@@ -1,0 +1,53 @@
+{
+  "generated_by": "00_data_quality.ipynb",
+  "seed": 42,
+  "data_date_range": {
+    "min": "2019-10-01 00:00:00",
+    "max": "2020-02-29 23:59:59",
+    "span_days": 151
+  },
+  "row_counts": {
+    "total_events": 20692840,
+    "n_orders": 159382,
+    "n_purchasing_users": 110518,
+    "n_users_any_event": 1639358
+  },
+  "order_reconstruction_rule": {
+    "rule": "GROUP BY (user_id, user_session, event_time) on event_type='purchase' rows",
+    "certified_because": "98.1% of multi-purchase-row sessions share one identical purchase timestamp across all their purchase rows; session-only grouping (Rule A) produces implausible order spans (max observed ~full dataset window) due to session-ID reuse documented in Section 7.",
+    "rejected_alternative": "one order per user_session (ignores possible multiple checkout events within one reused/long-lived session id)"
+  },
+  "retention_horizon": {
+    "primary_days": 30,
+    "primary_reason": "Only horizon with a full-cohort-trustworthy trailing window for nearly the entire dataset (Oct/Nov/Dec cohorts fully covered, Jan cohort nearly covered).",
+    "d30_feasible_cohorts": [
+      "2019-10-01",
+      "2019-11-01",
+      "2019-12-01"
+    ],
+    "d60_feasible_cohorts": [
+      "2019-10-01",
+      "2019-11-01",
+      "2019-12-01"
+    ],
+    "d90_feasible_cohorts": [
+      "2019-10-01",
+      "2019-11-01"
+    ],
+    "ml_target_recommendation": "repeat_purchase_30d"
+  },
+  "churn_threshold_candidates_days": {
+    "p75": 36.5,
+    "p85": 51.5,
+    "p95": 80.3,
+    "note": "Candidates only -- nb03 must validate FP rate and recall against future behavior before certifying one, per CLAUDE.md principle 2."
+  },
+  "known_limitations": [
+    "user_id is cookie-scoped, not account-scoped -- every repeat-purchase/retention figure is a LOWER BOUND on true customer-level behavior.",
+    "category_code is null for ~98% of events -- use category_id for category-level grouping.",
+    "brand is null for ~42% of events.",
+    "A small number of user_ids show bot/scraper-like volumes (thousands of sessions in weeks) -- not filtered here; nb02/nb04 must define and document an explicit exclusion threshold.",
+    "Order size has a heavy right tail (max order size in the hundreds of line items) driven by the same high-volume user_ids."
+  ],
+  "criteo_experiment_data_present": false
+}

@@ -1,0 +1,7 @@
+data/raw/*.csv
+*.duckdb
+outputs/figures/*.png
+.ipynb_checkpoints/
+__pycache__/
+.venv/
+.DS_Store

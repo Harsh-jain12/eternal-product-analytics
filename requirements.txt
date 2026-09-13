@@ -1,0 +1,13 @@
+duckdb>=0.10
+pandas
+numpy
+matplotlib
+scipy
+statsmodels
+lifelines
+scikit-learn
+lightgbm
+shap
+jupyter
+nbformat
+kaggle
