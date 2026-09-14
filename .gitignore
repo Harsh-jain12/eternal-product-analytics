@@ -1,4 +1,5 @@
 data/raw/*.csv
+data/processed/*.parquet
 *.duckdb
 outputs/figures/*.png
 .ipynb_checkpoints/

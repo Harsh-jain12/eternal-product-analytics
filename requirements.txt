@@ -1,5 +1,6 @@
 duckdb>=0.10
 pandas
+pyarrow
 numpy
 matplotlib
 scipy

@@ -1,0 +1,6 @@
+abandonment_type,n_users_with_type,n_repeat_purchasers,repeat_rate_pct,dedup_pct,raw_pct
+deferred_intent,75606,16227,21.462582334735337,7.78,7.77
+price_driven,77440,16262,20.99948347107438,8.24,8.24
+comparison_browse,112969,19879,17.596862856181783,19.75,19.76
+other_inconclusive,138464,22259,16.075658654957245,51.27,51.07
+true_abandonment,114914,17651,15.360182397271002,12.96,13.15

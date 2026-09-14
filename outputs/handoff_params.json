@@ -37,10 +37,18 @@
     "ml_target_recommendation": "repeat_purchase_30d"
   },
   "churn_threshold_candidates_days": {
-    "p75": 36.5,
-    "p85": 51.5,
-    "p95": 80.3,
-    "note": "Candidates only -- nb03 must validate FP rate and recall against future behavior before certifying one, per CLAUDE.md principle 2."
+    "p75": 42.2,
+    "p85": 56.9,
+    "p95": 87.3,
+    "method": "median-of-per-user-median inter-purchase gaps, bot-excluded (corrected in 01_funnel.ipynb)",
+    "note": "Candidates only -- nb03 must still validate FP rate and recall against future behavior.",
+    "superseded": {
+      "p75": 36.5,
+      "p85": 51.5,
+      "p95": 80.3,
+      "method": "pooled gaps (order-count-weighted), not bot-excluded -- from 00_data_quality.ipynb",
+      "reason_superseded": "Pooling weights frequent repeat-buyers more heavily, biasing every percentile down by roughly 15-20%. Kept here only for audit trail."
+    }
   },
   "known_limitations": [
     "user_id is cookie-scoped, not account-scoped -- every repeat-purchase/retention figure is a LOWER BOUND on true customer-level behavior.",
@@ -49,5 +57,16 @@
     "A small number of user_ids show bot/scraper-like volumes (thousands of sessions in weeks) -- not filtered here; nb02/nb04 must define and document an explicit exclusion threshold.",
     "Order size has a heavy right tail (max order size in the hundreds of line items) driven by the same high-volume user_ids."
   ],
-  "criteo_experiment_data_present": false
+  "criteo_experiment_data_present": false,
+  "bot_exclusion": {
+    "metric": "sessions per active day (distinct user_session count / distinct active-day count)",
+    "threshold": 29.0,
+    "threshold_derivation": "exact 99.9th percentile of the real distribution across all users; a generic Tukey far-outlier fence on raw session count was tested and rejected for over-flagging ordinary repeat shoppers (see notebook).",
+    "n_users_excluded": 1605,
+    "share_of_events_pct": 1.743,
+    "share_of_purchase_rows_pct": 1.1172,
+    "share_of_orders_pct": 0.6168,
+    "excluded_ids_file": "outputs/tables/excluded_bot_users.csv",
+    "order_size_tail_correction": "00 claimed the order-size heavy tail was driven by the same high-volume user_ids; verified false -- zero overlap between the session-frequency bot list and the top mega-basket-order users, and the tail (max=429 items) is unchanged after bot exclusion. Treat as a separate, unresolved data issue for nb04/nb05."
+  }
 }
