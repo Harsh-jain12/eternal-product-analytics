@@ -59,7 +59,10 @@
     "Bot exclusion IS defined and applied project-wide since 01: sessions per active day (distinct user_session count / distinct active-day count) > 29.0 (1,605 users, 1.743% of events). Inherit it from handoff_params.json bot_exclusion; do not re-derive.",
     "The order-size tail is NOT bot-driven (00's claim, disproved in 01) and is not an anomaly: 143 reseller/B2B-like bulk buyers (median ~130 distinct products over ~31 categories at a BELOW-average unit price). Kept and flagged as is_bulk_buyer in data/processed/cohort_assignments.parquet; exclude from MEAN-based monetary metrics in 04/05, report medians as headline.",
     "DuckDB determinism: never reference row_number() OVER () through a lazy view (it is re-assigned per reference and corrupts joins -- this silently broke 01's first two commits), and never use approx_quantile for a reported figure. See src/data.py connect().",
-    "01's 4-type cart-abandonment decomposition is partial: 02 Section 0A splits the 48% residual, promoting `substitution` to a named type and leaving only `returned_browsed_only` unclassified."
+    "01's 4-type cart-abandonment decomposition is partial: 02 Section 0A splits the 48% residual, promoting `substitution` to a named type and leaving only `returned_browsed_only` unclassified.",
+    "OUTCOME LEAKAGE: the abandonment-type ranking in 01 Section 4 and 02 Section 0A is NOT a valid effect size -- the types' definitions reference purchases that can fall in the outcome window. 02 Section 0E re-tests with disjoint windows: deferred_intent collapses from OR 10.81 to 0.78 and the ranking inverts. Only abandonment VOLUME survives. nb05 must not build features from those types -- see leakage_rules_for_05.",
+    "The 'promo' cohort is a BLACK FRIDAY cohort: all detected discount-spike days fall in one week, so promo-vs-organic results are about a single trading event, not about discounting in general.",
+    "SPINE-1 FALSIFIED: behaviour (first-session depth) does NOT beat first-order value for predicting repeat purchase (D30 dead heat, value ahead at D60/D90) and both are weak (V~0.09-0.13). See spine_hypothesis_status; CLAUDE.md's spine has been revised accordingly."
   ],
   "criteo_experiment_data_present": false,
   "bot_exclusion": {
@@ -129,13 +132,56 @@
     "slowest_bucket_ratio_vs_baseline": 1.27,
     "implication_for_08": "Do not assume an engineered 2nd purchase inherits the ~2x repeat rate; plan on the residual (1.27x), which is the part not explained by which buyers self-select into a fast 2nd purchase."
   },
-  "promo_acquisition": {
-    "spike_rule": "day-level mean discount vs per-product median price exceeding median + 3*MAD of the daily series",
+  "black_friday_cohort": {
+    "naming_note": "Renamed from 'promo_acquisition'. All detected spike days fall inside a single week, so this flag identifies the Black Friday cohort, not promotional acquisition generally. The old name overclaimed.",
+    "spike_rule": "day-level mean discount vs per-product median price exceeding median + 3*MAD of the daily series (derived from price dispersion only, no calendar input)",
     "spike_threshold": 0.00925,
     "n_spike_days": 7,
+    "spike_day_span": [
+      "2019-11-21",
+      "2019-11-30"
+    ],
     "black_friday_detected_independently": true,
-    "d30_gap_pp": -3.36,
-    "d60_gap_pp": -5.04,
-    "gap_trajectory": "WIDENS"
+    "primary_population": "cohorts eligible at D90 (Oct+Nov), held fixed across D7..D90",
+    "gap_pp": {
+      "d7": -0.81,
+      "d14": -2.53,
+      "d30": -5.39,
+      "d60": -7.83,
+      "d90": -7.42
+    },
+    "gap_trajectory": "WIDENS",
+    "interpretation_limit": "Associational, and about ONE trading week. Confounded with calendar position, merchandising and deal-seeking intent. Cannot justify a discounting decision on its own -- see 07 (Criteo) for randomised incrementality."
+  },
+  "leakage_rules_for_05": {
+    "rule": "No feature may be derived from a cart-abandonment type whose definition references the outcome window. The 01/02 types (deferred_intent, substitution) require a purchase, and if that purchase is unbounded in time it can BE the predicted repeat purchase.",
+    "evidence": "Under the leaky spec deferred_intent scored OR=10.81 [10.29, 11.36]; with the classification window confined to events before the first order and the outcome measured strictly after it, the same type scores OR=0.78 [0.71, 0.85] -- below the baseline. The ranking inverts.",
+    "safe_construction": "Classify on events strictly before the first order (or a fixed first-k-day window); measure the outcome strictly after it; ensure every purchase a type definition references falls inside the classification window.",
+    "what_survives": "Abandonment VOLUME (log1p n_removals) remains predictive: OR=1.38 [1.35, 1.41]. Type does not."
+  },
+  "spine_hypothesis_status": {
+    "finding_name": "SPINE-1: first-order value vs first-session depth is a dead heat, and both are weak",
+    "status": "FIRST CLAUSE FALSIFIED",
+    "original_claim": "Repeat purchase is driven more by user behaviour and category/journey characteristics than by simple first-order value.",
+    "measurement": {
+      "D30": {
+        "value_V": 0.0895,
+        "depth_V": 0.0894,
+        "category_V": 0.0616
+      },
+      "D60": {
+        "value_V": 0.1154,
+        "depth_V": 0.111,
+        "category_V": 0.0775
+      },
+      "D90": {
+        "value_V": 0.131,
+        "depth_V": 0.1196,
+        "category_V": 0.0872
+      }
+    },
+    "verdict": "First-order VALUE matches depth at D30 and exceeds it at D60 and D90. Behaviour does not beat first-order value. Both associations are weak (Cramer's V ~ 0.09-0.13), so neither is a strong standalone predictor of repeat purchase.",
+    "replacement_framing": "Repeat purchase and repeat engagement are separable problems at this retailer: by D90, 60% of purchasers return but only 27% buy again, a 33pp gap stable from D14 onward. Neither first-order value nor first-session depth predicts repeat purchase strongly, so the targeting question cannot be answered by propensity alone -- it requires estimating who would RESPOND to an intervention, which observational data cannot do (07/08).",
+    "recorded_not_deleted": "Kept as a named, dated falsification so 06/08 cannot silently re-adopt the original spine."
   }
 }

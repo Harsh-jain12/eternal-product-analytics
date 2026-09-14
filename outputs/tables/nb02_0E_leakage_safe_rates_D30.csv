@@ -1,0 +1,7 @@
+type,n_users,n_repeat,repeat_pct,ci_lo,ci_hi,median_n_removals
+comparison_browse,90,25,27.78,19.58,37.8,8.5
+price_driven,228,50,21.93,17.05,27.74,7.0
+deferred_intent,29416,4707,16.0,15.59,16.42,8.0
+substitution,20150,2985,14.81,14.33,15.31,4.0
+true_abandonment,4876,704,14.44,13.48,15.45,2.0
+other_inconclusive,76,9,11.84,6.36,21.0,1.0

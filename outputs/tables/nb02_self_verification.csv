@@ -2,7 +2,11 @@ check,pass,detail
 cohorts partition purchasers,True,"109,732 == 109,732"
 abandonment sub-types partition other_inconclusive,True,"1,422,387 == 1,422,387"
 time-to-2nd buckets partition 2nd-purchasers,True,"24,731 == 24,731"
-promo + organic partition the D60-eligible population,True,"9,263 + 62,464 == 71,727"
+Black Friday + organic partition the D90-eligible population,True,"9,263 + 42,888 == 52,151"
+0E leakage-safe types partition the D30 population,True,"54,836 == 54,836"
+0E leakage-safe types partition the D60 population,True,"54,836 == 54,836"
+0E classification window is disjoint from the outcome window,True,no classifying removal occurs at or after the first order
+0E every purchase referenced by a type definition is inside the classification window,True,every deferred_intent flag is justified by a purchase at or before the first order
 value_quintile buckets sum to eligible N at D30,True,"71,727 == 71,727"
 depth_quintile buckets sum to eligible N at D30,True,"71,727 == 71,727"
 category_bucket buckets sum to eligible N at D30,True,"71,727 == 71,727"

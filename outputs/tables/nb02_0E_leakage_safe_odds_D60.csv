@@ -1,0 +1,7 @@
+term,OR,ci_lo,ci_hi,p
+comparison_browse,1.573,1.02,2.428,0.041
+deferred_intent,0.752,0.696,0.813,0.0
+other_inconclusive,0.852,0.467,1.554,0.601
+price_driven,1.142,0.853,1.528,0.372
+substitution,0.841,0.779,0.909,0.0
+log_n,1.41,1.382,1.439,0.0

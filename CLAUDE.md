@@ -5,11 +5,42 @@ Which user behaviors and first-purchase characteristics drive repeat purchase an
 long-term retention, which customer segments are most valuable and at risk, and who
 should actually be targeted with a retention intervention?
 
-## Spine hypothesis (test it, do not force it)
-Repeat purchase is driven more by user behavior and category/journey characteristics
-than by simple first-order value, and the users most likely to churn are not
-necessarily the users who would respond to an intervention. Negative results are
-acceptable and must be reported honestly, not hidden.
+## Spine hypothesis (REVISED in 02 — see the falsification below before using this)
+Repeat purchase and repeat engagement are separable problems at this retailer: by D90,
+60% of purchasers return but only 27% buy again, a 33pp gap stable from D14 onward.
+Neither first-order value nor first-session depth predicts repeat purchase strongly, so
+the targeting question cannot be answered by propensity alone — it requires estimating
+who would RESPOND to an intervention, which observational data cannot do (nb07/nb08).
+
+The second clause of the original spine still stands and is still to be tested: the
+users most likely to churn are not necessarily the users who would respond to an
+intervention. Negative results are acceptable and must be reported honestly, not hidden.
+
+### SPINE-1 (FALSIFIED 2026-09-14, nb02 §5) — recorded, not deleted
+Original first clause: *"Repeat purchase is driven more by user behavior and
+category/journey characteristics than by simple first-order value."*
+
+Measured as Cramér's V on repeat purchase, eligible cohorts only:
+
+| horizon | first-order value | first-session depth | category_id |
+|---|---|---|---|
+| D30 | 0.0895 | 0.0894 | 0.0616 |
+| D60 | 0.1154 | 0.1108 | 0.0775 |
+| D90 | 0.1310 | 0.1197 | 0.0872 |
+
+Behaviour does **not** beat first-order value: a dead heat at D30 and value ahead at
+D60/D90. Both associations are weak, so neither is a usable standalone predictor. This
+is kept as a named, dated falsification so that 06/08 cannot silently re-adopt the
+original framing; it is not evidence that behaviour is irrelevant, only that *these two
+first-order summaries* are similarly weak. Full record in
+`handoff_params.json → spine_hypothesis_status`.
+
+### Leakage rule arising from 02 §0E (binding on nb05)
+No feature may be derived from a cart-abandonment type whose definition references the
+outcome window. Under the leaky spec `deferred_intent` scored OR=10.81; with disjoint
+classification/outcome windows the same type scores below the baseline and the ranking
+inverts. Only abandonment *volume* survives as a predictor. See
+`handoff_params.json → leakage_rules_for_05`.
 
 ## Datasets
 - Primary: REES46 "eCommerce Events History in Cosmetics Shop" — 5 monthly CSVs
