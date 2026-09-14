@@ -74,7 +74,10 @@
     "D30 CANNOT MEASURE CHURN: under the certified 42.2d rule no user is churned before day 42.2, so 06's repeat_purchase_30d target is a REPEAT-PURCHASE target and must never be labelled churn. The shortest horizon that can carry a churn label is D43.",
     "CHURN-THRESHOLD FLAG-DATE INSTABILITY: the J-optimal threshold drifts 43.5d -> 29.4d as the flag date moves 21 days earlier, tracking the shrinking lookback cap (95.1d -> 74.1d). This is left censoring in a 5-month window, not behaviour. Treat 42.2d as the centre of a 30-45d region; ~9 months of history would settle it.",
     "ABANDONMENT-VOLUME SIGNAL IS ANCHOR-SENSITIVE: log1p(n_removals) holds at OR 1.37-1.44 for first-order-anchored outcomes at every churn threshold, but falls to 1.03-1.14 for a calendar-anchored churn label. 05 must carry time-since-first-order alongside it rather than expecting OR=1.38.",
-    "CHURN IS FIRST-PURCHASE CHURN: 88% of users flagged by the certified rule had exactly one order, vs 80% of the base. 04's at-risk cells and 08's intervention are activation problems (get a 2nd order), not win-back problems."
+    "CHURN IS FIRST-PURCHASE CHURN: 88% of users flagged by the certified rule had exactly one order, vs 80% of the base. 04's at-risk cells and 08's intervention are activation problems (get a 2nd order), not win-back problems.",
+    "CHURN BASE RATE IS NOT RETENTION: 03's 84.84% true-churn base is a point-in-time STOCK measure on a calendar anchor; 02's 21.08% D60 retention is a FLOW measure anchored on each user's first order. Both are correct and they must never be quoted against each other. 03 Section 9A reproduces 02 exactly on the same users once the anchor is matched.",
+    "CHURN RULE RECALL IS 53%: the certified rule flags 36,495 users but the true at-risk base is 61,787. 08/09 must NOT treat flagged-population as at-risk-population -- every reach or ROI denominator built on the flagged count must be divided by recall (53.09%). All 28,986 missed churners sit BELOW the 42.2d threshold (median recency 23.7d).",
+    "CHURN THRESHOLD IS NOT IDENTIFIED: 42.2d is the centre of a 30-45d region; two independent methods agree there, but the estimate is robust to neither flag-date position nor cost asymmetry. ~9 months of history would identify it. Quote certified_region_days [30, 45], not the decimal; use 42.2d as the OPERATING value so 04/05/06 stay comparable."
   ],
   "criteo_experiment_data_present": false,
   "bot_exclusion": {
@@ -275,6 +278,44 @@
       "file": "data/processed/churn_flags.parquet",
       "operational_flag": "churned_at_data_end (all 109,732 purchasers, UNVALIDATED by construction)",
       "labelled_panel": "in_validation_panel == True (72,827 users) carries flagged_churned + true_churn_label"
+    },
+    "certified_region_days": [
+      30.0,
+      45.0
+    ],
+    "identification_status": {
+      "verdict": "NOT IDENTIFIED BY THIS DATASET",
+      "claim": "42.2d is the centre of a 30-45d region; two independent methods agree there, but the estimate is robust to neither flag-date position nor cost asymmetry. ~9 months of history would identify it.",
+      "operating_value_days": 42.2,
+      "why_an_operating_value_is_still_required": "04/05/06 must cut at one number or their results are not comparable. 42.2d is the best-supported point in the region; the region, not the decimal, is what the data supports.",
+      "evidence_against_precision": {
+        "flag_date_drift": "J-optimal K moves 43.5d -> 29.4d over 21 days of flag-date shift, tracking the lookback cap 95.1d -> 74.1d monotonically (Section 3D).",
+        "cost_asymmetry_band": "P75 wins only for recall weight w in [0.475, 0.525]; outside it P85 or the 30-day rule wins (Section 3C).",
+        "taken_together": "The estimate is robust to neither of the procedure's two free choices, so it is the value those choices produced rather than a property of the customers."
+      },
+      "what_survives": "Every method tried lands in 30-45d (P75 42.2, forward-optimum at full lookback 43.5, forward-optimum at the earliest flag date 29.4). The J curve is flat across the region, so the choice within it costs little; the choice between it and 22d or 57d costs a lot (J 13.7 and 17.4 vs ~19.6-19.9).",
+      "what_would_identify_it": "~9 months of history. With 270 days the threshold could be validated at a dozen flag dates each with a >150d lookback cap, and the drift would be measurable rather than confounded with left censoring.",
+      "recorded_by": "03 Section 9D (addendum), amending Section 3's certification language."
+    },
+    "addressable_population": {
+      "recall_pct": 53.09,
+      "n_evaluable_base": 72827,
+      "n_true_at_risk": 61787,
+      "n_flagged": 36495,
+      "n_correctly_flagged": 32801,
+      "n_missed": 28986,
+      "flagged_as_pct_of_true_at_risk": 59.1,
+      "where_the_missed_half_sits": "All 28,986 missed churners have recency BELOW 42.2d at the flag date, by construction: median 23.7d, IQR [13.9, 34.6]. 36.1% sit in [30, 42.2) -- the band the naive 30-day rule would have caught, which is precisely the recall it buys and the false positives it pays for.",
+      "binding_rule_for_08_09": "DO NOT treat the flagged population as the at-risk population. Sizing an intervention off 36,495 flagged users understates the at-risk base by 25,292 (41% short), while 3,694 of those flagged need no intervention. Any reach or ROI denominator built on the flagged count must be divided through by recall (53.09%), or it is wrong by roughly a factor of two."
+    },
+    "base_rate_reconciliation": {
+      "question": "03's Spec B gives a 56.9d forward window yet finds only 15.16% returning, against 02's D60 purchase retention of 21.08%. Is the 84.84% true-churn base rate fair?",
+      "verdict": "FAIR FOR THE QUESTION IT ANSWERS, and not comparable to 02's figure.",
+      "anchor": "02 starts each user's clock at their own first order; 03 starts every user's clock on one calendar date. Return probability is a function of recency: the freshest stratum of 03's panel (recency <7d, i.e. 02's starting condition) returns at 27.42% over 56.9d, falling monotonically to 7.58% for the longest-lapsed band.",
+      "composition": "02's population is a FLOW (new first-time buyers, all at recency 0); 03's is a STOCK (median recency 42.2d, only 4.73% within 7d of a purchase, 80.0% with one order). If the stock sat where 02's population starts, the churn base would be 72.58% rather than 84.84% -- the 12.26pp gap IS the recency mix.",
+      "proof_of_agreement": "Running 02's own first-order-anchored measure on 03's panel users reproduces 02 exactly: D30 14.08%, D60 21.08%. The notebooks do not disagree.",
+      "left_censoring": "Observable recency at F* is capped at 95.1d and users last active before 2019-10-01 are absent entirely, so the stock holds no long-dead customers. 84.84% therefore UNDER-states a mature retailer's point-in-time churn base.",
+      "does_the_degeneracy_depend_on_it": "NO, and this was the reason for checking. The cost model prefers flagging everyone once R exceeds the MAXIMUM LOCAL RETURN ODDS (0.378), not anything derived from the aggregate base rate; observed threshold 0.472 confirms the mechanism. On 02's own anchor the D60 odds are 0.267, still far below any realistic R, and reweighting the panel to 02's D60 rate moves the threshold only 0.472 -> 0.705. Section 3's argument is ANCHOR-INDEPENDENT and would not change if the base rate were 79%."
     }
   }
 }
