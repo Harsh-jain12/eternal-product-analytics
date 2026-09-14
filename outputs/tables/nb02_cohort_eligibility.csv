@@ -1,0 +1,6 @@
+cohort_month,n_users,min_trailing_days,D1,D3,D7,D14,D30,D60,D90
+2019-10-01,25593,121,True,True,True,True,True,True,True
+2019-11-01,26558,91,True,True,True,True,True,True,True
+2019-12-01,19576,60,True,True,True,True,True,True,False
+2020-01-01,20277,29,True,True,True,True,False,False,False
+2020-02-01,17728,0,False,False,False,False,False,False,False

@@ -1,0 +1,6 @@
+rate,denominator,eligibility,n_at_D30,n_at_D90
+purchase/activity retention at Dx,users in cohorts with >=x trailing days,"cohort min_trailing_days >= x; ineligible cohorts excluded, not zero-filled",71727.0,52151.0
+other_inconclusive subtype repeat rate,users with >=1 removal of that subtype,none (whole window); a user may appear under >1 subtype,,
+P(3rd by 30d | reached 2nd) by t2 bucket,users reaching a 2nd order in that bucket,KM right-censored at DATA_END - 2nd order,24731.0,
+promo vs organic repeat,"D60-eligible cohorts, split by first-order day",cohorts Oct/Nov/Dec only; KM censored at DATA_END,71727.0,
+spine cuts (value/depth/category),users in cohorts eligible at that horizon,cohort min_trailing_days >= horizon,71727.0,52151.0

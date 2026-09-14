@@ -1,0 +1,6 @@
+subtype,n_events,pct_of_other,pct_of_all_removals
+returned_browsed_only,590759,41.53,20.03
+bought_other_category,333739,23.46,11.31
+substitution_later_session,211611,14.88,7.17
+substitution_same_session,184251,12.95,6.25
+recart_no_purchase,102027,7.17,3.46
