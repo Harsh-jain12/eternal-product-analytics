@@ -37,12 +37,14 @@
     "ml_target_recommendation": "repeat_purchase_30d"
   },
   "churn_threshold_candidates_days": {
+    "median": 22.0,
     "p75": 42.2,
     "p85": 56.9,
     "p95": 87.3,
     "method": "median-of-per-user-median inter-purchase gaps, bot-excluded (corrected in 01_funnel.ipynb)",
     "note": "Candidates only -- nb03 must still validate FP rate and recall against future behavior.",
     "superseded": {
+      "median": 17.5,
       "p75": 36.5,
       "p85": 51.5,
       "p95": 80.3,

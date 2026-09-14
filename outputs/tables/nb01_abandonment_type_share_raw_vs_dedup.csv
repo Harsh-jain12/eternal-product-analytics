@@ -1,6 +1,6 @@
 abandonment_type,dedup_pct,raw_pct,shift_pp
-other_inconclusive,51.27,51.07,-0.2
+other_inconclusive,51.26,51.03,-0.23
 comparison_browse,19.75,19.76,0.01
-true_abandonment,12.96,13.15,0.19
-price_driven,8.24,8.24,0.0
-deferred_intent,7.78,7.77,-0.01
+true_abandonment,12.93,13.12,0.19
+price_driven,8.29,8.3,0.01
+deferred_intent,7.78,7.79,0.01

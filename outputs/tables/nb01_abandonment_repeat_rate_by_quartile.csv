@@ -1,0 +1,20 @@
+removal_count_quartile,type_exclusive,n,n_repeat,repeat_rate_pct
+Q1 (fewest),comparison_browse,14399,543,3.771095214945482
+Q1 (fewest),deferred_intent,6358,255,4.010695187165775
+Q1 (fewest),other_inconclusive,15596,869,5.571941523467556
+Q1 (fewest),price_driven,6654,249,3.7421100090171326
+Q1 (fewest),true_abandonment,18694,297,1.5887450518883064
+Q2,comparison_browse,11613,792,6.8199431671402735
+Q2,deferred_intent,9774,675,6.906077348066298
+Q2,other_inconclusive,2114,230,10.879848628192999
+Q2,price_driven,7967,585,7.342789004644157
+Q2,true_abandonment,5035,266,5.283018867924528
+Q3,comparison_browse,7757,907,11.692664689957457
+Q3,deferred_intent,20507,2723,13.278392743941094
+Q3,other_inconclusive,216,34,15.74074074074074
+Q3,price_driven,10621,1310,12.334055173712457
+Q3,true_abandonment,958,89,9.290187891440501
+Q4 (most),comparison_browse,708,139,19.63276836158192
+Q4 (most),deferred_intent,38864,12505,32.17630712227254
+Q4 (most),price_driven,4024,908,22.564612326043736
+Q4 (most),true_abandonment,11,3,27.272727272727273

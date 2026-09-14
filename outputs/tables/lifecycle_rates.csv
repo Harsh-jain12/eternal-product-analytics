@@ -1,12 +1,14 @@
-metric,value,method,note
-distinct_purchasers,109732.0,count,bot-excluded
-second_purchase_rate_naive_pct,22.54,naive (right-censoring ignored),24730/109732
-second_purchase_rate_km_by_30d_pct,14.84,Kaplan-Meier CDF,censoring-aware
-second_purchase_rate_km_by_60d_pct,21.76,Kaplan-Meier CDF,censoring-aware
-second_purchase_rate_km_by_90d_pct,25.76,Kaplan-Meier CDF,censoring-aware
-median_days_to_2nd_purchase_km,inf,Kaplan-Meier median,censoring-aware
-third_given_second_rate_naive_pct,40.42,naive (right-censoring ignored),9995/24730
-third_given_second_rate_km_by_30d_pct,28.59,Kaplan-Meier CDF,"censoring-aware, conditional on reaching 2nd"
-third_given_second_rate_km_by_60d_pct,43.32,Kaplan-Meier CDF,"censoring-aware, conditional on reaching 2nd"
-third_given_second_rate_km_by_90d_pct,50.74,Kaplan-Meier CDF,"censoring-aware, conditional on reaching 2nd"
-median_days_2nd_to_3rd_km,86.3,Kaplan-Meier median,censoring-aware
+metric,value,method,denominator,eligibility_rule,canonical,note
+distinct_purchasers,109732.0,count,109732.0,none (all bot-excluded purchasers),True,bot-excluded
+second_purchase_rate_naive_pct,22.54,naive (right-censoring ignored),109732.0,"Set A: ALL purchasers, n=109,732, eligibility=none, censored at (DATA_END - 1st purchase)",False,"24731/109732; kept for reference, not canonical"
+second_purchase_rate_km_by_30d_pct,14.84,Kaplan-Meier CDF,109732.0,"Set A: ALL purchasers, n=109,732, eligibility=none, censored at (DATA_END - 1st purchase)",True,15.4% of denominator censored before day 30
+second_purchase_rate_km_by_60d_pct,21.76,Kaplan-Meier CDF,109732.0,"Set A: ALL purchasers, n=109,732, eligibility=none, censored at (DATA_END - 1st purchase)",True,30.3% of denominator censored before day 60
+second_purchase_rate_km_by_90d_pct,25.76,Kaplan-Meier CDF,109732.0,"Set A: ALL purchasers, n=109,732, eligibility=none, censored at (DATA_END - 1st purchase)",True,44.4% of denominator censored before day 90
+median_days_to_2nd_purchase_km,inf,Kaplan-Meier median,109732.0,"Set A: ALL purchasers, n=109,732, eligibility=none, censored at (DATA_END - 1st purchase)",True,inf = fewer than half of purchasers ever reach a 2nd purchase in-window
+third_given_second_rate_naive_pct,40.41,naive (right-censoring ignored),24731.0,"Set B: purchasers who reached a 2nd order, n=24,731, eligibility=>=2 orders, censored at (DATA_END - 2nd purchase)",False,"9995/24731; kept for reference, not canonical"
+third_given_second_rate_km_by_30d_pct,28.59,Kaplan-Meier CDF,24731.0,"Set B: purchasers who reached a 2nd order, n=24,731, eligibility=>=2 orders, censored at (DATA_END - 2nd purchase)",True,17.6% of denominator censored before day 30
+third_given_second_rate_km_by_60d_pct,43.32,Kaplan-Meier CDF,24731.0,"Set B: purchasers who reached a 2nd order, n=24,731, eligibility=>=2 orders, censored at (DATA_END - 2nd purchase)",True,32.7% of denominator censored before day 60
+third_given_second_rate_km_by_90d_pct,50.74,Kaplan-Meier CDF,24731.0,"Set B: purchasers who reached a 2nd order, n=24,731, eligibility=>=2 orders, censored at (DATA_END - 2nd purchase)",True,43.7% of denominator censored before day 90
+median_days_2nd_to_3rd_km,86.3,Kaplan-Meier median,24731.0,"Set B: purchasers who reached a 2nd order, n=24,731, eligibility=>=2 orders, censored at (DATA_END - 2nd purchase)",True,censoring-aware
+ratio_set_b_over_set_a_naive,1.793,naive full-window rate ratio,,N/A -- diagnostic only,False,confirms the ~2x pattern is not a censoring/KM artifact -- it appears with zero censoring adjustment
+identity_check_n_repeaters_x_mean_extra,48667.0,n_repeaters * mean_extra_orders_per_repeater,,N/A -- accounting check,False,must equal excess_orders=48667; MATCHES

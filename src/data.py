@@ -13,8 +13,17 @@ import duckdb
 RAW_GLOB = os.path.join("data", "raw", "*.csv")
 
 
-def connect(memory_limit="5GB", threads=6):
-    """Open a DuckDB connection tuned for out-of-core CSV scans on an 8GB machine."""
+def connect(memory_limit="5GB", threads=1):
+    """Open a DuckDB connection tuned for out-of-core CSV scans on an 8GB machine.
+
+    threads=1 by default: verified empirically that DuckDB's parallel execution plan
+    for this notebook's inequality-join-heavy queries (comparison/price-driven/
+    true-abandonment classification) is NOT run-to-run deterministic -- two identical
+    runs at threads=6 produced different row counts (e.g. true_abandonment ranged
+    381k-382k across runs), while two runs at threads=1 were bit-for-bit identical.
+    Single-threaded is slower but the numbers this project reports must be
+    reproducible, per CLAUDE.md's "seed fixed everywhere" convention.
+    """
     con = duckdb.connect()
     con.execute(f"SET memory_limit='{memory_limit}'")
     con.execute(f"SET threads={threads}")
