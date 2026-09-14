@@ -79,7 +79,7 @@
     "CHURN RULE RECALL IS 53%: the certified rule flags 36,495 users but the true at-risk base is 61,787. 08/09 must NOT treat flagged-population as at-risk-population -- every reach or ROI denominator built on the flagged count must be divided by recall (53.09%). All 28,986 missed churners sit BELOW the 42.2d threshold (median recency 23.7d).",
     "CHURN THRESHOLD IS NOT IDENTIFIED: 42.2d is the centre of a 30-45d region; two independent methods agree there, but the estimate is robust to neither flag-date position nor cost asymmetry. ~9 months of history would identify it. Quote certified_region_days [30, 45], not the decimal; use 42.2d as the OPERATING value so 04/05/06 stay comparable."
   ],
-  "criteo_experiment_data_present": false,
+  "criteo_experiment_data_present": true,
   "bot_exclusion": {
     "metric": "sessions per active day (distinct user_session count / distinct active-day count)",
     "threshold": 29.0,
@@ -317,5 +317,51 @@
       "left_censoring": "Observable recency at F* is capped at 95.1d and users last active before 2019-10-01 are absent entirely, so the stock holds no long-dead customers. 84.84% therefore UNDER-states a mature retailer's point-in-time churn base.",
       "does_the_degeneracy_depend_on_it": "NO, and this was the reason for checking. The cost model prefers flagging everyone once R exceeds the MAXIMUM LOCAL RETURN ODDS (0.378), not anything derived from the aggregate base rate; observed threshold 0.472 confirms the mechanism. On 02's own anchor the D60 odds are 0.267, still far below any realistic R, and reweighting the panel to 02's D60 rate moves the threshold only 0.472 -> 0.705. Section 3's argument is ANCHOR-INDEPENDENT and would not change if the base rate were 79%."
     }
+  },
+  "criteo_dataset": {
+    "present": true,
+    "path": "data/raw/criteo/criteo-research-uplift-v2.1.csv.gz",
+    "source_url": "https://criteostorage.blob.core.windows.net/criteo-research-datasets/criteo-uplift-v2.1.csv.gz",
+    "source_note": "Criteo AI Lab's own Azure mirror. The canonical go.criteo.net link now 404s; a Hugging Face mirror (datasets/criteo/criteo-uplift) serves a byte-identical file (same 311,422,618-byte content-length) if this one moves.",
+    "sha256": "2716e1bf0fd157a93b5bf86924d9088419dfbac2022c6cd90030220634f616dc",
+    "bytes": 311422618,
+    "rows": 13979592,
+    "columns": [
+      "f0",
+      "f1",
+      "f2",
+      "f3",
+      "f4",
+      "f5",
+      "f6",
+      "f7",
+      "f8",
+      "f9",
+      "f10",
+      "f11",
+      "treatment",
+      "conversion",
+      "visit",
+      "exposure"
+    ],
+    "schema_note": "f0-f11 dense float features (anonymised); treatment 1/0; visit, conversion, exposure binary outcomes. No user id and no timestamp -- one row per randomised user.",
+    "randomisation": {
+      "treatment_ratio": 0.85,
+      "n_treated": 11882655,
+      "n_control": 2096937
+    },
+    "outcome_rates": {
+      "visit_rate": 0.046992,
+      "conversion_rate": 0.002917,
+      "exposure_rate": 0.030631
+    },
+    "naive_ate_unvalidated": {
+      "visit": 0.010342,
+      "conversion": 0.001152,
+      "warning": "Raw difference in means, computed here ONLY to confirm the file is usable. It is NOT a result: 07 must derive the ATE properly with SRM and covariate-balance checks, CIs, and ITT vs TOT (exposure is post-randomisation, so conditioning on it breaks randomisation)."
+    },
+    "verified_against_published_spec": true,
+    "verified_by": "scripted check outside the notebooks, after 03. 07 owns all analysis of this file.",
+    "why_it_is_here": "REES46 has no randomised experiment (principle 10). Criteo is the genuine one (principle 11) and is what lets 07 show that risk-targeting != uplift-targeting -- the argument 03's cost-model degeneracy already points at from the observational side."
   }
 }
