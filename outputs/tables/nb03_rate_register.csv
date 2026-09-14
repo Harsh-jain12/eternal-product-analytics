@@ -1,0 +1,8 @@
+rate,denominator,eligibility,n
+FP rate (false discovery rate),users flagged churned at F* by that rule,>=1 order at or before F*=2020-01-04; forward window must close by DATA_END,"36,495 at the certified rule"
+recall,users with no order in the forward window (true churners),"same panel; label fixed under Spec B, K-dependent under Spec A","61,787 under Spec B"
+precision / specificity / textbook FPR,flagged users / returners / returners respectively,same panel,"panel 72,827"
+still-active at Dx under rule K,users in cohorts eligible at that horizon (02's rule),"cohort min_trailing_days >= x; ineligible cohorts excluded, never zero-filled; undefined when x < K","D30 71,727 / D60 71,727 / D90 52,151"
+Black Friday gap in still-active at Dx,"the FIXED D90-eligible population (Oct+Nov), held constant across horizons","cohorts Oct+Nov only; fully observed, so no censoring correction","52,151 = 9,263 BF + 42,888 organic"
+log1p(n_removals) odds ratio,"purchasers with >=1 pre-first-order removal, restricted per outcome",classification strictly before the first order; outcome strictly after,"54,836 at D30; 55,680 for the calendar-anchored fit"
+naive-30 contrast band,"panel users with recency in [30, 42.2) days at F*",same panel,"12,618"

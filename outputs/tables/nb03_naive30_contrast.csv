@@ -1,0 +1,4 @@
+rule,n_flagged,flagged_pct,FP,fp_rate_pct,TP,recall_pct,specificity_pct,youden_J
+certified 42.2d,36495,50.11,3694,10.12,32801,53.09,66.54,19.63
+naive 30d,49113,67.44,5851,11.91,43262,70.02,47.0,17.02
+difference (naive - certified),12618,17.33,2157,1.79,10461,16.93,-19.54,-2.61

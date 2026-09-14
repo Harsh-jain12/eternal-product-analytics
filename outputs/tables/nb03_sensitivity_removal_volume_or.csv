@@ -1,0 +1,14 @@
+outcome,anchor,K_days,OR,ci_lo,ci_hi,n,base_rate_pct
+repeat by D30 (02's 0E measure),first order,,1.378,1.346,1.41,54836,15.464
+still active at D30 under median,first order,22.0,1.412,1.375,1.451,54836,10.75
+repeat by D60 (02's 0E measure),first order,,1.41,1.382,1.439,54836,23.207
+still active at D60 under median,first order,22.0,1.369,1.33,1.408,54836,9.326
+still active at D60 under p75,first order,42.2,1.413,1.382,1.446,54836,16.394
+still active at D60 under p85,first order,56.9,1.434,1.405,1.465,54836,20.884
+repeat by D90 (02's 0E measure),first order,,1.445,1.413,1.477,40512,29.475
+still active at D90 under median,first order,22.0,1.414,1.366,1.463,40512,8.664
+still active at D90 under p75,first order,42.2,1.41,1.372,1.449,40512,15.139
+still active at D90 under p85,first order,56.9,1.419,1.384,1.455,40512,19.128
+not churned at F* under median,calendar date F*,22.0,1.034,1.014,1.056,55680,22.956
+not churned at F* under p75,calendar date F*,42.2,1.104,1.085,1.123,55680,50.39
+not churned at F* under p85,calendar date F*,56.9,1.141,1.12,1.163,55680,67.522

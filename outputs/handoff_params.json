@@ -50,6 +50,12 @@
       "p95": 80.3,
       "method": "pooled gaps (order-count-weighted), not bot-excluded -- from 00_data_quality.ipynb",
       "reason_superseded": "Pooling weights frequent repeat-buyers more heavily, biasing every percentile down by roughly 15-20%. Kept here only for audit trail."
+    },
+    "nb03_status": {
+      "median_22.0": "validated, rejected (J too low, flags 77% of the base)",
+      "p75_42.2": "VALIDATED AND CERTIFIED",
+      "p85_56.9": "validated, rejected (recall 36%)",
+      "p95_87.3": "NOT VALIDATABLE -- dropped on window arithmetic, never scored"
     }
   },
   "known_limitations": [
@@ -62,7 +68,13 @@
     "01's 4-type cart-abandonment decomposition is partial: 02 Section 0A splits the 48% residual, promoting `substitution` to a named type and leaving only `returned_browsed_only` unclassified.",
     "OUTCOME LEAKAGE: the abandonment-type ranking in 01 Section 4 and 02 Section 0A is NOT a valid effect size -- the types' definitions reference purchases that can fall in the outcome window. 02 Section 0E re-tests with disjoint windows: deferred_intent collapses from OR 10.81 to 0.78 and the ranking inverts. Only abandonment VOLUME survives. nb05 must not build features from those types -- see leakage_rules_for_05.",
     "The 'promo' cohort is a BLACK FRIDAY cohort: all detected discount-spike days fall in one week, so promo-vs-organic results are about a single trading event, not about discounting in general.",
-    "SPINE-1 FALSIFIED: behaviour (first-session depth) does NOT beat first-order value for predicting repeat purchase (D30 dead heat, value ahead at D60/D90) and both are weak (V~0.09-0.13). See spine_hypothesis_status; CLAUDE.md's spine has been revised accordingly."
+    "SPINE-1 FALSIFIED: behaviour (first-session depth) does NOT beat first-order value for predicting repeat purchase (D30 dead heat, value ahead at D60/D90) and both are weak (V~0.09-0.13). See spine_hypothesis_status; CLAUDE.md's spine has been revised accordingly.",
+    "CHURN THRESHOLD CERTIFIED: 42.2 days of purchase silence (P75 of per-user-median inter-purchase gaps), validated at flag date 2020-01-04 with FP rate 10.12% and recall 53.09% (Spec B). Inherit it from handoff_params.json churn_definition; do not re-derive or round it.",
+    "P95 CHURN CANDIDATE (87.3d) WAS NEVER TESTED and must not be cited as validated: it needs 2K=174.6 days of span against 152.0 available, so zero users can be scored against it.",
+    "D30 CANNOT MEASURE CHURN: under the certified 42.2d rule no user is churned before day 42.2, so 06's repeat_purchase_30d target is a REPEAT-PURCHASE target and must never be labelled churn. The shortest horizon that can carry a churn label is D43.",
+    "CHURN-THRESHOLD FLAG-DATE INSTABILITY: the J-optimal threshold drifts 43.5d -> 29.4d as the flag date moves 21 days earlier, tracking the shrinking lookback cap (95.1d -> 74.1d). This is left censoring in a 5-month window, not behaviour. Treat 42.2d as the centre of a 30-45d region; ~9 months of history would settle it.",
+    "ABANDONMENT-VOLUME SIGNAL IS ANCHOR-SENSITIVE: log1p(n_removals) holds at OR 1.37-1.44 for first-order-anchored outcomes at every churn threshold, but falls to 1.03-1.14 for a calendar-anchored churn label. 05 must carry time-since-first-order alongside it rather than expecting OR=1.38.",
+    "CHURN IS FIRST-PURCHASE CHURN: 88% of users flagged by the certified rule had exactly one order, vs 80% of the base. 04's at-risk cells and 08's intervention are activation problems (get a 2nd order), not win-back problems."
   ],
   "criteo_experiment_data_present": false,
   "bot_exclusion": {
@@ -183,5 +195,86 @@
     "verdict": "First-order VALUE matches depth at D30 and exceeds it at D60 and D90. Behaviour does not beat first-order value. Both associations are weak (Cramer's V ~ 0.09-0.13), so neither is a strong standalone predictor of repeat purchase.",
     "replacement_framing": "Repeat purchase and repeat engagement are separable problems at this retailer: by D90, 60% of purchasers return but only 27% buy again, a 33pp gap stable from D14 onward. Neither first-order value nor first-session depth predicts repeat purchase strongly, so the targeting question cannot be answered by propensity alone -- it requires estimating who would RESPOND to an intervention, which observational data cannot do (07/08).",
     "recorded_not_deleted": "Kept as a named, dated falsification so 06/08 cannot silently re-adopt the original spine."
+  },
+  "churn_definition": {
+    "certified_threshold_days": 42.2,
+    "candidate_name": "p75",
+    "rule": "A user is churned as of date D if (D - last order timestamp) >= 42.2 days, in exact elapsed seconds, over bot-excluded orders built with the certified order-reconstruction rule.",
+    "derivation": {
+      "backward_method": "P75 of per-user-median inter-purchase gaps (01) = 42.2d",
+      "forward_method": "max-separation cut (Youden's J) against a 56.9d forward window = 43.5d",
+      "agreement_days": 1.3,
+      "why_this_is_the_certification": "Two methods sharing no inputs land 1.3 days apart, and P75 scores J=19.63 against a ceiling of 19.90 -- it is on the plateau, not a slope."
+    },
+    "validation": {
+      "flag_date": "2020-01-04 02:23:59",
+      "anchor_date": "2019-11-22 21:35:59",
+      "forward_window_days_specA_matched": 42.2,
+      "forward_window_days_specB_fixed": 56.9,
+      "evaluable_n": 72827,
+      "true_churn_base_rate_pct": 84.84,
+      "specA": {
+        "fp_rate_pct": 8.61,
+        "fp_ci": [
+          8.33,
+          8.9
+        ],
+        "recall_pct": 52.68,
+        "recall_ci": [
+          52.29,
+          53.07
+        ],
+        "precision_pct": 91.39,
+        "n_flagged": 36495
+      },
+      "specB": {
+        "fp_rate_pct": 10.12,
+        "fp_ci": [
+          9.82,
+          10.44
+        ],
+        "recall_pct": 53.09,
+        "recall_ci": [
+          52.69,
+          53.48
+        ],
+        "precision_pct": 89.88,
+        "specificity_pct": 66.54,
+        "youden_J": 19.63,
+        "n_flagged": 36495
+      }
+    },
+    "reasoning": "Certified on prevalence-free separation (Youden's J), NOT on misclassification cost. A cost sweep is degenerate here: at an 85% true-churn base rate, cost = c_FP*FP + c_FN*FN is minimised at K -> 0 for every R >= 0.47 and is strictly increasing in K from R >= 1.30, so across the whole economically sensible range it advises flagging everyone. Charging contact cost on all flagged users removes the degeneracy but breaks even between R=1.2 and 1.3, which nothing in the data pins down. Certifying a definition on intervention economics would make the churn rate a function of the marketing budget; the contact threshold is a separate decision and belongs in 08/09.",
+    "business_asymmetry_assumed": "Symmetric per head: one missed churner costs about what one wasted contact costs (w=0.5). P75 wins only for w in [0.475, 0.525]; below that P85 wins, above it the 30-day rule and then the median win. The threshold is NOT robust to this assumption.",
+    "candidates_rejected": {
+      "p95_87.3d": "NOT VALIDATABLE. Needs 2K=174.6d of span; there are 152.0d. Its anchor falls 22 days before the first row of data, so zero users can be scored. Dropped, not weakly validated.",
+      "median_22d": "J=13.72, flags 77% of the base -- close to flagging everyone.",
+      "p85_56.9d": "J=17.43, recall only 36%."
+    },
+    "naive_30d_contrast": {
+      "differently_classified_users": 12618,
+      "direction": "recency rules nest: the naive 30d rule flags a strict SUPERSET, 12,618 extra users, all with recency in [30, 42.2) days",
+      "flagged_population": "36,495 -> 49,113 (+34.6%)",
+      "marginal_band_return_rate_pct": 17.09,
+      "recall_bought_pp": 16.93,
+      "extra_false_positives": 2157,
+      "honest_read": "30 days is a defensible operating point, not a catastrophic one -- 83% of its marginal contacts land on real churners. What deriving buys is a KNOWN position on the curve (J 17.02 vs 19.63 vs a ceiling of 19.90) and a priceable trade."
+    },
+    "sensitivity_of_01_02_headlines": {
+      "verdict": "No conclusion from 01 or 02 reverses at any validatable threshold.",
+      "purchase_retention": {
+        "still_active_at_D90_pct_median": 7.84,
+        "still_active_at_D90_pct_p75": 13.81,
+        "still_active_at_D90_pct_p85": 17.45,
+        "nb02_cumulative_d90_pct": 27.1
+      },
+      "black_friday_gap": "sign negative and CI excludes 0 in every measurable cell (range -7.83 to -2.46 pp); the 'WIDENS' trajectory is NOT assessable under P75/P85 because D7-D30 are unmeasurable",
+      "removal_volume_OR": "first-order-anchored 1.37-1.44 at every K (02 committed 1.38); re-anchored to a calendar date it collapses to 1.03-1.14"
+    },
+    "persisted": {
+      "file": "data/processed/churn_flags.parquet",
+      "operational_flag": "churned_at_data_end (all 109,732 purchasers, UNVALIDATED by construction)",
+      "labelled_panel": "in_validation_panel == True (72,827 users) carries flagged_churned + true_churn_label"
+    }
   }
 }

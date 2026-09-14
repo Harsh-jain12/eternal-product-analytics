@@ -1,0 +1,5 @@
+candidate,K_days,n_flagged,pct_one_order_only,median_orders_at_flag,median_recency_days,return_rate_pct
+median,22.0,55978,83.32,1.0,51.69,12.86
+p75,42.2,36495,87.78,1.0,65.6,10.12
+p85,56.9,24141,90.8,1.0,75.58,8.4
+(whole base),,72827,79.97,1.0,42.24,15.16

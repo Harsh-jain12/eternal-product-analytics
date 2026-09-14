@@ -1,0 +1,22 @@
+check,pass,detail
+confusion cells partition the panel (median),True,"48,777+7,201+13,010+3,839 == 72,827"
+confusion cells partition the panel (p75),True,"32,801+3,694+28,986+7,346 == 72,827"
+confusion cells partition the panel (p85),True,"22,114+2,027+39,673+9,013 == 72,827"
+confusion cells partition the panel (naive_30d),True,"43,262+5,851+18,525+5,189 == 72,827"
+flagged + unflagged == panel (certified rule),True,"36,495 + 36,332 == 72,827"
+panel + post-F* first-time purchasers == all purchasers,True,"72,827 + 36,905 == 109,732"
+Black Friday + organic partition the fixed D90 population,True,"9,263 + 42,888 == 52,151"
+classification and outcome windows are disjoint at F*,True,last classifying order 2020-01-04 02:14:32 <= F* < first outcome order 2020-01-04 02:24:08
+classification + outcome orders partition all orders,True,"97,736 + 60,663 == 158,399"
+every forward window closes inside the data,True,F* + 56.9d = 2020-02-29 23:59:59 <= 2020-02-29 23:59:59
+0E classification window is strictly before the first order,True,no classifying removal at or after the first order
+"dropped candidate is exactly P95, on arithmetic not on results",True,2K = 174.6d > span 152.0d
+flagged population is non-increasing in K,True,"72,084 at K=1.0 down to 24,141 at K=56.9"
+recall is non-increasing in K,True,99.18% down to 35.79%
+recency rules nest: certified flags a subset of naive-30,True,0 users flagged by certified but not by naive-30
+"cost-model degeneracy is computed, not asserted",True,cost minimised at K->0 for every R >= 0.47; strictly monotone from R >= 1.30
+eligible N at D30/D60/D90 matches 02's committed figures,True,"D30=71,727, D60=71,727, D90=52,151"
+log1p(n_removals) OR reproduces 02's committed 1.38,True,1.378 vs 1.38
+"order identity: n_orders - n_purchasers == excess orders (01 committed 48,667)",True,"158,399 - 109,732 = 48,667"
+precision == 100 - FP rate at every candidate,True,identity holds to float precision
+still-active at Dx never exceeds 02's cumulative retention at Dx,True,"still-active is a subset of ever-returned, as it must be"

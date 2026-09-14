@@ -1,0 +1,5 @@
+candidate,K_days,youden_J,recall_pct,specificity_pct,fp_rate_pct,flagged_pct,J_vs_optimum
+p75,42.2,19.63,53.09,66.54,10.12,50.11,-0.27
+p85,56.9,17.43,35.79,81.64,8.4,33.15,-2.47
+naive_30d,30.0,17.02,70.02,47.0,11.91,67.44,-2.88
+median,22.0,13.72,78.94,34.77,12.86,76.86,-6.18

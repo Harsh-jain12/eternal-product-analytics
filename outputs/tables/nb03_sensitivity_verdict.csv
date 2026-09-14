@@ -1,0 +1,4 @@
+headline,holds_across_candidates,what_changes,direction
+purchase retention D30/D60/D90 (02),True,"D30 is NOT MEASURABLE under P75/P85 (30 < K, 100% by construction). At D90 the still-active share is 7.8/13.8/17.4% vs 02's cumulative 27.1%.","unchanged, and stronger -- repeat purchase looks weaker still"
+Black Friday cohort gap (02),True,sign negative and CI excludes 0 in all 7 measurable cells (range -7.83 to -2.46 pp); the 'WIDENS' trajectory is no longer assessable because D7-D30 are unmeasurable at P75/P85,unchanged in sign; trajectory claim narrowed
+log1p(n_removals) OR (01 corrected / 02 0E),True,"first-order-anchored OR stays 1.37-1.44 at every K; re-anchored to a calendar date it collapses to 1.03-1.14 (sign holds, CI still excludes 1)",unchanged under the same anchor; weakens sharply under calendar anchoring
