@@ -13,22 +13,58 @@ import duckdb
 RAW_GLOB = os.path.join("data", "raw", "*.csv")
 
 
-def connect(memory_limit="5GB", threads=1):
+def connect(memory_limit="5GB", threads=6):
     """Open a DuckDB connection tuned for out-of-core CSV scans on an 8GB machine.
 
-    threads=1 by default: verified empirically that DuckDB's parallel execution plan
-    for this notebook's inequality-join-heavy queries (comparison/price-driven/
-    true-abandonment classification) is NOT run-to-run deterministic -- two identical
-    runs at threads=6 produced different row counts (e.g. true_abandonment ranged
-    381k-382k across runs), while two runs at threads=1 were bit-for-bit identical.
-    Single-threaded is slower but the numbers this project reports must be
-    reproducible, per CLAUDE.md's "seed fixed everywhere" convention.
+    DETERMINISM UNDER MULTI-THREADING (isolated empirically in 02; supersedes the
+    blanket threads=1 that 01 was run under). Multi-threaded execution is safe and
+    is the default again, PROVIDED three guardrails hold. What was actually
+    non-deterministic, and what was not:
+
+      NOT deterministic
+      1. `row_number() OVER ()` inside a LAZY VIEW. A view is re-evaluated on every
+         reference, and with no ORDER BY the id is assigned in physical scan order,
+         which differs per evaluation once the scan is parallelised. Measured: 99.97%
+         of ids pointed at a DIFFERENT row across two evaluations of the same view.
+         This is a CORRECTNESS bug (joins land on the wrong rows), not a cosmetic
+         one, and it is plan-dependent -- it does NOT reproduce on small inputs, so
+         "it looked fine" is not evidence of safety.
+         GUARD: materialise anything carrying a synthetic row id -- see materialize().
+      2. `approx_quantile` (sketch-based). Measured 4.0754 vs 4.0705 for the same
+         median across two runs -- materially different, not a rounding artefact.
+         GUARD: use `quantile_cont` (exact) for every reported percentile.
+      3. Raw float `sum`/`avg`: parallel summation order changes the last ~7
+         significant figures. Cosmetic only.
+         GUARD: round to reporting precision (2dp money, 6dp rates).
+
+      Deterministic (verified): count(*), count(DISTINCT), min/max, quantile_cont,
+      and window functions over an already-materialised table.
     """
     con = duckdb.connect()
     con.execute(f"SET memory_limit='{memory_limit}'")
     con.execute(f"SET threads={threads}")
     con.execute("SET enable_progress_bar=false")
     return con
+
+
+def materialize(con, name, select_sql):
+    """Create `name` as a real TABLE (not a view) from select_sql.
+
+    Use for (a) anything carrying a synthetic row id -- mandatory for correctness,
+    see connect() -- and (b) any relation referenced more than a couple of times,
+    since a view over the raw CSVs re-scans ~2.4GB on every single reference.
+    """
+    con.execute(f"CREATE OR REPLACE TABLE {name} AS {select_sql}")
+    return con.execute(f"SELECT count(*) FROM {name}").fetchone()[0]
+
+
+def materialize_view(con, view_name):
+    """Replace an existing lazy view with an identically-named materialised table."""
+    tmp = f"{view_name}__mat"
+    con.execute(f"CREATE OR REPLACE TABLE {tmp} AS SELECT * FROM {view_name}")
+    con.execute(f"DROP VIEW IF EXISTS {view_name}")
+    con.execute(f"ALTER TABLE {tmp} RENAME TO {view_name}")
+    return con.execute(f"SELECT count(*) FROM {view_name}").fetchone()[0]
 
 
 def load_raw_events(con, glob_path=RAW_GLOB, view_name="ev_raw"):

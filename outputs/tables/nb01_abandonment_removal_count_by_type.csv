@@ -1,6 +1,6 @@
 type_exclusive,mean,median
-comparison_browse,4.134089392928619,3.0
-deferred_intent,33.145371707084486,15.0
-other_inconclusive,1.5672765815017293,1.0
-price_driven,7.742704845212875,6.0
-true_abandonment,2.015669284962345,1.0
+comparison_browse,14.9955,8.0
+deferred_intent,31.7554653221461,11.0
+other_inconclusive,2.1319374369323913,1.0
+price_driven,24.80366209571023,12.0
+true_abandonment,6.484581673837465,3.0
