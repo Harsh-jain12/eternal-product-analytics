@@ -1,0 +1,16 @@
+check,pass,detail
+missed + correctly flagged == true at-risk base,True,"28,986 + 32,801 == 61,787"
+redistribution rows sum to the at-risk base,True,"61,787"
+"missed column sums to 28,986 in both cuts",True,"segment 28,986 == value 28,986 == 28,986"
+segment_model.json reproduces 04's own labels on the full window,True,100.000% agreement
+F*-anchored and snapshot redistributions agree in direction,True,segment visibility spread 3.8pp (F*) / 4.9pp (snapshot)
+value gradient is larger than the behavioural gradient,True,value spread 18.4pp vs segment spread 3.8pp
+every missed churner has recency below the threshold at F* (03's structural claim),True,max recency among missed = 42.20d < 42.2d
+B1 + other Broad Deliberators == all Broad Deliberators,True,"10,982 + 32,398 == 43,380"
+B1 stays less engaged at matched tenure on every metric,True,all 5 metrics negative both raw and tenure-matched
+tenure matching does not close the gap (widens on the majority),True,widens on 4/5 metrics; narrows only on session depth and stays negative there
+B1 is less engaged than other BD in every tenure decile (views),True,9/9 deciles
+B1 count reconciles across all three sources,True,"10,982"
+4A correction is real: Low RFM admits R_score=2,True,"12,339 Low-RFM users have R_score=2; min recency 41.12d"
+4A's CONCLUSION still holds despite the wrong premise,True,still 0 Low-RFM users acquired within 30d
+implied_true_at_risk removed from the handoff cells,True,withdrawn column is gone from every cell entry

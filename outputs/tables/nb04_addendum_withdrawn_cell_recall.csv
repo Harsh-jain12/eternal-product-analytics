@@ -1,0 +1,7 @@
+cell,n_users,flagged_churned,flagged_pct,WITHDRAWN_implied,why_withdrawn
+A1  High RFM x churn-like behaviour,5287,1138,21.5,2144,cell mixes recency strata; a single global recall does not apply within it
+A2  High VALUE x worst recency x churn-like,610,610,100.0,1149,"cell is recency-defined: flagged is ~100% by construction, so the scaled figure invents members the definition cannot hold"
+A3  High VALUE x worst recency (any behaviour),2883,2883,100.0,5430,"cell is recency-defined: flagged is ~100% by construction, so the scaled figure invents members the definition cannot hold"
+B1  Low RFM x most-engaged behaviour,10982,10909,99.3,20548,"cell is recency-defined: flagged is ~100% by construction, so the scaled figure invents members the definition cannot hold"
+B2  Low/Mid VALUE x acquired within 30d,17395,0,0.0,0,"cell is tenure-defined (<=30d), so recency < 42.2d and flagged is 0 by construction: the scaled figure reports zero risk where risk is merely unobservable"
+B3  B2 x engaged behaviour,7741,0,0.0,0,"cell is tenure-defined (<=30d), so recency < 42.2d and flagged is 0 by construction: the scaled figure reports zero risk where risk is merely unobservable"

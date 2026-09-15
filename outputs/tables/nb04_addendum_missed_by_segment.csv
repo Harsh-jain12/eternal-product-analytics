@@ -1,0 +1,6 @@
+cluster_name,flagged_TP,missed,total_at_risk,pct_of_all_missed,visibility_pct
+Broad Deliberators,11071,10213,21284,35.2,52.0
+Single-Mission Buyers,8533,7537,16070,26.0,53.1
+Cart Loaders,6861,5606,12467,19.3,55.0
+Frequent Skimmers,4194,3913,8107,13.5,51.7
+No Behavioural Profile,2142,1717,3859,5.9,55.5

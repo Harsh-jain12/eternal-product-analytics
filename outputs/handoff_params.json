@@ -85,7 +85,10 @@
     "RFM FREQUENCY IS DEGENERATE HERE: 77.5% of purchasers have exactly one order, so both F tercile boundaries fall on F=1 and F is scored on natural breaks (1/2/3+) instead. The RFM composite is effectively an R-and-M score, and R is near-identical to the churn flag (tercile boundary 41.11d vs threshold 42.2d). Any claim that RFM segments by loyalty at this retailer would be false.",
     "BEHAVIOUR DOES NOT PROXY VALUE: across the 4 segments, eta-squared is 0.4594 on session depth (a fitted feature) but 0.0416 on median basket value (not fitted). All 6 pairwise basket-value comparisons are significant at p<1e-300 and none reaches a medium Cliff's delta. Segment membership must not be used as a stand-in for customer value in 08/09.",
     "04 SEGMENTS PURCHASERS ONLY (109,732 of ~1.64M users). The ~1.53M non-purchasers are out of scope, so nothing in 04 supports a first-conversion (acquisition) recommendation.",
-    "CLUSTER FEATURES ARE NOT TENURE-NORMALISED: the Oct-Dec -> Jan-Feb drift is directional, toward the broad/deep segment, as browsing history accumulates. Part of what the clustering calls behaviour is tenure. 05 should either tenure-normalise or carry tenure alongside any segment feature."
+    "CLUSTER FEATURES ARE NOT TENURE-NORMALISED: the Oct-Dec -> Jan-Feb drift is directional, toward the broad/deep segment, as browsing history accumulates. Part of what the clustering calls behaviour is tenure. 05 should either tenure-normalise or carry tenure alongside any segment feature.",
+    "RECALL CANNOT BE APPLIED WITHIN A RECENCY-DEFINED CELL (04 Section 9A, withdrawing 4C): recall 53.09% is a base-level property of the churn rule. Cells defined by recency have ~100% flagged by construction and cells defined by tenure<=30d have 0% by construction, so scaling either by 1/recall is invalid and points the wrong way. Use the base-level identity true_at_risk = correctly_flagged/recall only, and use segmentation.cross_tab.missed_churner_redistribution for where the missed actually sit.",
+    "THE CHURN RULE'S BLIND SPOT IS REPEAT BUYERS, NOT A BEHAVIOURAL SEGMENT (04 Section 9B): catch rate is flat at 51.7-55.5% across all four behavioural segments but falls to 36.9% for the high-value tercile. The driver is having a purchase cadence at all -- at-risk users with 2+ orders have a median personal gap of 14.1d, a third of the global 42.2d threshold, so the rule waits long past the point their habit broke. 05/06 should test a personalised (cadence-multiple) threshold; a different global K will not fix it.",
+    "CELL B1 IS LONG TENURE, NOT ENGAGEMENT (04 Section 9C, withdrawing Section 7 item 5): matching B1 against other Broad Deliberators on tenure-since-first-event does NOT close the engagement gap -- it widens on 4 of 5 metrics (Cliff's delta -0.31 -> -0.39 on assortment breadth, -0.31 -> -0.43 on sessions), narrows only slightly on session depth (-0.14 -> -0.12), and stays negative on all five both raw and matched. Per tenure-day B1 browses at 0.43x their rate. B1 is an activation-at-first-order population reached ~109 days late, not a re-engagement population. 08 should design on cell B3 instead, where the 42.2d window is still open."
   ],
   "criteo_experiment_data_present": true,
   "bot_exclusion": {
@@ -404,7 +407,8 @@
         "High": 21.91
       },
       "recency_tercile_is_the_churn_flag": "the fresher R boundary (41.11d) sits 1.09d from the certified churn threshold (42.2d); R_score and churned_at_data_end are near-duplicates, so 'high RFM AND at risk' is a contradiction and Section 4 uses a recency-free value_score = F_score + M_score instead.",
-      "value_score_definition": "F_score + M_score, terciles Low=(2), Mid=(3,4), High=(5,6)"
+      "value_score_definition": "F_score + M_score, terciles Low=(2), Mid=(3,4), High=(5,6)",
+      "low_tercile_mechanism_correction": "Section 4A claimed Low RFM requires R_score=1 (recency > 94.63d). FALSE: RFM_sum<=4 also admits (R=2,F=1,M=1), and 12,339 of 37,742 Low-RFM users have R_score=2. The conclusion (no Low-RFM user acquired within 30d) holds on the weaker premise that the minimum recency in the tercile is 41.12d > 30d. Corrected in Section 9D."
     },
     "clustering": {
       "algorithm": "k-means, k=4, seed 42, n_init=10, on 8 standardised features",
@@ -525,7 +529,6 @@
           "M_median_eur": 75.4,
           "one_order_pct": 39.5,
           "churn_flagged": 1138,
-          "implied_true_at_risk": 2144,
           "note": "briefed cell: looks healthy on RFM, behaves like a non-returner"
         },
         "A2": {
@@ -536,7 +539,6 @@
           "M_median_eur": 92.34,
           "one_order_pct": 0.0,
           "churn_flagged": 610,
-          "implied_true_at_risk": 1149,
           "note": "the sharpest 08 target: proven spend, lapsed, and behaving like a one-off"
         },
         "A3": {
@@ -547,7 +549,6 @@
           "M_median_eur": 95.5,
           "one_order_pct": 0.0,
           "churn_flagged": 2883,
-          "implied_true_at_risk": 5430,
           "note": "the classic high-value-at-risk cell, behaviour ignored"
         },
         "B1": {
@@ -558,7 +559,6 @@
           "M_median_eur": 18.1,
           "one_order_pct": 99.5,
           "churn_flagged": 10909,
-          "implied_true_at_risk": 20548,
           "note": "engaged browsers written off by RFM as dead"
         },
         "B2": {
@@ -569,7 +569,6 @@
           "M_median_eur": 24.6,
           "one_order_pct": 96.9,
           "churn_flagged": 0,
-          "implied_true_at_risk": 0,
           "note": "low value only because they are new -- censored, not low-value"
         },
         "B3": {
@@ -580,11 +579,92 @@
           "M_median_eur": 30.48,
           "one_order_pct": 95.6,
           "churn_flagged": 0,
-          "implied_true_at_risk": 0,
           "note": "new AND behaving like the high-repeat segments: the best activation odds"
         }
       },
-      "headline": "B1 (Low RFM x Broad Deliberators, n=10,978) is the largest disagreement: they browse like the 35.8%-repeat segment but 99.5% have exactly one order and median recency is 109 days. RFM writes them off; behaviour says they are an activation population."
+      "headline": "B1 (Low RFM x Broad Deliberators, n=10,982) is the largest disagreement cell, but Section 9C shows it is LONG TENURE rather than live engagement: matching on tenure widens its engagement gap against other Broad Deliberators on every metric, and per tenure-day it browses at 0.43x their rate. Treat it as activation-at-first-order, and prefer cell B3 (7,741 users, median tenure 15.5d) where the 42.2d window is still open.",
+      "disagreement_cells_recall_correction": {
+        "status": "WITHDRAWN in Section 9A",
+        "what_was_wrong": "Section 4C divided each cell's flagged count by recall (0.5309) to give implied_true_at_risk. Recall is a BASE-level property of the rule and cannot be applied inside a subgroup that is itself defined by recency. A2/A3 are R_score==1 cells where every member is flagged by construction, so scaling invents members the definition cannot hold; B2/B3 are tenure<=30d cells where flagged is 0 by construction, so scaling reports zero risk exactly where the missed churners live. The correction was anti-correlated with the truth and contradicted binding_constraint_from_03.structural_point.",
+        "correct_base_arithmetic": "true_at_risk = correctly_flagged / recall = 32,801 / 0.5309 = 61,784, matching 03's 61,787. Dividing the FLAGGED count (36,495) by recall gives 68,742 and double-counts the 3,694 false positives.",
+        "replacement": "segmentation.cross_tab.missed_churner_redistribution"
+      },
+      "missed_churner_redistribution": {
+        "method": "The 28,986 at-risk users the certified rule misses at F*=2020-01-04, cross-tabbed against behavioural segment and value tercile BOTH re-scored on pre-F* data (segment_model.json for clusters, orders<=F* for F and M). Snapshot-anchored labels agree on 96.3% of at-risk users, so the result is anchor-robust.",
+        "visibility_by_segment_pct": {
+          "Broad Deliberators": 52.0,
+          "Single-Mission Buyers": 53.1,
+          "Cart Loaders": 55.0,
+          "Frequent Skimmers": 51.7,
+          "No Behavioural Profile": 55.5
+        },
+        "missed_by_segment": {
+          "Broad Deliberators": 10213,
+          "Single-Mission Buyers": 7537,
+          "Cart Loaders": 5606,
+          "Frequent Skimmers": 3913,
+          "No Behavioural Profile": 1717
+        },
+        "visibility_by_value_tercile_pct": {
+          "Mid": 55.3,
+          "Low": 54.5,
+          "High": 36.9
+        },
+        "missed_by_value_tercile": {
+          "Mid": 14854,
+          "Low": 9991,
+          "High": 4141
+        },
+        "finding_1": "Behaviour does NOT predict visibility: the catch rate spans only 51.7-55.5% across the four segments, and the missed are spread roughly in proportion to segment size.",
+        "finding_2": "Value does: high-value at-risk users are caught only 36.9% of the time against 54.5% (Low) and 55.3% (Mid). 4,141 high-value at-risk users are invisible.",
+        "mechanism": "Repeat-buyer status, not value as such. At-risk users with 2+ orders are caught 37.7% vs 55.8% for one-timers. Their median personal inter-purchase gap is 13.8d = 0.33x the global 42.2d threshold, and 88.1% have a personal cadence below it, so the global rule waits far past the point at which their own habit was broken.",
+        "recommendation_for_05_06": "A personalised threshold (a multiple of each user's own cadence) rather than a different global K. Do not try to find the blind spot behaviourally -- it is not there."
+      },
+      "b1_tenure_test": {
+        "question": "Is B1 engaged-but-written-off, or long-tenure-one-order?",
+        "verdict": "LONG TENURE. Section 7 item 5 is withdrawn.",
+        "design": "B1 vs other Broad Deliberators, direct standardisation over 9 deciles of tenure since FIRST EVENT, Cliff's delta within stratum weighted by B1's stratum sizes.",
+        "tenure_median_days": {
+          "B1": 124.17364583333332,
+          "other_BD": 109.69840277777777
+        },
+        "cliffs_delta": {
+          "session depth": {
+            "raw": -0.144,
+            "tenure_matched": -0.116
+          },
+          "assortment breadth (category H)": {
+            "raw": -0.309,
+            "tenure_matched": -0.389
+          },
+          "view count": {
+            "raw": -0.298,
+            "tenure_matched": -0.376
+          },
+          "brand breadth": {
+            "raw": -0.235,
+            "tenure_matched": -0.287
+          },
+          "sessions": {
+            "raw": -0.306,
+            "tenure_matched": -0.431
+          }
+        },
+        "gap_direction": "Does not close. Widens on 4/5 metrics under tenure matching and stays negative on all 5 both raw and matched; narrows slightly only on session depth.",
+        "per_tenure_day_rates": {
+          "views per tenure-day": {
+            "B1": 0.1917,
+            "other_BD": 0.4432,
+            "ratio": 0.43
+          },
+          "sessions per tenure-day": {
+            "B1": 0.0437,
+            "other_BD": 0.1049,
+            "ratio": 0.42
+          }
+        },
+        "implication_for_08": "Not re-engagement -- there is no dormant engagement to revive. Activation at first order, and B1 is reached ~109 days too late. Cell B3 is the testable version of the same profile inside the open window."
+      }
     },
     "binding_constraint_from_03": {
       "framing": "FIRST-PURCHASE churn. At-risk cells here are ACTIVATION problems (get a 2nd order), not win-back problems.",
@@ -596,6 +676,17 @@
     "persisted": {
       "assignments": "data/processed/segment_assignments.parquet",
       "model": "data/processed/segment_model.json"
+    },
+    "addendum": {
+      "section": "9",
+      "added": "after Sections 1-8 were committed",
+      "execution_note": "Run in a fresh kernel and spliced into the committed notebook, the same way 03's Section 9 was. This EXTENDS the existing end-to-end-reproducibility limitation rather than resolving it; the full clean re-execution required before 09 now covers 00->04 including this addendum.",
+      "contents": [
+        "9A withdraws the cell-level recall correction",
+        "9B redistributes the 28,986 missed churners across segments and value",
+        "9C reframes cell B1 as tenure rather than engagement",
+        "9D reconciles the B1 count and corrects 4A's Low-RFM mechanism"
+      ]
     }
   }
 }
