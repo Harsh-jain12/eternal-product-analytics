@@ -1,0 +1,82 @@
+rank,feature,scoring,n_scored,AUC,direction,block
+1,pre_n_products,numeric,90815,0.6097,+,M3 pre-t0 browsing
+2,pre_n_events,numeric,90815,0.6092,+,M3 pre-t0 browsing
+3,pre_n_cart_ev,numeric,90815,0.606,+,M3 pre-t0 browsing
+4,pre_n_categories,numeric,90815,0.6055,+,M3 pre-t0 browsing
+5,pre_p_carted,numeric,90815,0.6042,+,M3 pre-t0 browsing
+6,pre_n_removals,numeric,90815,0.6023,+,M3 pre-t0 browsing
+7,log1p_pre_n_removals,numeric,90815,0.6023,+,M3 pre-t0 browsing
+8,pre_n_active_days,numeric,90815,0.5972,+,M3 pre-t0 browsing
+9,pre_n_brands,numeric,90815,0.5962,+,M3 pre-t0 browsing
+10,tenure_d,numeric,90815,0.595,+,M3 pre-t0 browsing
+11,fo_n_products,numeric,91334,0.588,+,M1 first order
+12,fo_n_items,numeric,91334,0.588,+,M1 first order
+13,pre_n_sessions,numeric,90815,0.5868,+,M3 pre-t0 browsing
+14,pre_sessions_per_tenure_day,numeric,90815,0.5865,-,M3 pre-t0 browsing
+15,pre_n_prior_sessions,numeric,90815,0.5863,+,M3 pre-t0 browsing
+16,pre_category_entropy,numeric,84297,0.5819,+,M3 pre-t0 browsing
+17,pre_cart_not_in_first_order_rate,numeric,90152,0.5765,+,M3 pre-t0 browsing
+18,pre_price_range_viewed,numeric,83317,0.5759,+,M3 pre-t0 browsing
+19,fo_primary_category,OOF target-encoded,91334,0.5753,+,M1 first order
+20,fo_n_categories,numeric,91334,0.5752,+,M1 first order
+21,pre_removal_per_cart,numeric,90152,0.5752,+,M3 pre-t0 browsing
+22,pre_p_viewed,numeric,90815,0.5748,+,M3 pre-t0 browsing
+23,fo_value_w,numeric,91334,0.5747,+,M1 first order
+24,fo_value,numeric,91334,0.5747,+,M1 first order
+25,cad_day_n_hist_gaps,numeric,43092,0.5735,+,M4 cadence
+26,pre_brand_entropy,numeric,84297,0.573,+,M3 pre-t0 browsing
+27,has_day_cadence,numeric,91334,0.5724,+,M4 cadence
+28,has_session_cadence,numeric,91334,0.5707,+,M4 cadence
+29,pre_n_view_ev,numeric,90815,0.5703,+,M3 pre-t0 browsing
+30,fs_n_removals,numeric,81626,0.5693,+,M2 first-order session
+31,pre_events_per_tenure_day,numeric,90815,0.5677,-,M3 pre-t0 browsing
+32,pre_products_per_tenure_day,numeric,90815,0.5658,-,M3 pre-t0 browsing
+33,pre_views_per_tenure_day,numeric,90815,0.5657,-,M3 pre-t0 browsing
+34,fo_n_brands,numeric,91334,0.5643,+,M1 first order
+35,fo_price_range,numeric,91334,0.5621,+,M1 first order
+36,fs_p_touched,numeric,81626,0.5604,+,M2 first-order session
+37,has_prior_sessions,numeric,91334,0.5593,+,M3 pre-t0 browsing
+38,fo_min_price,numeric,91334,0.5564,-,M1 first order
+39,fs_n_categories,numeric,81626,0.5556,+,M2 first-order session
+40,cad_median_gap_d,numeric,42190,0.553,+,M4 cadence
+41,fs_n_events,numeric,81626,0.5525,+,M2 first-order session
+42,cad_iqr_gap_d,numeric,42190,0.5511,+,M4 cadence
+43,fs_n_brands,numeric,81626,0.5466,+,M2 first-order session
+44,pre_mean_session_depth,numeric,90815,0.5447,+,M3 pre-t0 browsing
+45,fo_primary_brand,OOF target-encoded,91334,0.5396,+,M1 first order
+46,fo_median_price,numeric,91334,0.5369,-,M1 first order
+47,gap_before_purchase_visit,numeric,42445,0.5365,+,M4 cadence
+48,fo_product_price_pct_prior,numeric,90299,0.5358,-,M1 first order
+49,cad_day_median_gap_d,numeric,24339,0.5354,-,M4 cadence
+50,cad_n_hist_gaps,numeric,42190,0.5304,+,M4 cadence
+51,fs_entry_event_type,OOF target-encoded,91334,0.5302,+,M2 first-order session
+52,fs_n_cart_ev,numeric,81626,0.5296,+,M2 first-order session
+53,fo_price_vs_prior_mean,numeric,90299,0.5261,-,M1 first order
+54,cad_regularity,numeric,42190,0.5243,+,M4 cadence
+55,pre_mean_price_pct_viewed,numeric,83317,0.5226,-,M3 pre-t0 browsing
+56,gap_before_purchase_day,numeric,34051,0.5207,-,M4 cadence
+57,pre_view_to_cart,numeric,84297,0.5195,+,M3 pre-t0 browsing
+58,fs_duration_min,numeric,81626,0.5186,+,M2 first-order session
+59,pre_days_since_last_event,numeric,90815,0.5184,-,M3 pre-t0 browsing
+60,cad_lapse_ratio,numeric,42190,0.5182,-,M4 cadence
+61,fo_catz_coverage,numeric,91334,0.5164,-,M1 first order
+62,fs_price_range_viewed,numeric,81626,0.5157,+,M2 first-order session
+63,fo_max_price,numeric,91334,0.5147,+,M1 first order
+64,fo_brand_null_share,numeric,91334,0.5143,+,M1 first order
+65,pre_brand_coverage,numeric,84297,0.514,-,M3 pre-t0 browsing
+66,fo_price_z_in_category,numeric,91334,0.5136,+,M1 first order
+67,fs_p_viewed,numeric,81626,0.5119,+,M2 first-order session
+68,fs_start_hour,numeric,81626,0.5103,-,M2 first-order session
+69,fo_hour,numeric,91334,0.5091,-,M1 first order
+70,fs_n_view_ev,numeric,81626,0.5086,+,M2 first-order session
+71,fs_max_price_viewed,numeric,67930,0.5079,-,M2 first-order session
+72,cad_day_lapse_ratio,numeric,24339,0.5078,+,M4 cadence
+73,fo_discount_vs_prior_max,numeric,90299,0.5058,-,M1 first order
+74,fo_price_ref_coverage,numeric,91334,0.5052,-,M1 first order
+75,fo_has_discount,numeric,91334,0.5042,-,M1 first order
+76,fs_has_pre_purchase_events,numeric,91334,0.5017,-,M2 first-order session
+77,fo_is_weekend,numeric,91334,0.5015,-,M1 first order
+78,fo_dow,numeric,91334,0.5013,-,M1 first order
+79,has_pre_t0_history,numeric,91334,0.5006,+,M3 pre-t0 browsing
+80,fs_start_dow,numeric,81626,0.5004,-,M2 first-order session
+81,first_order_is_bulk,numeric,91334,0.5003,+,M1 first order

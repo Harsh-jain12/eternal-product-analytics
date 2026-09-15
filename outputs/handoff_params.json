@@ -92,9 +92,10 @@
     "04's TWO DETERMINISM GUARDS ARE NECESSARY BUT NOT SUFFICIENT (05 Section 11): round_sig(sig=6) plus .sort_values('user_id') still left this notebook non-reproducible, and it failed its own zero-diff assertion on one cell of fo_price_vs_prior_mean out of 109,732. The parallel float wobble is ~1e-15 relative while round_sig snaps to a 1e-6 grid, so a value sitting within 1e-15 of a rounding boundary flips across it -- rounding makes the non-determinism RARE, not absent, which is a worse failure mode than an obvious one. A THIRD guard is required: SET threads=1 for the fetch itself (materialisations can stay parallel). Measured over 3 repeats per block: 48,738 differing cells sorted-only, 0 after 04's two guards, 0 with threads=1 before any rounding. Use src fetch_block().",
     "FIRST-SESSION FEATURES MUST BE TRUNCATED AT t0 (05 Section 1A): 241,536 events sit in the first-order session AFTER the first order, across 11,704 users (10.7% of purchasers), including 24,625 purchase rows. 02's certified first_session_events is untruncated -- correct for 02's descriptive use, a leak as a feature. Untruncated it scores univariate AUC 0.5737 on repeat_purchase_30d against 0.5525 truncated.",
     "04's cart_abandonment_rate CANNOT BE REBUILT IN A PRE-FIRST-ORDER WINDOW (05 Section 6A): there are zero purchases before t0 by construction, so the rate is a constant 1.0 for every user who has one. 04 computed it over full history, which for a post-t0 outcome is an outcome-window aggregate. Consequence beyond the one feature: segment_model.json cannot be applied faithfully to pre-t0 data -- one of its eight fitted features is degenerate there -- so 08's re-scoring at targeting time must use a window that contains at least one purchase, not a pre-first-order one.",
-    "PURCHASE CADENCE IS UNDEFINED AT A FIRST-ORDER ANCHOR (05 Section 7): 04 \u00a79B's personalised-threshold recommendation cannot be tested as stated -- every user has exactly one order at t0, so the coverage gap is 100%, not the ~77% anticipated. 05 tested pre-t0 VISIT cadence instead: defined for 27.1% of users, personal median day-gap 3.5d against the 42.2d global rule (54.8% sit below it), LR chi2(1)=20 p=6.0e-06 but in-sample AUC gain only +0.0031. The test that would settle 04 \u00a79B is a SECOND-ORDER anchor predicting the third order.",
+    "PURCHASE CADENCE IS UNDEFINED AT A FIRST-ORDER ANCHOR (05 Section 7): 04 \u00a79B's personalised-threshold recommendation cannot be tested as stated -- every user has exactly one order at t0, so the coverage gap is 100%, not the ~77% anticipated. 05 tested pre-t0 VISIT cadence instead: defined for 27.1% of users, personal median day-gap 3.5d against the 42.2d global rule (96.3% sit below it), LR chi2(1)=20.5 p=6.0e-06 but in-sample AUC gain only +0.0031. The test that would settle 04 \u00a79B is a SECOND-ORDER anchor predicting the third order.",
     "02's is_bulk_buyer IS A LEAKY FEATURE (05 Section 4C): it flags any order over 90.6 items across FULL history, so for 33 of the 143 flagged users the evidence post-dates their first order. Carried as a population flag (constraint 6 requires it) with model_eligible=False; first_order_is_bulk replaces it as the M1 feature.",
-    "05 PERSISTS ALL 109,732 PURCHASERS, NOT A PRE-FILTERED MODELLING SET: the three horizons have three eligible populations (D30 91,334, D60 71,727, D90 52,737), so 06 must subset on eligible_{h}d itself. 05's user-level eligibility rule differs from 02's cohort-level one by design and the cohort-eligible set is a strict subset of it; restricted to that subset, 05 reproduces 02's retention figures exactly."
+    "05 PERSISTS ALL 109,732 PURCHASERS, NOT A PRE-FILTERED MODELLING SET: the three horizons have three eligible populations (D30 91,334, D60 71,727, D90 52,737), so 06 must subset on eligible_{h}d itself. 05's user-level eligibility rule differs from 02's cohort-level one by design and the cohort-eligible set is a strict subset of it; restricted to that subset, 05 reproduces 02's retention figures exactly.",
+    "UNIVARIATE CEILING IS AUC 0.6097 (05 Section 14B): across all 81 model-eligible features the best single column (pre_n_products) reaches 0.6097 against repeat_purchase_30d and the median reaches 0.5525; only 7 clear 0.60. Section 9C's 0.7386 is a LEAKAGE bound, not a signal bound, and sits 0.13 above the real ceiling -- do not quote it as evidence the table is informative. 06 must beat 0.6097 to justify a model over a one-feature rule, and must report PR-AUC/AP as the primary metric regardless."
   ],
   "criteo_experiment_data_present": true,
   "bot_exclusion": {
@@ -778,7 +779,7 @@
         "coverage_pct": 27.1,
         "personal_median_day_gap_d": 3.5,
         "global_threshold_d": 42.2,
-        "share_below_global_threshold_pct": 54.8,
+        "share_below_global_threshold_pct": 96.3,
         "screen_result": {
           "n": 24339,
           "LR_chi2_1df": 20.5,
@@ -788,7 +789,17 @@
           "delta_auc": 0.0031,
           "verdict": "significant and small. Carry it; do not build a targeting rule on it."
         },
-        "the_test_that_would_settle_it": "re-anchor on the SECOND order and predict the third. Purchase cadence is defined there. 06 or 08 owns that test."
+        "the_test_that_would_settle_it": "re-anchor on the SECOND order and predict the third. Purchase cadence is defined there. 06 or 08 owns that test.",
+        "share_below_global_threshold_denominator": "users with a DAY cadence defined (n=29,743), NOT all M4 rows",
+        "share_below_global_threshold_correction": {
+          "withdrawn_value_pct": 54.8,
+          "corrected_value_pct": 96.3,
+          "cause": "NaN-denominator bug. (M4.cad_day_median_gap_d < 42.2).mean() was taken over all 52,219 M4 rows, but only 29,743 have a day cadence; NaN < 42.2 is False, so the 22,476 users with no day cadence were counted as 'not below threshold' when they have no cadence at all.",
+          "direction": "the withdrawn figure UNDERSTATED the mismatch it was cited for",
+          "conclusions_affected": "none. Section 7's head-to-head and nested LR test never used this share. The corrected figure strengthens the finding and brings it in line with 04 \u00a79B's 88.1% on purchase cadence, which at 54.8% looked like a different phenomenon.",
+          "transcription_collision_checked": "04's addendum also reports a 96.3% (snapshot-label agreement on the 28,986 missed churners). Not the source: 05's value derives independently from 28,631/29,743 = 96.2613% and rounds to 96.3% by coincidence.",
+          "recorded_by": "05 Section 14A (addendum)"
+        }
       },
       "bulk_flag_is_leaky": {
         "n_flagged_by_02": 143,
@@ -810,6 +821,122 @@
       "Keep one feature per flagged collinear pair in the logistic ladder; LightGBM may keep both.",
       "Do not impute. Every NULL has a named indicator (fs_has_pre_purchase_events, has_pre_t0_history, has_day_cadence, has_session_cadence).",
       "The target is repeat_purchase_30d and must never be described as churn."
-    ]
+    ],
+    "univariate_ceiling": {
+      "generated_by": "05 Section 14B (addendum)",
+      "target": "repeat_purchase_30d",
+      "population": "D30-eligible, n=91,334",
+      "n_features_scored": 81,
+      "scoring": "direction-free ROC-AUC, max(a, 1-a); each feature on its own observed rows. The 3 non-numeric features are OOF target-encoded (5-fold stratified, seed 42).",
+      "max_auc": 0.6097,
+      "max_auc_feature": "pre_n_products",
+      "median_auc": 0.5525,
+      "n_at_or_above_0.60": 7,
+      "n_at_or_above_0.55": 42,
+      "top10": [
+        {
+          "rank": 1,
+          "feature": "pre_n_products",
+          "block": "M3 pre-t0 browsing",
+          "auc": 0.6097
+        },
+        {
+          "rank": 2,
+          "feature": "pre_n_events",
+          "block": "M3 pre-t0 browsing",
+          "auc": 0.6092
+        },
+        {
+          "rank": 3,
+          "feature": "pre_n_cart_ev",
+          "block": "M3 pre-t0 browsing",
+          "auc": 0.606
+        },
+        {
+          "rank": 4,
+          "feature": "pre_n_categories",
+          "block": "M3 pre-t0 browsing",
+          "auc": 0.6055
+        },
+        {
+          "rank": 5,
+          "feature": "pre_p_carted",
+          "block": "M3 pre-t0 browsing",
+          "auc": 0.6042
+        },
+        {
+          "rank": 6,
+          "feature": "pre_n_removals",
+          "block": "M3 pre-t0 browsing",
+          "auc": 0.6023
+        },
+        {
+          "rank": 7,
+          "feature": "log1p_pre_n_removals",
+          "block": "M3 pre-t0 browsing",
+          "auc": 0.6023
+        },
+        {
+          "rank": 8,
+          "feature": "pre_n_active_days",
+          "block": "M3 pre-t0 browsing",
+          "auc": 0.5972
+        },
+        {
+          "rank": 9,
+          "feature": "pre_n_brands",
+          "block": "M3 pre-t0 browsing",
+          "auc": 0.5962
+        },
+        {
+          "rank": 10,
+          "feature": "tenure_d",
+          "block": "M3 pre-t0 browsing",
+          "auc": 0.595
+        }
+      ],
+      "best_per_block": {
+        "M3 pre-t0 browsing": {
+          "feature": "pre_n_products",
+          "auc": 0.6097
+        },
+        "M1 first order": {
+          "feature": "fo_n_products",
+          "auc": 0.588
+        },
+        "M4 cadence": {
+          "feature": "cad_day_n_hist_gaps",
+          "auc": 0.5735
+        },
+        "M2 first-order session": {
+          "feature": "fs_n_removals",
+          "auc": 0.5693
+        }
+      },
+      "complete_case": {
+        "n": 17010,
+        "pct_of_d30": 18.6,
+        "positive_rate_pct": 20.51,
+        "max_auc": 0.5698,
+        "max_auc_feature": "pre_n_cart_ev",
+        "note": "NOT a random subset -- requiring a cadence selects the most engaged fifth of the frame, which repeats at a higher rate, so every feature has less room to separate. Use it to confirm the ranking is not a coverage artefact, not as the operational ceiling."
+      },
+      "why_9C_could_not_tell_you_this": "Section 9C's threshold (0.7386) was calibrated 0.20 below a planted outcome-window control so it would not flag honest signal as leakage. It is a bound on LEAKAGE and sits 0.13 above the real signal ceiling.",
+      "binding_rule_for_06": "A fitted model that does not clearly beat 0.6097 ROC-AUC is not worth shipping over a one-feature rule on pre_n_products. But ROC-AUC is the SECONDARY metric (principle 7): the decision criterion is PR-AUC / Average Precision against the 13.73% base rate, plus calibration and decile lift. Report this ceiling alongside them so the gain from modelling is legible.",
+      "tables": [
+        "outputs/tables/nb05_addendum_univariate_auc_all.csv",
+        "outputs/tables/nb05_addendum_univariate_auc_complete_case.csv",
+        "outputs/tables/nb05_addendum_best_auc_by_block.csv"
+      ]
+    },
+    "addendum": {
+      "section": "14",
+      "added": "after Sections 1-13 were committed",
+      "execution_note": "Run in a fresh kernel against the persisted features.parquet and spliced into the committed notebook, the same way 03's and 04's Section 9 addenda were. It recomputes no feature, so Sections 1-13 stand except the withdrawn share. This EXTENDS the standing end-to-end-reproducibility limitation rather than resolving it.",
+      "contents": [
+        "14A withdraws the 54.8% cadence share (NaN denominator) and corrects it to 96.3%",
+        "14B reports the univariate AUC ceiling over all 81 model-eligible features"
+      ]
+    }
   }
 }

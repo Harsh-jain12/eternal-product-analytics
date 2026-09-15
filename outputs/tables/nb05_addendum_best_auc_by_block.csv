@@ -1,0 +1,5 @@
+rank,block,feature,AUC
+1,M3 pre-t0 browsing,pre_n_products,0.6097
+11,M1 first order,fo_n_products,0.588
+25,M4 cadence,cad_day_n_hist_gaps,0.5735
+30,M2 first-order session,fs_n_removals,0.5693
