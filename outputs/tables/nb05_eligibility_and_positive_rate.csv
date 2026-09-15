@@ -1,0 +1,4 @@
+horizon,eligible_n,excluded_censored_n,positives,positive_rate_pct,ci_lo_pct,ci_hi_pct
+D30,91334,18398,12540,13.73,13.51,13.95
+D60,71727,38005,15117,21.08,20.78,21.38
+D90,52737,56995,14263,27.05,26.67,27.43

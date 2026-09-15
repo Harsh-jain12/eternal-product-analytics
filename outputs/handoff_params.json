@@ -88,7 +88,13 @@
     "CLUSTER FEATURES ARE NOT TENURE-NORMALISED: the Oct-Dec -> Jan-Feb drift is directional, toward the broad/deep segment, as browsing history accumulates. Part of what the clustering calls behaviour is tenure. 05 should either tenure-normalise or carry tenure alongside any segment feature.",
     "RECALL CANNOT BE APPLIED WITHIN A RECENCY-DEFINED CELL (04 Section 9A, withdrawing 4C): recall 53.09% is a base-level property of the churn rule. Cells defined by recency have ~100% flagged by construction and cells defined by tenure<=30d have 0% by construction, so scaling either by 1/recall is invalid and points the wrong way. Use the base-level identity true_at_risk = correctly_flagged/recall only, and use segmentation.cross_tab.missed_churner_redistribution for where the missed actually sit.",
     "THE CHURN RULE'S BLIND SPOT IS REPEAT BUYERS, NOT A BEHAVIOURAL SEGMENT (04 Section 9B): catch rate is flat at 51.7-55.5% across all four behavioural segments but falls to 36.9% for the high-value tercile. The driver is having a purchase cadence at all -- at-risk users with 2+ orders have a median personal gap of 14.1d, a third of the global 42.2d threshold, so the rule waits long past the point their habit broke. 05/06 should test a personalised (cadence-multiple) threshold; a different global K will not fix it.",
-    "CELL B1 IS LONG TENURE, NOT ENGAGEMENT (04 Section 9C, withdrawing Section 7 item 5): matching B1 against other Broad Deliberators on tenure-since-first-event does NOT close the engagement gap -- it widens on 4 of 5 metrics (Cliff's delta -0.31 -> -0.39 on assortment breadth, -0.31 -> -0.43 on sessions), narrows only slightly on session depth (-0.14 -> -0.12), and stays negative on all five both raw and matched. Per tenure-day B1 browses at 0.43x their rate. B1 is an activation-at-first-order population reached ~109 days late, not a re-engagement population. 08 should design on cell B3 instead, where the 42.2d window is still open."
+    "CELL B1 IS LONG TENURE, NOT ENGAGEMENT (04 Section 9C, withdrawing Section 7 item 5): matching B1 against other Broad Deliberators on tenure-since-first-event does NOT close the engagement gap -- it widens on 4 of 5 metrics (Cliff's delta -0.31 -> -0.39 on assortment breadth, -0.31 -> -0.43 on sessions), narrows only slightly on session depth (-0.14 -> -0.12), and stays negative on all five both raw and matched. Per tenure-day B1 browses at 0.43x their rate. B1 is an activation-at-first-order population reached ~109 days late, not a re-engagement population. 08 should design on cell B3 instead, where the 42.2d window is still open.",
+    "04's TWO DETERMINISM GUARDS ARE NECESSARY BUT NOT SUFFICIENT (05 Section 11): round_sig(sig=6) plus .sort_values('user_id') still left this notebook non-reproducible, and it failed its own zero-diff assertion on one cell of fo_price_vs_prior_mean out of 109,732. The parallel float wobble is ~1e-15 relative while round_sig snaps to a 1e-6 grid, so a value sitting within 1e-15 of a rounding boundary flips across it -- rounding makes the non-determinism RARE, not absent, which is a worse failure mode than an obvious one. A THIRD guard is required: SET threads=1 for the fetch itself (materialisations can stay parallel). Measured over 3 repeats per block: 48,738 differing cells sorted-only, 0 after 04's two guards, 0 with threads=1 before any rounding. Use src fetch_block().",
+    "FIRST-SESSION FEATURES MUST BE TRUNCATED AT t0 (05 Section 1A): 241,536 events sit in the first-order session AFTER the first order, across 11,704 users (10.7% of purchasers), including 24,625 purchase rows. 02's certified first_session_events is untruncated -- correct for 02's descriptive use, a leak as a feature. Untruncated it scores univariate AUC 0.5737 on repeat_purchase_30d against 0.5525 truncated.",
+    "04's cart_abandonment_rate CANNOT BE REBUILT IN A PRE-FIRST-ORDER WINDOW (05 Section 6A): there are zero purchases before t0 by construction, so the rate is a constant 1.0 for every user who has one. 04 computed it over full history, which for a post-t0 outcome is an outcome-window aggregate. Consequence beyond the one feature: segment_model.json cannot be applied faithfully to pre-t0 data -- one of its eight fitted features is degenerate there -- so 08's re-scoring at targeting time must use a window that contains at least one purchase, not a pre-first-order one.",
+    "PURCHASE CADENCE IS UNDEFINED AT A FIRST-ORDER ANCHOR (05 Section 7): 04 \u00a79B's personalised-threshold recommendation cannot be tested as stated -- every user has exactly one order at t0, so the coverage gap is 100%, not the ~77% anticipated. 05 tested pre-t0 VISIT cadence instead: defined for 27.1% of users, personal median day-gap 3.5d against the 42.2d global rule (54.8% sit below it), LR chi2(1)=20 p=6.0e-06 but in-sample AUC gain only +0.0031. The test that would settle 04 \u00a79B is a SECOND-ORDER anchor predicting the third order.",
+    "02's is_bulk_buyer IS A LEAKY FEATURE (05 Section 4C): it flags any order over 90.6 items across FULL history, so for 33 of the 143 flagged users the evidence post-dates their first order. Carried as a population flag (constraint 6 requires it) with model_eligible=False; first_order_is_bulk replaces it as the M1 feature.",
+    "05 PERSISTS ALL 109,732 PURCHASERS, NOT A PRE-FILTERED MODELLING SET: the three horizons have three eligible populations (D30 91,334, D60 71,727, D90 52,737), so 06 must subset on eligible_{h}d itself. 05's user-level eligibility rule differs from 02's cohort-level one by design and the cohort-eligible set is a strict subset of it; restricted to that subset, 05 reproduces 02's retention figures exactly."
   ],
   "criteo_experiment_data_present": true,
   "bot_exclusion": {
@@ -688,5 +694,122 @@
         "9D reconciles the B1 count and corrects 4A's Low-RFM mechanism"
       ]
     }
+  },
+  "features": {
+    "generated_by": "05_features.ipynb",
+    "file": "data/processed/features.parquet",
+    "dictionary": "outputs/tables/nb05_feature_dictionary.csv",
+    "n_rows": 109732,
+    "n_columns": 96,
+    "n_model_eligible": 81,
+    "anchor": "t0 = each user's first order timestamp, certified reconstruction rule",
+    "feature_window": "event_time < t0, plus the first order's own purchase lines at exactly t0",
+    "outcome_window": "orders with order_ts > t0 in a session other than the first-order session",
+    "eligibility_rule": "t0 + horizon <= DATA_END in EXACT ELAPSED SECONDS; censored users excluded, never zero-filled",
+    "eligible_n": {
+      "d30": 91334,
+      "d60": 71727,
+      "d90": 52737
+    },
+    "positive_rate_pct": {
+      "d30": 13.73,
+      "d60": 21.08,
+      "d90": 27.05
+    },
+    "target_naming": "repeat_purchase_{h}d. NOT churn -- D30 cannot carry a churn label under the certified 42.2d rule.",
+    "forbidden_list": {
+      "F1_outcome_window_aggregate": "any feature computed from events with event_time > t0",
+      "F2_lifetime_or_recency": "lifetime orders/spend, last-event recency, R/F/M, tenure-to-DATA_END",
+      "F3_full_dataset_item_stats": "product/category popularity or price stats over the full window",
+      "F4_static_cluster_name": "cluster_name joined from segment_assignments.parquet",
+      "F5_abandonment_type": "any cart-abandonment TYPE label (deferred_intent, substitution, ...)"
+    },
+    "blocks": {
+      "M1 first order": 24,
+      "M2 first-order session": 15,
+      "M3 pre-t0 browsing": 30,
+      "M4 cadence": 12,
+      "S segment": 1
+    },
+    "collinearity": {
+      "pairs_at_abs_rho_ge_0.90": 23,
+      "n_vif_ge_10": 31,
+      "handling": "FLAGGED, NOT DROPPED. 06's logistic ladder must keep one per pair; LightGBM need not.",
+      "tables": [
+        "outputs/tables/nb05_collinear_pairs.csv",
+        "outputs/tables/nb05_vif.csv"
+      ]
+    },
+    "determinism": {
+      "guards": "THREE, all mandatory: SET threads=1 for the fetch, src.data.round_sig(sig=6), .sort_values('user_id'). 04 specified the last two; 05 found them insufficient.",
+      "why_04s_two_are_not_enough": "the parallel float wobble is ~1e-15 relative and round_sig snaps to a 1e-6 grid, so a value whose 7th significant digit sits within 1e-15 of a rounding boundary flips ACROSS the grid. Rounding makes the non-determinism rare, not absent, which converts a reproducible failure into an intermittent one. It broke this notebook's first execution on one cell of fo_price_vs_prior_mean out of 109,732.",
+      "measured": {
+        "L1_sorted_only_threads6": 48738,
+        "L1_max_abs_diff": 8.526512829121202e-14,
+        "L2_sorted_and_rounded": 0,
+        "L3_threads1_raw": 0,
+        "repeats_per_level": 3
+      },
+      "verified": "two full builds through fetch_block(), 0 differing cells across all columns",
+      "row_order_unstable_blocks": 4,
+      "cost": "only the FETCH is single-threaded; materialisations stay on 6 threads. ~8s in total.",
+      "binding_on_06_and_later": "call fetch_block() or reproduce all three guards."
+    },
+    "leakage_verification": {
+      "method_1_window_disjointness": "row-level SQL: max feature-block offset 0s vs t0, min outcome offset 70s",
+      "method_2_provenance_audit": "every column declares its window; built-set and declared-set asserted equal",
+      "method_3_screen_with_positive_controls": "planted pure-outcome control AUC 0.9386; planted near-miss (02's untruncated first-session depth) AUC 0.5737 vs its truncated twin 0.5525; no shipped feature reaches 0.7386",
+      "what_the_screen_cannot_do": "univariate AUC cannot see a weak leak or an interaction leak; the load-bearing guarantees are methods 1 and 2"
+    },
+    "new_findings": {
+      "first_session_post_t0_leak": {
+        "n_events": 241536,
+        "n_users": 11704,
+        "pct_of_purchasers": 10.67,
+        "statement": "02's certified first_session_events is UNTRUNCATED and reads post-t0 events for 10.7% of purchasers, including purchase rows. Every M2 feature here is cut at t0. Measured cost of not truncating: univariate AUC 0.5737 -> 0.5525."
+      },
+      "pre_window_abandonment_degeneracy": {
+        "statement": "There are ZERO purchases before t0, so 04's cart_abandonment_rate is a constant 1.0 in a strictly-pre-first-order window. 04 computed it over full history, which for a post-t0 outcome is an F1 violation. Replaced by pre_cart_not_in_first_order_rate.",
+        "consequence_for_segment_model": "one of segment_model.json's eight fitted features is constant here, so the model cannot be applied faithfully to a pre-t0 window"
+      },
+      "purchase_cadence_undefined_at_t0": {
+        "statement": "04 \u00a79B asked 05/06 to test a personalised cadence threshold. At a first-order anchor every user has exactly one order, so purchase cadence is undefined for 100% of users, not the ~77% anticipated. Not a missingness problem -- the quantity does not exist yet.",
+        "what_was_tested_instead": "pre-t0 VISIT cadence (median gap between active days) and its lapse ratio",
+        "coverage_pct": 27.1,
+        "personal_median_day_gap_d": 3.5,
+        "global_threshold_d": 42.2,
+        "share_below_global_threshold_pct": 54.8,
+        "screen_result": {
+          "n": 24339,
+          "LR_chi2_1df": 20.5,
+          "p": 5.966283588409909e-06,
+          "auc_base": 0.5521,
+          "auc_with_cadence": 0.5552,
+          "delta_auc": 0.0031,
+          "verdict": "significant and small. Carry it; do not build a targeting rule on it."
+        },
+        "the_test_that_would_settle_it": "re-anchor on the SECOND order and predict the third. Purchase cadence is defined there. 06 or 08 owns that test."
+      },
+      "bulk_flag_is_leaky": {
+        "n_flagged_by_02": 143,
+        "n_flagged_by_first_order": 110,
+        "n_leaky": 33,
+        "statement": "33 of 02's 143 bulk buyers are flagged on an order that happens AFTER t0. is_bulk_buyer_fullhistory is carried as a population flag only; first_order_is_bulk is the model feature."
+      }
+    },
+    "segment_rescoring": {
+      "scorable_pct": 91.0,
+      "agreement_with_04_stored_label_pct": 77.1,
+      "verdict": "pre_segment is persisted but model_eligible=False. One of the eight fitted inputs is constant in a pre-t0 window, it is a lossy function of M3 features already in the table, and it inherits 04's membership instability. Kept as the reference implementation of the re-scoring 08 must do at targeting time."
+    },
+    "binding_rules_for_06": [
+      "Subset on eligible_{h}d. Never zero-fill a censored user -- an unobserved window is not a negative.",
+      "Split CHRONOLOGICALLY on first_ts, never randomly (CLAUDE.md principle 6).",
+      "Use only model_eligible == True columns. t0_calendar_day, trailing_days, is_bulk_buyer_fullhistory and pre_segment are in the file for diagnostics and must not be fitted on.",
+      "Encode fo_primary_brand / fo_primary_category INSIDE the training fold -- both are high-cardinality and a full-table encoding is an F3 violation.",
+      "Keep one feature per flagged collinear pair in the logistic ladder; LightGBM may keep both.",
+      "Do not impute. Every NULL has a named indicator (fs_has_pre_purchase_events, has_pre_t0_history, has_day_cadence, has_session_cadence).",
+      "The target is repeat_purchase_30d and must never be described as churn."
+    ]
   }
 }

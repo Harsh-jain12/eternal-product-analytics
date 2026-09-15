@@ -1,0 +1,24 @@
+a,b,spearman_rho,abs_rho,mechanism
+pre_n_removals,log1p_pre_n_removals,1.0,1.0,cross-block
+pre_n_sessions,cad_n_hist_gaps,1.0,1.0,cross-block
+fo_value,fo_value_w,1.0,0.9999995247817216,both from the same first order
+fo_n_items,fo_n_products,0.9999,0.9998585826223341,both from the same first order
+fo_discount_vs_prior_max,fo_has_discount,0.9927,0.992698927382214,both from the same first order
+pre_n_prior_sessions,cad_n_hist_gaps,0.9924,0.9923601293866527,cross-block
+pre_n_sessions,pre_n_prior_sessions,0.9872,0.9871777493259741,both are pre-t0 volume
+fs_n_view_ev,fs_p_viewed,0.9825,0.9825475286798244,both from the first-order session
+pre_n_view_ev,pre_p_viewed,0.9788,0.9788151413748092,both are pre-t0 volume
+pre_events_per_tenure_day,pre_products_per_tenure_day,0.978,0.9779718431732087,both are pre-t0 volume
+fo_dow,fs_start_dow,0.9754,0.9754339198410152,cross-block
+pre_n_active_days,cad_day_n_hist_gaps,0.9676,0.967613460657242,cross-block
+fo_median_price,fo_product_price_pct_prior,0.9536,0.9536241563843468,both from the same first order
+tenure_d,pre_sessions_per_tenure_day,-0.9535,0.9535047208747506,cross-block
+pre_n_events,pre_n_products,0.9471,0.9471314223645988,both are pre-t0 volume
+pre_n_cart_ev,pre_p_carted,0.9437,0.9437080671386663,both are pre-t0 volume
+fo_hour,fs_start_hour,0.9389,0.9388923739329086,cross-block
+fs_n_events,fs_p_touched,0.9307,0.9307324613055546,both from the first-order session
+tenure_d,pre_events_per_tenure_day,-0.9139,0.9139290509481613,cross-block
+tenure_d,pre_products_per_tenure_day,-0.9103,0.9102580754951742,cross-block
+pre_sessions_per_tenure_day,pre_events_per_tenure_day,0.9067,0.9067181558807319,both are pre-t0 volume
+pre_sessions_per_tenure_day,pre_products_per_tenure_day,0.9019,0.9018533388741036,both are pre-t0 volume
+cad_day_n_hist_gaps,has_day_cadence,0.9016,0.901648745260647,both from the cadence block

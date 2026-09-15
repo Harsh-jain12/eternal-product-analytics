@@ -1,0 +1,80 @@
+feature,VIF,flag
+fo_price_range,inf,EXACT LINEAR DEPENDENCY -- removed to make the matrix full rank
+fs_has_pre_purchase_events,inf,EXACT LINEAR DEPENDENCY -- removed to make the matrix full rank
+pre_n_prior_sessions,inf,EXACT LINEAR DEPENDENCY -- removed to make the matrix full rank
+has_pre_t0_history,inf,EXACT LINEAR DEPENDENCY -- removed to make the matrix full rank
+pre_n_events,119493.81,SEVERE (>=10)
+pre_n_removals,24637.24,SEVERE (>=10)
+pre_n_view_ev,22273.3,SEVERE (>=10)
+pre_n_cart_ev,11579.66,SEVERE (>=10)
+pre_n_sessions,10987.28,SEVERE (>=10)
+cad_n_hist_gaps,9960.96,SEVERE (>=10)
+fo_n_products,8564.04,SEVERE (>=10)
+fo_n_items,8561.41,SEVERE (>=10)
+fs_n_events,1467.53,SEVERE (>=10)
+fs_n_removals,388.22,SEVERE (>=10)
+has_session_cadence,255.73,SEVERE (>=10)
+fs_n_view_ev,243.09,SEVERE (>=10)
+fs_n_cart_ev,205.23,SEVERE (>=10)
+pre_n_active_days,91.37,SEVERE (>=10)
+cad_day_n_hist_gaps,67.07,SEVERE (>=10)
+pre_n_products,53.62,SEVERE (>=10)
+pre_p_viewed,44.51,SEVERE (>=10)
+fs_p_viewed,27.98,SEVERE (>=10)
+pre_p_carted,25.71,SEVERE (>=10)
+fs_p_touched,23.24,SEVERE (>=10)
+fo_median_price,18.56,SEVERE (>=10)
+fo_value,17.85,SEVERE (>=10)
+fo_value_w,16.78,SEVERE (>=10)
+pre_n_categories,16.75,SEVERE (>=10)
+fo_min_price,16.09,SEVERE (>=10)
+has_prior_sessions,13.57,SEVERE (>=10)
+pre_n_brands,12.42,SEVERE (>=10)
+fs_n_categories,8.72,moderate (>=5)
+fo_n_categories,7.81,moderate (>=5)
+fs_n_brands,7.31,moderate (>=5)
+fo_dow,6.81,moderate (>=5)
+fs_start_dow,6.77,moderate (>=5)
+pre_category_entropy,6.69,moderate (>=5)
+fo_n_brands,5.98,moderate (>=5)
+log1p_pre_n_removals,5.81,moderate (>=5)
+fo_max_price,5.56,moderate (>=5)
+pre_events_per_tenure_day,5.48,moderate (>=5)
+pre_brand_entropy,5.23,moderate (>=5)
+pre_mean_session_depth,4.97,
+pre_products_per_tenure_day,4.87,
+tenure_d,4.39,
+fo_hour,4.36,
+fs_start_hour,4.31,
+fo_product_price_pct_prior,4.22,
+fo_catz_coverage,3.96,
+pre_cart_not_in_first_order_rate,3.91,
+has_day_cadence,3.4,
+fs_max_price_viewed,3.38,
+gap_before_purchase_day,3.27,
+fo_discount_vs_prior_max,3.23,
+fo_price_z_in_category,3.05,
+pre_price_range_viewed,2.69,
+fs_price_range_viewed,2.68,
+pre_removal_per_cart,2.51,
+cad_day_median_gap_d,2.43,
+fo_has_discount,2.36,
+fo_price_ref_coverage,2.33,
+fo_brand_null_share,2.24,
+gap_before_purchase_visit,2.17,
+fo_price_vs_prior_mean,2.15,
+pre_views_per_tenure_day,2.15,
+pre_mean_price_pct_viewed,2.14,
+pre_sessions_per_tenure_day,2.09,
+cad_iqr_gap_d,1.96,
+cad_median_gap_d,1.94,
+pre_brand_coverage,1.92,
+pre_view_to_cart,1.76,
+cad_day_lapse_ratio,1.54,
+first_order_is_bulk,1.41,
+fs_duration_min,1.34,
+cad_lapse_ratio,1.17,
+fo_primary_category,1.07,
+pre_days_since_last_event,1.07,
+cad_regularity,1.06,
+fo_is_weekend,1.03,

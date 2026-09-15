@@ -1,0 +1,5 @@
+block,n_rows,max_seconds_vs_t0,min_seconds_vs_t0
+M1 first-order lines,831777,0,0
+M2 first-order session (truncated),1940228,-1,-12081659
+M3/M4 all pre-t0 events,5351448,-1,-13065403
+OUTCOME orders (target only),45771,13089090,70

@@ -1,0 +1,6 @@
+rule,how it is enforced in code,where it is verified
+F1_outcome_window_aggregate,"every feature SQL is filtered to event_time < t0, or to the first-order purchase lines at exactly t0",Section 1 row-level partition; Section 9A per-block max(event_time) assertion
+F2_lifetime_or_recency,"no join to churn_flags / segment_assignments columns; tenure is measured to t0, not to DATA_END",Section 9B provenance audit lists every source column
+F3_full_dataset_item_stats,prod_ref / cat_ref built with a window frame of UNBOUNDED PRECEDING .. 1 PRECEDING over days,Section 4A compares safe vs full-dataset reference directly
+F4_static_cluster_name,segment_assignments.parquet is loaded for comparison only and never merged into the feature frame,Section 8 re-scores from segment_model.json on pre-t0 data and reports coverage
+F5_abandonment_type,"abandonment_user_types_leakage_safe.parquet is loaded, coverage reported, and deliberately not joined",Section 6C; only removal VOLUME and a cart-vs-first-order RATE are built

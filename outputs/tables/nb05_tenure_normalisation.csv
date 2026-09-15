@@ -1,0 +1,5 @@
+raw_feature,rho_raw_vs_tenure,normalised_twin,rho_twin_vs_tenure
+pre_n_view_ev,0.605,pre_views_per_tenure_day,-0.632
+pre_n_sessions,0.703,pre_sessions_per_tenure_day,-0.955
+pre_n_events,0.609,pre_events_per_tenure_day,-0.916
+pre_n_products,0.587,pre_products_per_tenure_day,-0.911

@@ -1,0 +1,3 @@
+outcome,mean_naive,mean_truncated,post_t0_events_added,as_pct_of_truncated
+did NOT repeat,29.75,19.51,10.24,52.5
+repeated within 30d,34.05,23.17,10.88,47.0

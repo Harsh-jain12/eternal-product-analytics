@@ -1,0 +1,97 @@
+feature,block,window,source_events,definition,leakage_risk_assessed,model_eligible,dtype,n_unique,missing_pct_all_purchasers,missing_pct_D30_eligible
+user_id,id,meta,-,"cookie-scoped user id; NOT account-scoped, so every repeat figure is a lower bound",none,False,int64,109732,0.0,0.0
+first_ts,id,meta,purchase,"t0 -- first order timestamp, certified rule",anchor itself,False,datetime64[us],109031,0.0,0.0
+cohort_month,meta,meta,purchase,calendar month of t0; for 06's chronological split,none,False,datetime64[s],5,0.0,0.0
+trailing_days,meta,meta,-,(DATA_END - t0) in days; the censoring quantity,"CENSORING, not a feature",False,float64,90571,0.0,0.0
+t0_calendar_day,meta,meta,-,days from 2019-10-01 to t0; carried for 03's anchor-sensitivity re-test,near-perfect train/test discriminator under a chronological split,False,float64,94837,0.0,0.0
+days_to_next_order,target,target,purchase,days from t0 to the first later order in a different session; NULL if none,OUTCOME,False,float64,22835,78.87,76.11
+repeat_purchase_30d,target,target,purchase,days_to_next_order <= 30,OUTCOME,False,bool,2,0.0,0.0
+eligible_30d,target,meta,-,t0 + 30d <= DATA_END in exact elapsed seconds,censoring rule,False,bool,2,0.0,0.0
+repeat_purchase_60d,target,target,purchase,days_to_next_order <= 60,OUTCOME,False,bool,2,0.0,0.0
+eligible_60d,target,meta,-,t0 + 60d <= DATA_END in exact elapsed seconds,censoring rule,False,bool,2,0.0,0.0
+repeat_purchase_90d,target,target,purchase,days_to_next_order <= 90,OUTCOME,False,bool,2,0.0,0.0
+eligible_90d,target,meta,-,t0 + 90d <= DATA_END in exact elapsed seconds,censoring rule,False,bool,2,0.0,0.0
+is_bulk_buyer_fullhistory,population flag,meta,purchase,02's flag: ANY order >= 90.6 items over FULL history,FORBIDDEN AS A FEATURE (F2) -- carried for reporting per constraint 6; use first_order_is_bulk,False,bool,2,0.0,0.0
+is_bf_cohort,population flag,meta,-,02's Black Friday acquisition cohort,calendar attribute of t0; safe but confounded -- see handoff black_friday_cohort,False,bool,2,0.0,0.0
+fo_value,M1 first order,at t0,purchase,sum of positive line prices in the first order,bulk buyers move any MEAN of this; use fo_value_w for mean-based terms,True,float64,13711,0.0,0.0
+fo_value_w,M1 first order,at t0,purchase,fo_value winsorised at P99 (constraint 6),mean-safe twin of fo_value,True,float64,12673,0.0,0.0
+fo_n_items,M1 first order,at t0,purchase,"purchase lines in the first order (quantity-preserving, per 00's audit)",none,True,int64,149,0.0,0.0
+fo_n_products,M1 first order,at t0,purchase,distinct products in the first order,none,True,int64,149,0.0,0.0
+fo_n_categories,M1 first order,at t0,purchase,distinct category_id in the first order,none,True,int64,51,0.0,0.0
+fo_n_brands,M1 first order,at t0,purchase,distinct non-null brands in the first order,none,True,int64,24,0.0,0.0
+fo_brand_null_share,M1 first order,at t0,purchase,share of first-order lines with a null brand,"brand is 42.3% null at source; NULL is information, not missingness",True,float64,920,0.0,0.0
+fo_max_price,M1 first order,at t0,purchase,max line price,none,True,float64,2019,0.0,0.0
+fo_min_price,M1 first order,at t0,purchase,min line price,none,True,float64,1635,0.0,0.0
+fo_median_price,M1 first order,at t0,purchase,"median line price (quantile_cont, exact)",none,True,float64,4396,0.0,0.0
+fo_price_range,M1 first order,at t0,purchase,fo_max_price - fo_min_price,none,True,float64,5203,0.0,0.0
+fo_hour,M1 first order,at t0,purchase,hour of t0,none,True,int64,24,0.0,0.0
+fo_dow,M1 first order,at t0,purchase,day of week of t0,none,True,int64,7,0.0,0.0
+fo_is_weekend,M1 first order,at t0,purchase,t0 falls on Sat/Sun,none,True,int32,2,0.0,0.0
+fo_discount_vs_prior_max,M1 first order,at t0,purchase,"mean over lines of max(1 - price / product's max price on STRICTLY PRIOR days, 0)",F3-safe by construction: .shift().expanding(); a full-dataset reference inflates this 5x,True,float64,16220,0.95,1.13
+fo_price_vs_prior_mean,M1 first order,at t0,purchase,mean over lines of price / product's mean price on strictly prior days,"F3-safe, same construction",True,float64,22639,0.95,1.13
+fo_product_price_pct_prior,M1 first order,at t0,purchase,"mean over lines of the product's cross-sectional price percentile among all products, computed from prior-day prices on the order's day",F3-safe,True,float64,100334,0.95,1.13
+fo_price_ref_coverage,M1 first order,at t0,purchase,share of first-order lines that had a prior-day reference at all,diagnostic for the three features above,True,float64,156,0.0,0.0
+fo_price_z_in_category,M1 first order,at t0,purchase,"mean over lines of (ln price - prior mean ln price in category) / prior sd, clipped to +/-5",F3-safe; NULL where the category has <50 prior priced rows or sd(ln p) < 0.05,True,float64,103619,0.0,0.0
+fo_catz_coverage,M1 first order,at t0,purchase,share of lines with a usable category reference,diagnostic for fo_price_z_in_category,True,float64,430,0.0,0.0
+fo_has_discount,M1 first order,at t0,purchase,fo_discount_vs_prior_max > 0,F3-safe,True,int64,2,0.0,0.0
+first_order_is_bulk,M1 first order,at t0,purchase,fo_n_items >= 90.6 -- the leakage-safe replacement for is_bulk_buyer,F2-safe by construction,True,int64,2,0.0,0.0
+fo_primary_brand,M1 first order,at t0,purchase,modal brand of the first order; '__NULL__' is its own level,"HIGH CARDINALITY -- 06 must encode inside its split, never on the full table",True,object,234,0.0,0.0
+fo_primary_category,M1 first order,at t0,purchase,"modal category_id of the first order; structural id, unlabelled (category_code is 98.3% null)",HIGH CARDINALITY -- same rule,True,int64,433,0.0,0.0
+fs_n_events,M2 first-order session,< t0,all types,events in the first-order session before t0,truncated at t0: the untruncated version leaks for 10.7% of users (Section 1A),True,float64,381,10.78,10.63
+fs_n_view_ev,M2 first-order session,< t0,all types,view events in that window,same truncation,True,float64,193,10.78,10.63
+fs_n_cart_ev,M2 first-order session,< t0,all types,cart events in that window,same truncation,True,float64,179,10.78,10.63
+fs_n_removals,M2 first-order session,< t0,all types,remove_from_cart events in that window,abandonment VOLUME -- permitted by the leakage rule; TYPE is not,True,float64,222,10.78,10.63
+fs_p_viewed,M2 first-order session,< t0,all types,distinct products viewed in that window,"product-distinct base, immune to 00's 10.4% duplicate telemetry rows",True,float64,141,10.78,10.63
+fs_p_touched,M2 first-order session,< t0,all types,distinct products touched by any event in that window,same,True,float64,201,10.78,10.63
+fs_n_categories,M2 first-order session,< t0,all types,distinct categories in that window,same truncation,True,float64,64,10.78,10.63
+fs_n_brands,M2 first-order session,< t0,all types,distinct non-null brands in that window,same truncation,True,float64,35,10.78,10.63
+fs_max_price_viewed,M2 first-order session,< t0,all types,max price among priced views in that window,NULL for users who reached t0 with no priced view,True,float64,2151,25.69,25.62
+fs_price_range_viewed,M2 first-order session,< t0,all types,P90-P10 of priced-view prices in that window,same,True,float64,16083,10.78,10.63
+fs_duration_min,M2 first-order session,< t0,all types,minutes from the session's first pre-t0 event to t0,HEAVY TAIL from session-ID reuse (00: 2.16% of sessions > 24h); log or bin it,True,float64,12063,10.78,10.63
+fs_start_hour,M2 first-order session,< t0,all types,hour of the session's first pre-t0 event,none,True,float64,24,10.78,10.63
+fs_start_dow,M2 first-order session,< t0,all types,day of week of the same,none,True,float64,7,10.78,10.63
+fs_entry_event_type,M2 first-order session,< t0,all types,event_type of the session's first pre-t0 event,3-level categorical,True,object,3,10.78,10.63
+fs_has_pre_purchase_events,M2 first-order session,< t0,all types,the first-order session had any event before t0,"the explicit missingness indicator for this whole block -- 11,830 users have none",True,int64,2,0.0,0.0
+pre_n_events,M3 pre-t0 browsing,< t0,all types,all events before t0,none,True,float64,829,0.55,0.57
+pre_n_view_ev,M3 pre-t0 browsing,< t0,all types,views before t0,none,True,float64,459,0.55,0.57
+pre_n_cart_ev,M3 pre-t0 browsing,< t0,all types,cart adds before t0,none,True,float64,355,0.55,0.57
+pre_n_removals,M3 pre-t0 browsing,< t0,all types,removals before t0,abandonment VOLUME; the one thing 02 Section 0E found survives,True,float64,437,0.55,0.57
+log1p_pre_n_removals,M3 pre-t0 browsing,< t0,all types,log1p(pre_n_removals) -- the form 02/03 measured at OR 1.38,"anchor-sensitive: 1.37-1.44 first-order-anchored, 1.03-1.14 calendar-anchored",True,float64,437,0.55,0.57
+pre_n_products,M3 pre-t0 browsing,< t0,all types,distinct products touched before t0,none,True,float64,394,0.55,0.57
+pre_p_viewed,M3 pre-t0 browsing,< t0,all types,distinct products viewed before t0,none,True,float64,308,0.55,0.57
+pre_p_carted,M3 pre-t0 browsing,< t0,all types,distinct products carted before t0,none,True,float64,295,0.55,0.57
+pre_n_categories,M3 pre-t0 browsing,< t0,all types,distinct categories before t0,none,True,float64,105,0.55,0.57
+pre_n_brands,M3 pre-t0 browsing,< t0,all types,distinct non-null brands before t0,none,True,float64,58,0.55,0.57
+pre_n_active_days,M3 pre-t0 browsing,< t0,all types,distinct active days before t0,none,True,float64,55,0.55,0.57
+pre_n_sessions,M3 pre-t0 browsing,< t0,all types,distinct sessions with an event before t0,none,True,float64,233,0.55,0.57
+pre_n_prior_sessions,M3 pre-t0 browsing,< t0,all types,"as above, excluding the first-order session",lets 06 build a disjoint M2/M3 nesting if it prefers,True,float64,234,0.55,0.57
+has_prior_sessions,M3 pre-t0 browsing,< t0,all types,pre_n_prior_sessions > 0,the non-degenerate form of 'converted in the first session',True,int64,2,0.0,0.0
+pre_mean_session_depth,M3 pre-t0 browsing,< t0,all types,mean events per pre-t0 session,none,True,float64,6054,0.55,0.57
+pre_view_to_cart,M3 pre-t0 browsing,< t0,all types,"distinct carted / distinct viewed, before t0",NULL where no view,True,float64,4925,7.55,7.7
+pre_removal_per_cart,M3 pre-t0 browsing,< t0,all types,"removal events / cart events, before t0",abandonment VOLUME ratio; NULL where no cart,True,float64,5070,1.26,1.29
+pre_cart_not_in_first_order_rate,M3 pre-t0 browsing,< t0,all types,share of pre-t0 carted products NOT in the first order,"REPLACES 04's cart_abandonment_rate, which is a constant 1.0 in this window (Section 6A)",True,float64,2317,1.26,1.29
+pre_brand_entropy,M3 pre-t0 browsing,< t0,all types,"Shannon entropy of viewed brands, NULL kept as its own level",none,True,float64,22341,7.55,7.7
+pre_brand_coverage,M3 pre-t0 browsing,< t0,all types,share of pre-t0 views carrying a non-null brand,diagnostic for pre_brand_entropy,True,float64,4038,7.55,7.7
+pre_category_entropy,M3 pre-t0 browsing,< t0,all types,Shannon entropy of viewed category_id,none,True,float64,23604,7.55,7.7
+pre_mean_price_pct_viewed,M3 pre-t0 browsing,< t0,all types,mean prior-day price percentile of products viewed before t0,F3-safe; NOT the same variable 04 fitted on (it used a full-dataset percentile),True,float64,93889,8.45,8.78
+pre_price_range_viewed,M3 pre-t0 browsing,< t0,all types,P90-P10 of those percentiles,"F3-safe, same caveat",True,float64,84242,8.45,8.78
+tenure_d,M3 pre-t0 browsing,< t0,all types,days from the user's FIRST EVENT to t0,"measured to t0, NOT to DATA_END -- the DATA_END version is F2",True,float64,64247,0.55,0.57
+pre_days_since_last_event,M3 pre-t0 browsing,< t0,all types,days from the last pre-t0 event to t0,"NEAR-DEGENERATE: median 6.8 minutes. Measures checkout speed, not recency",True,float64,8537,0.55,0.57
+pre_views_per_tenure_day,M3 pre-t0 browsing,< t0,all types,pre_n_view_ev / tenure_d (floored at 1 minute),"tenure-normalised twin, constraint 5",True,float64,79495,0.55,0.57
+pre_sessions_per_tenure_day,M3 pre-t0 browsing,< t0,all types,pre_n_sessions / tenure_d,"tenure-normalised twin, constraint 5",True,float64,71628,0.55,0.57
+pre_events_per_tenure_day,M3 pre-t0 browsing,< t0,all types,pre_n_events / tenure_d,"tenure-normalised twin, constraint 5",True,float64,88383,0.55,0.57
+pre_products_per_tenure_day,M3 pre-t0 browsing,< t0,all types,pre_n_products / tenure_d,"tenure-normalised twin, constraint 5",True,float64,84163,0.55,0.57
+has_pre_t0_history,M3 pre-t0 browsing,< t0,all types,the user has any event before t0,explicit missingness indicator for this block -- 600 users have none,True,int64,2,0.0,0.0
+cad_n_hist_gaps,M4 cadence,< t0,all types,number of historical inter-session gaps before the buying visit,coverage indicator,True,Int64,231,53.33,53.81
+cad_median_gap_d,M4 cadence,< t0,all types,median of those gaps (days),NULL for users with <2 prior sessions; never imputed,True,float64,34361,53.33,53.81
+cad_iqr_gap_d,M4 cadence,< t0,all types,IQR of those gaps,same,True,float64,31144,53.33,53.81
+cad_regularity,M4 cadence,< t0,all types,cad_iqr_gap_d / cad_median_gap_d,same,True,float64,35611,53.33,53.81
+gap_before_purchase_visit,M4 cadence,< t0,all types,days from the previous session's start to the buying session's start,held out of the cadence median so the ratio is not self-referential,True,float64,29606,53.07,53.53
+cad_lapse_ratio,M4 cadence,< t0,all types,gap_before_purchase_visit / cad_median_gap_d,the personalised quantity; NOT collinear with either part,True,float64,46903,53.33,53.81
+has_session_cadence,M4 cadence,< t0,all types,cad_median_gap_d is defined,explicit missingness indicator,True,int64,2,0.0,0.0
+cad_day_n_hist_gaps,M4 cadence,< t0,all types,number of historical gaps between ACTIVE DAYS before the buying day,coverage indicator,True,float64,54,52.41,52.82
+cad_day_median_gap_d,M4 cadence,< t0,all types,median of those day-gaps,the interpretable cadence: median 3.5d against a 42.2d global rule,True,float64,201,72.89,73.35
+gap_before_purchase_day,M4 cadence,< t0,all types,days from the previous active day to the buying day,"held out of the median, as above",True,Int64,142,62.22,62.72
+cad_day_lapse_ratio,M4 cadence,< t0,all types,gap_before_purchase_day / cad_day_median_gap_d,the personalised quantity tested in Section 7,True,float64,1958,72.89,73.35
+has_day_cadence,M4 cadence,< t0,all types,cad_day_median_gap_d is defined,explicit missingness indicator -- only 27.1% of users,True,int64,2,0.0,0.0
+pre_segment,S segment,< t0,all types,segment_model.json re-scored on pre-t0 features only,"NOT model-eligible: one of the 8 fitted inputs is constant in this window, and it is a lossy function of M3 (Section 8)",False,object,5,0.0,0.0

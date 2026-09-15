@@ -1,0 +1,5 @@
+block,n_features,mean_missing_pct,max_missing_pct,n_complete
+M1 first order,24,0.14,1.13,21
+M2 first-order session,15,10.92,25.62,1
+M3 pre-t0 browsing,30,2.08,8.78,2
+M4 cadence,12,48.73,73.35,2
