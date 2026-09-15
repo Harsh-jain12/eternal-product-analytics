@@ -1,0 +1,3 @@
+test,window_gap_d,n_fit,n_overlap,proportion_TVD_pp,same_cluster_pct,chance_pct,kappa
+Oct-Dec (92d) -> Jan-Feb (60d),32,72262,21640,1.54,56.9,37.6,0.309
+Nov-Dec (61d) -> Jan-Feb (60d),1,56128,19416,0.42,55.0,36.1,0.296

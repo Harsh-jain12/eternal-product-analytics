@@ -1,0 +1,11 @@
+feature,n_null,pct_null,why_null
+sessions_per_active_week,0,0.0,-
+mean_session_depth,0,0.0,-
+view_to_cart,5312,4.841,no view events
+cart_to_purchase,982,0.895,no cart events
+cart_abandonment_rate,982,0.895,no cart events
+mean_price_pct_viewed,5312,4.841,no view events
+price_range_viewed,5312,4.841,no view events
+brand_entropy,5312,4.841,no view events
+category_entropy,5312,4.841,no view events
+mean_intersession_gap_d,22773,20.753,only one session -- no gap exists

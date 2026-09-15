@@ -1,0 +1,4 @@
+rfm_tercile,n_users,R_median_d,F_median,M_median_eur,basket_median_eur,repeat_pct,churn_flag_pct,tenure_median_d,pct_of_base
+Low,37742,107.17,1.0,15.89,15.87,0.44,99.36,107.23,34.39
+Mid,47953,54.26,1.0,36.03,33.2,11.86,59.41,56.57,43.7
+High,24037,27.3,2.0,91.53,45.52,78.53,26.58,87.31,21.91

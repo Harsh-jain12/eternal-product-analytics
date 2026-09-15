@@ -9,6 +9,54 @@ reconstruction rule.
 import os
 
 import duckdb
+import numpy as np
+
+
+def round_sig(df, cols, sig=6):
+    """Round float columns to `sig` significant figures, in place, and return df.
+
+    THE GUARD FOR NON-DETERMINISTIC FLOAT AGGREGATES, promised in connect()'s note 3 and
+    first actually needed in 04. Parallel `avg`/`sum` in DuckDB reduce in physical scan
+    order, so the last few ULPs of any float aggregate move between evaluations of the
+    same query. Measured in 04 over the 109,732-row feature table, two runs of one query
+    inside a single session (the exact counts, and which rows differ, move between
+    executions -- that is the phenomenon, not noise in measuring it):
+
+        mean_price_pct_viewed   ~30,000 rows differ, max |diff| 6.7e-16
+        category_entropy        ~27,000 rows differ, max |diff| 8.9e-15
+        brand_entropy           ~24,000 rows differ, max |diff| 4.4e-15
+        mean_intersession_gap_d     ~30 rows differ, max |diff| 1.8e-15
+
+    That is cosmetic for a reported mean and NOT cosmetic for anything iterative: fed to
+    k-means it moved ~0.1% of users across cluster boundaries and changed every segment
+    size between runs at a fixed seed. Rounding to 6 significant figures drops all three
+    to zero differing rows while preserving far more precision than any figure this
+    project reports.
+
+    Use significant figures, not decimals: these features span 1e-3 to 1e3, so a fixed
+    decimal count would over-round the small ones and under-round the large ones.
+
+    THIS GUARD ALONE IS NOT SUFFICIENT. There is a second, independent source of
+    non-determinism in the same pipeline: `fetchdf()` returns rows in parallel-scan
+    order, which is not stable across evaluations, and k-means++ picks its initial
+    centres by sampling row INDICES. Rounding the values and leaving the order alone
+    still produced different segment sizes on every run. Always pair this with a
+    canonical sort:
+
+        df = round_sig(con.execute(SQL).fetchdf(), FLOAT_COLS).sort_values("user_id")
+
+    Row order is irrelevant to every order-invariant statistic, which is exactly why it
+    is easy to miss.
+    """
+    for c in cols:
+        v = df[c].to_numpy(dtype="float64", copy=True)
+        ok = np.isfinite(v) & (v != 0)
+        if ok.any():
+            mag = np.floor(np.log10(np.abs(v[ok])))
+            factor = np.power(10.0, (sig - 1) - mag)
+            v[ok] = np.round(v[ok] * factor) / factor
+        df[c] = v
+    return df
 
 RAW_GLOB = os.path.join("data", "raw", "*.csv")
 

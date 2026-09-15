@@ -1,0 +1,7 @@
+cell,n_users,churn_flagged,implied_true_at_risk,invisible_to_the_rule
+A1  High RFM x churn-like behaviour,5287,1138,2144,1006
+A2  High VALUE x worst recency x churn-like behaviour,610,610,1149,539
+A3  High VALUE x worst recency (any behaviour),2883,2883,5430,2547
+B1  Low RFM x most-engaged behaviour,10982,10909,20548,9639
+B2  Low/Mid VALUE x acquired within 30d,17395,0,0,0
+B3  Low/Mid VALUE x acquired within 30d x engaged behaviour,7741,0,0,0

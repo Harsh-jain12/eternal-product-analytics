@@ -77,7 +77,15 @@
     "CHURN IS FIRST-PURCHASE CHURN: 88% of users flagged by the certified rule had exactly one order, vs 80% of the base. 04's at-risk cells and 08's intervention are activation problems (get a 2nd order), not win-back problems.",
     "CHURN BASE RATE IS NOT RETENTION: 03's 84.84% true-churn base is a point-in-time STOCK measure on a calendar anchor; 02's 21.08% D60 retention is a FLOW measure anchored on each user's first order. Both are correct and they must never be quoted against each other. 03 Section 9A reproduces 02 exactly on the same users once the anchor is matched.",
     "CHURN RULE RECALL IS 53%: the certified rule flags 36,495 users but the true at-risk base is 61,787. 08/09 must NOT treat flagged-population as at-risk-population -- every reach or ROI denominator built on the flagged count must be divided by recall (53.09%). All 28,986 missed churners sit BELOW the 42.2d threshold (median recency 23.7d).",
-    "CHURN THRESHOLD IS NOT IDENTIFIED: 42.2d is the centre of a 30-45d region; two independent methods agree there, but the estimate is robust to neither flag-date position nor cost asymmetry. ~9 months of history would identify it. Quote certified_region_days [30, 45], not the decimal; use 42.2d as the OPERATING value so 04/05/06 stay comparable."
+    "CHURN THRESHOLD IS NOT IDENTIFIED: 42.2d is the centre of a 30-45d region; two independent methods agree there, but the estimate is robust to neither flag-date position nor cost asymmetry. ~9 months of history would identify it. Quote certified_region_days [30, 45], not the decimal; use 42.2d as the OPERATING value so 04/05/06 stay comparable.",
+    "FLOAT AGGREGATES ARE NOT REPRODUCIBLE WITHOUT ROUNDING (found in 04, applies project-wide): DuckDB's parallel avg()/sum() reduce in physical scan order, so brand_entropy, category_entropy, mean_price_pct_viewed and mean_intersession_gap_d differ across two evaluations of the same query in one session (order 20-30k rows, max |diff| ~9e-15), AND fetchdf() returns rows in an unstable parallel-scan order which changes k-means++ seeding. Harmless for a reported mean, NOT harmless for k-means: segment sizes moved by up to 45 users per run at a fixed seed. Guard is src.data.round_sig(..., sig=6), applied to every feature frame in 04 and MANDATORY for any notebook that re-derives these features. This is the concrete instance of the risk connect() flagged in the abstract.",
+    "NB00-NB03 HAVE NOT BEEN RUN END-TO-END IN ONE CONTINUOUS SESSION: nb03's Section 9 addendum was executed in a fresh kernel and spliced into the committed notebook. Every number reconciles on re-read, but a full clean re-execution of 00->03 in a single session is REQUIRED before nb09 if the README is going to claim reproducibility.",
+    "SEGMENT MEMBERSHIP IS NOT DURABLE: 04 fits clusters on Oct-Dec and scores Jan-Feb with the same centroids. The STRUCTURE reproduces (mix drift 1.53pp, independent-refit ARI 0.897) but only 56.8% of users stay in the same segment (Cohen's kappa 0.309, chance 37.5%). An equal-length window control (Nov-Dec vs Jan-Feb) reproduces this exactly, so it is behaviour, not an artefact. 08 must re-score segments at targeting time; a stored label misdirects ~2 users in 5.",
+    "BEHAVIOURAL CLUSTERS ARE A PARTITION OF A CONTINUUM, NOT DISCRETE TYPES: every silhouette across k=3..8 is below 0.25 (max 0.213 at k=3). k=4 is chosen on the elbow. The segments are descriptively useful and externally validated (4x spread in repeat rate, a variable never fitted on), but nothing downstream should treat them as latent classes.",
+    "RFM FREQUENCY IS DEGENERATE HERE: 77.5% of purchasers have exactly one order, so both F tercile boundaries fall on F=1 and F is scored on natural breaks (1/2/3+) instead. The RFM composite is effectively an R-and-M score, and R is near-identical to the churn flag (tercile boundary 41.11d vs threshold 42.2d). Any claim that RFM segments by loyalty at this retailer would be false.",
+    "BEHAVIOUR DOES NOT PROXY VALUE: across the 4 segments, eta-squared is 0.4594 on session depth (a fitted feature) but 0.0416 on median basket value (not fitted). All 6 pairwise basket-value comparisons are significant at p<1e-300 and none reaches a medium Cliff's delta. Segment membership must not be used as a stand-in for customer value in 08/09.",
+    "04 SEGMENTS PURCHASERS ONLY (109,732 of ~1.64M users). The ~1.53M non-purchasers are out of scope, so nothing in 04 supports a first-conversion (acquisition) recommendation.",
+    "CLUSTER FEATURES ARE NOT TENURE-NORMALISED: the Oct-Dec -> Jan-Feb drift is directional, toward the broad/deep segment, as browsing history accumulates. Part of what the clustering calls behaviour is tenure. 05 should either tenure-normalise or carry tenure alongside any segment feature."
   ],
   "criteo_experiment_data_present": true,
   "bot_exclusion": {
@@ -363,5 +371,231 @@
     "verified_against_published_spec": true,
     "verified_by": "scripted check outside the notebooks, after 03. 07 owns all analysis of this file.",
     "why_it_is_here": "REES46 has no randomised experiment (principle 10). Criteo is the genuine one (principle 11) and is what lets 07 show that risk-targeting != uplift-targeting -- the argument 03's cost-model degeneracy already points at from the observational side."
+  },
+  "segmentation": {
+    "generated_by": "04_segmentation.ipynb",
+    "snapshot_date": "2020-02-29 23:59:59",
+    "snapshot_justification": "DATA_END, the last event in the bot-excluded data. Forced by 03's churned_at_data_end being measured at exactly this instant -- Section 4 cross-tabs RFM recency against that flag, so they must share a clock.",
+    "population": {
+      "purchasers": 109732,
+      "clusterable": 103919,
+      "no_behavioural_profile": 5813,
+      "note": "Non-purchasers (~1.53M users) are OUT OF SCOPE. This notebook can size a second-order activation target; it says nothing about first conversion."
+    },
+    "rfm": {
+      "frequency_is_degenerate": true,
+      "one_order_share_pct": 77.46,
+      "f_tercile_boundaries": [
+        1.0,
+        1.0
+      ],
+      "f_scoring": "NATURAL BREAKS 1 / 2 / 3+ orders. NOT terciles -- both tercile boundaries fall on F=1, so a quantile cut on Frequency is impossible at this retailer.",
+      "r_tercile_boundaries_days": [
+        41.11,
+        94.63
+      ],
+      "m_tercile_boundaries_eur": [
+        20.63,
+        48.25
+      ],
+      "achieved_tercile_shares_pct": {
+        "Mid": 43.7,
+        "Low": 34.39,
+        "High": 21.91
+      },
+      "recency_tercile_is_the_churn_flag": "the fresher R boundary (41.11d) sits 1.09d from the certified churn threshold (42.2d); R_score and churned_at_data_end are near-duplicates, so 'high RFM AND at risk' is a contradiction and Section 4 uses a recency-free value_score = F_score + M_score instead.",
+      "value_score_definition": "F_score + M_score, terciles Low=(2), Mid=(3,4), High=(5,6)"
+    },
+    "clustering": {
+      "algorithm": "k-means, k=4, seed 42, n_init=10, on 8 standardised features",
+      "features": [
+        "sessions_per_active_week",
+        "mean_session_depth",
+        "view_to_cart",
+        "cart_abandonment_rate",
+        "mean_price_pct_viewed",
+        "price_range_viewed",
+        "brand_entropy",
+        "category_entropy"
+      ],
+      "transform": "log1p on sessions_per_active_week/mean_session_depth/view_to_cart, then clip to per-feature [0.5, 99.5] percentiles, then z-score",
+      "features_dropped": {
+        "mean_intersession_gap_d": "undefined for 22,773 single-session purchasers (20.75%); requiring it would exclude the least-engaged fifth of the base, which is exactly 08's target. Retained as a profiling variable.",
+        "cart_to_purchase": "Spearman rho = -0.936 with cart_abandonment_rate -- near rank-duplicates. The bounded one was kept."
+      },
+      "determinism_guard": {
+        "problem": "DuckDB parallel float avg()/sum() reduce in physical scan order, so mean_price_pct_viewed, brand_entropy, category_entropy and mean_intersession_gap_d differ between two evaluations of the SAME query in one session (order 20-30k rows each, max |diff| ~9e-15; which rows differ is itself run-dependent). Cosmetic for a reported mean; NOT cosmetic for k-means, which reassigns boundary points on distance comparisons -- segment sizes moved by up to 45 users per run at a fixed seed before the guard was added.",
+        "problem_2": "fetchdf() returns rows in parallel-scan order, which is not stable across evaluations. Every statistic computed here is order-invariant, but k-means++ selects initial centres by sampling row INDICES, so a different row order seeds on different customers and converges to a neighbouring local optimum. Rounding alone did NOT fix reproducibility; this was the second cause.",
+        "guard": "BOTH are required: (1) src.data.round_sig(df, FLOAT_COLS, sig=6) on every feature frame immediately after fetch -- significant figures, not decimals, since the features span 1e-3 to 1e3; (2) .sort_values('user_id') on every feature frame, to make row order canonical.",
+        "binding_on_05": "Any notebook that re-derives these features MUST apply BOTH guards or it will not reproduce 04's segments."
+      },
+      "leakage": "NO abandonment TYPE features are used, per leakage_rules_for_05. Only cart_abandonment_rate, computed from products carted-and-not-bought inside the same window as every other feature. abandonment_user_types_leakage_safe.parquet was loaded and checked for coverage but deliberately not joined.",
+      "k_selection": {
+        "method": "elbow + silhouette over k=3..8, chosen BEFORE the stability test",
+        "silhouette_by_k": {
+          "3": 0.2068,
+          "4": 0.2057,
+          "5": 0.1846,
+          "6": 0.1778,
+          "7": 0.1778,
+          "8": 0.1829
+        },
+        "inertia_drop_pct_by_k": {
+          "3": null,
+          "4": 11.86,
+          "5": 8.97,
+          "6": 6.84,
+          "7": 6.37,
+          "8": 5.18
+        },
+        "chosen": 4,
+        "caveat": "EVERY silhouette in the sweep is below 0.25. There are no well-separated natural groups in this feature space; k-means is partitioning a continuum. The segments are a useful description, NOT evidence that four discrete shopper types exist."
+      },
+      "segments": {
+        "Broad Deliberators": {
+          "n": 43380,
+          "pct": 41.74,
+          "repeat_pct": 35.83,
+          "churn_flag_pct": 62.28,
+          "basket_median_eur": 34.1,
+          "churn_like": false
+        },
+        "Frequent Skimmers": {
+          "n": 14455,
+          "pct": 13.91,
+          "repeat_pct": 27.04,
+          "churn_flag_pct": 64.07,
+          "basket_median_eur": 26.69,
+          "churn_like": false
+        },
+        "Cart Loaders": {
+          "n": 20048,
+          "pct": 19.29,
+          "repeat_pct": 13.64,
+          "churn_flag_pct": 68.36,
+          "basket_median_eur": 25.48,
+          "churn_like": true
+        },
+        "Single-Mission Buyers": {
+          "n": 26036,
+          "pct": 25.05,
+          "repeat_pct": 8.66,
+          "churn_flag_pct": 70.11,
+          "basket_median_eur": 19.96,
+          "churn_like": true
+        }
+      },
+      "separation": {
+        "session_depth_eta2_FITTED": 0.4593,
+        "basket_value_eta2_EXTERNAL": 0.0416,
+        "verdict": "Segments separate behaviour ~11x more strongly than spend. Every basket-value pair is significant and none reaches a medium Cliff's delta. Behavioural segmentation is NOT a proxy for monetary value here."
+      }
+    },
+    "stability": {
+      "design": "fit on Oct-Dec, score Jan-Feb with the same clip bounds, scaler and centroids; k NOT re-tuned",
+      "structure_holds": true,
+      "proportion_drift_tvd_pp": 1.54,
+      "independent_refit_ari": 0.891,
+      "independent_refit_agreement_pct": 95.8,
+      "max_centroid_displacement_z": 0.207,
+      "membership_holds": false,
+      "same_cluster_pct": 56.9,
+      "chance_pct": 37.6,
+      "cohens_kappa": 0.309,
+      "n_overlap": 21640,
+      "equal_window_control": {
+        "test": "Nov-Dec (61d) vs Jan-Feb (60d)",
+        "same_cluster_pct": 55.0,
+        "cohens_kappa": 0.296,
+        "verdict": "the instability is NOT a window-length artefact"
+      },
+      "binding_rule_for_08_09": "A stored cluster label is NOT a durable customer attribute. ~43% of users change segment within two months, so any campaign built on a stale segment list misdirects roughly two users in five. 08 must RE-SCORE membership at the moment of targeting using segment_model.json.",
+      "known_confound": "Drift is directional -- users migrate toward the broad/deep segment as history accumulates. None of the 8 features is tenure-normalised, so part of what the clustering calls behaviour is tenure."
+    },
+    "cross_tab": {
+      "cramers_v_rfm_x_cluster": 0.1944,
+      "cramers_v_value_x_cluster": 0.2335,
+      "interpretation": "Weak-to-moderate. The two lenses are largely independent axes, which is what makes the cross-tab informative rather than a diagonal restatement of RFM.",
+      "disagreement_cells": {
+        "A1": {
+          "label": "A1  High RFM x churn-like behaviour",
+          "n": 5287,
+          "pct_of_purchasers": 4.82,
+          "R_median_d": 25.6,
+          "M_median_eur": 75.4,
+          "one_order_pct": 39.5,
+          "churn_flagged": 1138,
+          "implied_true_at_risk": 2144,
+          "note": "briefed cell: looks healthy on RFM, behaves like a non-returner"
+        },
+        "A2": {
+          "label": "A2  High VALUE x worst recency x churn-like behaviour",
+          "n": 610,
+          "pct_of_purchasers": 0.56,
+          "R_median_d": 113.5,
+          "M_median_eur": 92.34,
+          "one_order_pct": 0.0,
+          "churn_flagged": 610,
+          "implied_true_at_risk": 1149,
+          "note": "the sharpest 08 target: proven spend, lapsed, and behaving like a one-off"
+        },
+        "A3": {
+          "label": "A3  High VALUE x worst recency (any behaviour)",
+          "n": 2883,
+          "pct_of_purchasers": 2.63,
+          "R_median_d": 110.7,
+          "M_median_eur": 95.5,
+          "one_order_pct": 0.0,
+          "churn_flagged": 2883,
+          "implied_true_at_risk": 5430,
+          "note": "the classic high-value-at-risk cell, behaviour ignored"
+        },
+        "B1": {
+          "label": "B1  Low RFM x most-engaged behaviour",
+          "n": 10982,
+          "pct_of_purchasers": 10.01,
+          "R_median_d": 109.1,
+          "M_median_eur": 18.1,
+          "one_order_pct": 99.5,
+          "churn_flagged": 10909,
+          "implied_true_at_risk": 20548,
+          "note": "engaged browsers written off by RFM as dead"
+        },
+        "B2": {
+          "label": "B2  Low/Mid VALUE x acquired within 30d",
+          "n": 17395,
+          "pct_of_purchasers": 15.85,
+          "R_median_d": 15.3,
+          "M_median_eur": 24.6,
+          "one_order_pct": 96.9,
+          "churn_flagged": 0,
+          "implied_true_at_risk": 0,
+          "note": "low value only because they are new -- censored, not low-value"
+        },
+        "B3": {
+          "label": "B3  Low/Mid VALUE x acquired within 30d x engaged behaviour",
+          "n": 7741,
+          "pct_of_purchasers": 7.05,
+          "R_median_d": 15.4,
+          "M_median_eur": 30.48,
+          "one_order_pct": 95.6,
+          "churn_flagged": 0,
+          "implied_true_at_risk": 0,
+          "note": "new AND behaving like the high-repeat segments: the best activation odds"
+        }
+      },
+      "headline": "B1 (Low RFM x Broad Deliberators, n=10,978) is the largest disagreement: they browse like the 35.8%-repeat segment but 99.5% have exactly one order and median recency is 109 days. RFM writes them off; behaviour says they are an activation population."
+    },
+    "binding_constraint_from_03": {
+      "framing": "FIRST-PURCHASE churn. At-risk cells here are ACTIVATION problems (get a 2nd order), not win-back problems.",
+      "recall_correction_applied": true,
+      "recall_pct": 53.09,
+      "assumption": "Recall was measured on 03's panel at F*=2020-01-04 and is ASSUMED to transfer to the 2020-02-29 snapshot. 03 showed the J-optimal threshold drifts with the flag date, so this is a first-order correction, not a precise one.",
+      "structural_point": "All missed churners have recency BELOW 42.2d, i.e. they score in the FRESHEST R tercile. The at-risk population is therefore NOT concentrated in the Low-RFM cells -- roughly half of it sits in cells that look healthy. A campaign sized off Low-RFM at-risk cells reaches at most half the at-risk base, and behaviour is the only lens here that can see the other half."
+    },
+    "persisted": {
+      "assignments": "data/processed/segment_assignments.parquet",
+      "model": "data/processed/segment_model.json"
+    }
   }
 }

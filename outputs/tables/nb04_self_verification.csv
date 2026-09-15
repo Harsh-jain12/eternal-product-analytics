@@ -1,0 +1,33 @@
+check,pass,detail
+cluster labels partition all purchasers exactly,True,"109,732 == 109,732, no nulls, 5 levels incl. No Behavioural Profile"
+eligible + ineligible == all purchasers,True,"103,919 + 5,813 == 109,732"
+k-means assigns every eligible user exactly once,True,"103,919 labels over 103,919 eligible users"
+RFM terciles partition all purchasers,True,"Low/Mid/High = [37742, 47953, 24037]"
+value terciles partition all purchasers,True,"Low/Mid/High = [35768, 54887, 19077]"
+cross-tab margins equal the population,True,"109,732 == 109,732"
+cross-tab row margins equal the RFM tercile counts,True,every row sums to its tercile size
+cross-tab column margins equal the cluster counts,True,every column sums to its segment size
+cell A1 equals the sum of its cross-tab cells,True,"5,287 == 5,287"
+cell B1 equals its cross-tab cell,True,"10,982 == 10,982"
+A2 is a strict subset of A3,True,"A2 610 subset of A3 2,883"
+B3 is a strict subset of B2,True,"B3 7,741 subset of B2 17,395"
+bot list reproduces the certified exclusion exactly,True,"1,605 == 1,605"
+bulk-buyer count matches the handoff,True,143 == 143
+RFM recency reproduces 03's recency_at_data_end_days,True,max deviation 0.00e+00 days
+churn flag share reproduces 03's churned_at_data_end,True,"72,375 users"
+recency cut at 42.2d IS the churn flag (no independent derivation),True,0 disagreements between R >= 42.2d and churned_at_data_end
+"order identity: n_orders - n_purchasers == excess orders (01 committed 48,667)",True,"158,399 - 109,732 = 48,667"
+one-order-share reconciles against a pure-SQL count,True,"SQL 85,001 == pandas 85,001 (77.46% of purchasers)"
+total monetary value reconciles against a pure-SQL sum,True,"SQL 6,292,822.05 vs RFM M-sum 6,292,822.05"
+every cluster holds >= 5% of the profiled base (no sliver clusters),True,min 13.91%
+"silhouette never reaches 0.25 anywhere in the k sweep (weak structure, reported)",True,max 0.2068 at k=3
+stability: structure holds while membership does not,True,refit ARI 0.891 vs membership kappa 0.309
+equal-length window control does not rescue membership stability,True,kappa 0.309 (92d vs 60d) -> 0.296 (61d vs 60d)
+transition matrix rows sum to 100%,True,all rows sum to 100
+Holm-adjusted p never below the raw p,True,Holm correction is monotone and non-decreasing
+basket-value separation is weaker than fitted-feature separation,True,"eta^2 0.0416 (basket, external) < 0.4593 (session depth, fitted)"
+"recall correction is applied, not assumed",True,every cell scaled by 1/0.5309
+feature frame is in canonical user_id order (determinism guard 2),True,"every feature window sorted by user_id, so k-means++ seeding is reproducible"
+feature matrix is reproducible after round_sig (determinism guard 1),True,"4 features unstable raw (max |diff| 8.0e-15), 0 after rounding"
+k-means is reproducible on the rounded matrix,True,refitting k=4 on the same Z reproduces every label exactly
+"no Low-RFM user was acquired within 30 days (structural, as claimed in 4A)",True,"0 users -- Low RFM requires lapsed recency, which a 30-day-old customer cannot have"

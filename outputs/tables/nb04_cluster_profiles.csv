@@ -1,0 +1,5 @@
+cluster_name,n_users,sess_per_wk,session_depth,view_to_cart,abandon_rate,price_pctile,price_range,brand_H,category_H,n_sessions,n_views,intersession_gap_d,orders_med,repeat_pct,basket_med_eur,M_med_eur,recency_med_d,churn_flag_pct,n_bulk,pct_of_profiled,churn_like
+Broad Deliberators,43380,2.0,13.0,0.889,0.533,0.507,0.646,2.261,2.9,8.0,31.0,4.977,1.0,35.834,34.1,44.48,64.126,62.284,81,41.74,False
+Frequent Skimmers,14455,8.0,3.167,0.5,0.368,0.492,0.592,2.105,2.659,20.0,32.0,0.711,1.0,27.043,26.69,35.26,68.078,64.068,10,13.91,False
+Cart Loaders,20048,1.0,16.667,2.8,0.25,0.413,0.224,0.918,1.0,2.0,4.0,3.46,1.0,13.642,25.475,28.435,74.637,68.361,50,19.29,True
+Single-Mission Buyers,26036,1.667,5.0,1.0,0.0,0.786,0.104,0.592,0.811,3.0,5.0,2.25,1.0,8.665,19.96,21.27,74.541,70.111,0,25.05,True

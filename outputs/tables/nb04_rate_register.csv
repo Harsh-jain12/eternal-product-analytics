@@ -1,0 +1,10 @@
+rate,denominator,eligibility,n
+RFM tercile shares,"all 109,732 bot-excluded purchasers",>=1 reconstructed order in the observation window; snapshot 2020-02-29,"109,732"
+repeat-purchase rate (per segment and overall),users in that segment,"same; repeat = F >= 2 at the snapshot, censored -- a user acquired in Feb has had little time to repeat","109,732"
+cluster shares / cluster profiles,"the 103,919 purchasers with all 8 features defined",">=1 view event AND >=1 cart event; the other 5,813 carry 'No Behavioural Profile'","103,919"
+silhouette,"10,000-user random samples of the eligible set","10 independent draws, seed 42; reported as mean +/- 95% CI","10,000 x 10"
+cluster proportion drift (3A),eligible users WITHIN each period,period-scoped features; a user counts in a period only if eligible there,"Oct-Dec 72,262 / Jan-Feb 53,069"
+membership persistence / kappa (3B),users eligible in BOTH periods,"strictly the overlap -- users active in only one period cannot transition, and this biases the estimate toward the more engaged","21,640"
+churn-flagged % per cell,users in that cell,churned_at_data_end = recency >= 42.2d at the snapshot; UNVALIDATED by construction (no data after DATA_END),cell-specific
+implied true at-risk per cell,that cell's flagged count divided by recall 0.5309,recall measured on 03's panel at F*=2020-01-04 and ASSUMED to transfer to the 2020-02-29 snapshot -- first-order correction only,cell-specific
+Kruskal-Wallis / Dunn effect sizes,the 4 behavioural segments over the eligible set,No Behavioural Profile excluded (undefined features); Holm correction over 6 pairs,"103,919"

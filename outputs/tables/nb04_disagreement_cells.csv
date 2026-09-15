@@ -1,0 +1,7 @@
+cell,n_users,pct_of_purchasers,R_median_d,F_median,M_median_eur,one_order_pct,tenure_median_d,churn_flagged,churn_flagged_pct,note
+A1  High RFM x churn-like behaviour,5287,4.82,25.6,2.0,75.4,39.5,39.2,1138,21.5,"briefed cell: looks healthy on RFM, behaves like a non-returner"
+A2  High VALUE x worst recency x churn-like behaviour,610,0.56,113.5,2.0,92.34,0.0,130.6,610,100.0,"the sharpest 08 target: proven spend, lapsed, and behaving like a one-off"
+A3  High VALUE x worst recency (any behaviour),2883,2.63,110.7,2.0,95.5,0.0,132.7,2883,100.0,"the classic high-value-at-risk cell, behaviour ignored"
+B1  Low RFM x most-engaged behaviour,10982,10.01,109.1,1.0,18.1,99.5,109.2,10909,99.3,engaged browsers written off by RFM as dead
+B2  Low/Mid VALUE x acquired within 30d,17395,15.85,15.3,1.0,24.6,96.9,15.5,0,0.0,"low value only because they are new -- censored, not low-value"
+B3  Low/Mid VALUE x acquired within 30d x engaged behaviour,7741,7.05,15.4,1.0,30.48,95.6,15.7,0,0.0,new AND behaving like the high-repeat segments: the best activation odds

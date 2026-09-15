@@ -1,0 +1,5 @@
+from,-> jf_cluster_0,-> jf_cluster_1,-> jf_cluster_2,-> jf_cluster_3
+od_cluster_0,54.2,6.7,27.1,12.0
+od_cluster_1,5.4,38.0,39.9,16.7
+od_cluster_2,7.8,14.8,66.0,11.3
+od_cluster_3,10.9,16.6,34.8,37.6

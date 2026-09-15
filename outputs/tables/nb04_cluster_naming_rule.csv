@@ -1,0 +1,5 @@
+segment,rule,cluster_id,value
+Frequent Skimmers,idxmax(sessions_per_active_week) among unclaimed,3,1.797
+Cart Loaders,idxmax(view_to_cart) among unclaimed,2,1.131
+Single-Mission Buyers,idxmin(category_entropy) among unclaimed,0,-0.919
+Broad Deliberators,remainder,1,

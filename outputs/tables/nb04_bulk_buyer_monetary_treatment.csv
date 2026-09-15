@@ -1,0 +1,3 @@
+metric,all_users_mean,ex_bulk_mean,HEADLINE_median,ex_bulk_median,mean_shift_from_bulk
+M: total order value per user,57.35,56.59,33.1,33.02,0.76
+median basket value per user,37.43,37.01,26.9,26.84,0.42

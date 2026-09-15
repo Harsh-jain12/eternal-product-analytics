@@ -1,0 +1,9 @@
+feature,sessions_per_active_week,mean_session_depth,view_to_cart,cart_abandonment_rate,mean_price_pct_viewed,price_range_viewed,brand_entropy,category_entropy
+sessions_per_active_week,1.0,-0.408,-0.262,0.253,-0.112,0.305,0.351,0.383
+mean_session_depth,-0.408,1.0,0.364,0.263,-0.264,0.147,0.167,0.176
+view_to_cart,-0.262,0.364,1.0,0.091,-0.062,-0.17,-0.257,-0.24
+cart_abandonment_rate,0.253,0.263,0.091,1.0,-0.162,0.389,0.454,0.503
+mean_price_pct_viewed,-0.112,-0.264,-0.062,-0.162,1.0,-0.227,-0.221,-0.246
+price_range_viewed,0.305,0.147,-0.17,0.389,-0.227,1.0,0.7,0.739
+brand_entropy,0.351,0.167,-0.257,0.454,-0.221,0.7,1.0,0.828
+category_entropy,0.383,0.176,-0.24,0.503,-0.246,0.739,0.828,1.0

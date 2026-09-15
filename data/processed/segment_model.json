@@ -1,0 +1,111 @@
+{
+  "fitted_by": "04_segmentation.ipynb",
+  "seed": 42,
+  "k": 4,
+  "features": [
+    "sessions_per_active_week",
+    "mean_session_depth",
+    "view_to_cart",
+    "cart_abandonment_rate",
+    "mean_price_pct_viewed",
+    "price_range_viewed",
+    "brand_entropy",
+    "category_entropy"
+  ],
+  "log1p_features": [
+    "sessions_per_active_week",
+    "mean_session_depth",
+    "view_to_cart"
+  ],
+  "clip_lo": {
+    "sessions_per_active_week": 0.1541509655415032,
+    "mean_session_depth": 0.8472964318147546,
+    "view_to_cart": 0.08004267690430518,
+    "cart_abandonment_rate": 0.0,
+    "mean_price_pct_viewed": 0.053027992,
+    "price_range_viewed": 0.0,
+    "brand_entropy": -0.0,
+    "category_entropy": -0.0
+  },
+  "clip_hi": {
+    "sessions_per_active_week": 3.515339159003195,
+    "mean_session_depth": 5.201329413059708,
+    "view_to_cart": 3.091042453358316,
+    "cart_abandonment_rate": 0.96875,
+    "mean_price_pct_viewed": 0.99424997,
+    "price_range_viewed": 0.9563205100000001,
+    "brand_entropy": 3.621324800000001,
+    "category_entropy": 5.188595400000003
+  },
+  "scaler_mean": {
+    "sessions_per_active_week": 1.2303535817415416,
+    "mean_session_depth": 2.3678051794285064,
+    "view_to_cart": 0.8045826535602274,
+    "cart_abandonment_rate": 0.3534590090157719,
+    "mean_price_pct_viewed": 0.5528014408649043,
+    "price_range_viewed": 0.4362988268403565,
+    "brand_entropy": 1.5440037602055448,
+    "category_entropy": 1.9998038678210914
+  },
+  "scaler_scale": {
+    "sessions_per_active_week": 0.577375378694738,
+    "mean_session_depth": 0.8423410047862808,
+    "view_to_cart": 0.5477889059889488,
+    "cart_abandonment_rate": 0.2918306128497917,
+    "mean_price_pct_viewed": 0.2054270907694217,
+    "price_range_viewed": 0.28154841679502757,
+    "brand_entropy": 1.0004675971494685,
+    "category_entropy": 1.328259346875609
+  },
+  "centroids": {
+    "Single-Mission Buyers": [
+      -0.34394914364165685,
+      -0.6527047027079911,
+      -0.2570919681720515,
+      -0.7637152387396268,
+      0.9813442230330611,
+      -0.9368218709683258,
+      -0.91180230312539,
+      -0.9194144373985562
+    ],
+    "Broad Deliberators": [
+      -0.1468374013537469,
+      0.427540186009051,
+      -0.16182662613843307,
+      0.5337502179108459,
+      -0.2081829068983901,
+      0.7006899862191249,
+      0.711795237458354,
+      0.7166461967973673
+    ],
+    "Cart Loaders": [
+      -0.5347643086412357,
+      0.6595199288171224,
+      1.1310826933051847,
+      -0.2149309018461571,
+      -0.6217562669627174,
+      -0.6541112435042733,
+      -0.7372597084372942,
+      -0.746899699894069
+    ],
+    "Frequent Skimmers": [
+      1.797439847567044,
+      -1.0201480040435902,
+      -0.620290385216582,
+      0.07224858988502968,
+      -0.2785968532875124,
+      0.4917782681449563,
+      0.5287528638722944,
+      0.5412579268143447
+    ]
+  },
+  "cluster_names": {
+    "0": "Single-Mission Buyers",
+    "1": "Broad Deliberators",
+    "2": "Cart Loaders",
+    "3": "Frequent Skimmers"
+  },
+  "apply_order": "select FEATS -> log1p(log1p_features) -> clip to [clip_lo, clip_hi] -> (x - scaler_mean)/scaler_scale -> nearest centroid in Euclidean distance",
+  "eligibility": ">=1 view event AND >=1 cart event in the scoring window; otherwise 'No Behavioural Profile'",
+  "warning_for_05": "These labels are computed on FULL history to 2020-02-29 and are NOT leakage-safe as predictor features for a post-snapshot outcome. Re-score on a pre-outcome window with this transform instead of joining cluster_name from segment_assignments.parquet."
+}
