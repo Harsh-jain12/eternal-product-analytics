@@ -1,0 +1,7 @@
+outcome,estimator,ate_pp,lo_pp,hi_pp,shift_vs_unadj_pp,pct_shift
+visit,unadjusted difference in means,1.03424,1.00556,1.06292,0.0,0.0
+visit,ANCOVA (additive covariates),0.69822,0.67346,0.72297,-0.33602,-32.48991
+visit,Lin interacted (T x centred X),0.77338,0.74765,0.79911,-0.26086,-25.22239
+conversion,unadjusted difference in means,0.11519,0.10845,0.12192,0.0,0.0
+conversion,ANCOVA (additive covariates),0.09162,0.08529,0.09794,-0.02357,-20.46266
+conversion,Lin interacted (T x centred X),0.10017,0.09351,0.10683,-0.01502,-13.04091

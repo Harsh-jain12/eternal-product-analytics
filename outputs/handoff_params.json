@@ -1271,5 +1271,519 @@
       "The operating threshold depends on an ASSUMED cost ratio, not on anything in the data. 09 must carry R explicitly and show the sweep, exactly as 03 refused to certify a threshold on economics.",
       "The shipped probabilities have a degenerate lower tail (0.41% of test users below p = 0.001) from heavy-tailed feature leverage -- see modelling.known_defect_leverage. Use deciles, not absolute levels, at the bottom of the score."
     ]
+  },
+  "criteo_experiment": {
+    "generated_by": "07_criteo_experiment.ipynb",
+    "why_it_exists": "REES46 has no randomised experiment (principle 10), so the distinction between RISK-targeting and UPLIFT-targeting cannot be demonstrated there. Criteo is the genuine randomised test (principle 11). This notebook proves the distinction on real randomised data and carries the structural result -- not the magnitudes -- back to 08.",
+    "data": {
+      "rows": 13979592,
+      "sha256_verified": true,
+      "row_order_fingerprint": "933f245ac9e3e1d4",
+      "split": "random 50/50, seed 42",
+      "split_fingerprint": "3f1f73c3ccba86b1",
+      "n_train": 6989796,
+      "n_test": 6989796,
+      "why_not_chronological": "Criteo has no timestamp and one row per randomised user. Principle 6's chronological rule exists to stop the future leaking into the past in a REES46 event panel; there is no time axis here for it to apply to."
+    },
+    "validity": {
+      "srm": {
+        "chi2": 1.817775848947767e-06,
+        "p": 0.9989242531217909,
+        "binomial_p": 0.9994023626951405,
+        "observed_ratio": 0.8500001287591226,
+        "deviation_users": 1.800000000745058,
+        "verdict": "PASSES, and the pass is weak evidence. The deviation from 85.000% is 1.8 users against a Bernoulli SD of 1,336 -- the split is deterministic, not sampled, so SRM here checks only that the file was not subset after randomisation."
+      },
+      "balance": {
+        "max_abs_smd": 0.04883634026324019,
+        "max_smd_feature": "f3",
+        "all_below_0_10": true,
+        "randomisation_noise_sd": 0.000749027586326405,
+        "sd_units_range": [
+          6.8883016770170755,
+          65.19965506578644
+        ],
+        "propensity_model_test_auc": 0.5105162117096129,
+        "verdict": "PASSES the conventional rule and FAILS the honest one. All 12 |SMD| < 0.05, but they sit 7-65 SDs above the 0.00075 an 85/15 draw at n=14M would produce, and a GBM separates the arms at ROC 0.5105. The published v2.1 extract carries a covariate signature."
+      },
+      "outcome_rates_reproduce_spec": true,
+      "exposure_is_one_sided": true
+    },
+    "ate_itt": {
+      "visit": {
+        "rate_T": 0.048543360048743316,
+        "rate_C": 0.03820095691954503,
+        "abs_lift_pp": 1.0342403129198283,
+        "abs_ci_pp": [
+          1.0055628213713732,
+          1.0629178044682837
+        ],
+        "rel_lift_pct": 27.073675539019604,
+        "rel_ci_pct": [
+          26.156617437512963,
+          27.99739992231647
+        ]
+      },
+      "conversion": {
+        "rate_T": 0.0030894610674129645,
+        "rate_C": 0.0019375880152813366,
+        "abs_lift_pp": 0.11518730521316278,
+        "abs_ci_pp": [
+          0.10845057902364738,
+          0.12192403140267818
+        ],
+        "rel_lift_pct": 59.44881177252619,
+        "rel_ci_pct": [
+          54.36975782271105,
+          64.69497610321501
+        ]
+      }
+    },
+    "ate_adjusted_sensitivity": {
+      "estimators": {
+        "visit | unadjusted difference in means": 1.0342403129198283,
+        "visit | ANCOVA (additive covariates)": 0.6982165750591085,
+        "visit | Lin interacted (T x centred X)": 0.7733801744116585,
+        "conversion | unadjusted difference in means": 0.11518730521316278,
+        "conversion | ANCOVA (additive covariates)": 0.09161691926033612,
+        "conversion | Lin interacted (T x centred X)": 0.10016583675442721
+      },
+      "propensity_stratified": {
+        "visit": 0.82053663256224,
+        "conversion": 0.09954178443659518
+      },
+      "finding": "Covariate adjustment MOVES the point estimate by 13-32% depending on outcome and estimator, always downward, and all three functional forms agree. In a clean randomisation Lin adjustment is variance reduction and should not move the estimate. Reported ITTs stay unadjusted -- that is the pre-specified estimand -- but every Criteo magnitude in this project carries an extra +/-~25% bias band.",
+      "does_it_threaten_S7": "No. The policy contrast is 97.4% vs 1.0% of the available effect, and both policies are scored on the same T-vs-C contrast, so the bias is shared. A 25% bias cannot manufacture a 90x gap."
+    },
+    "itt_vs_tot": {
+      "compliance_rate": 0.036036727482199896,
+      "control_exposure_rate": 0.0,
+      "estimates": {
+        "visit": {
+          "ITT_pp": 1.0342403129198283,
+          "TOT_pp": 28.699618005843746,
+          "TOT_ci_pp": [
+            27.903818261598364,
+            29.495417750089132
+          ],
+          "naive_exposed_vs_control_pp": 37.633670199706636,
+          "naive_over_TOT": 1.3112951605155079
+        },
+        "conversion": {
+          "ITT_pp": 0.11518730521316278,
+          "TOT_pp": 3.1963863885825594,
+          "TOT_ci_pp": [
+            3.0094423886302244,
+            3.383330388534895
+          ],
+          "naive_exposed_vs_control_pp": 5.184651892240374,
+          "naive_over_TOT": 1.6220354055942254
+        }
+      },
+      "the_error": "Exposure is realised AFTER randomisation and depends on user activity, so conditioning on it compares a self-selected slice of the treated arm to the whole control arm. It inflates the complier effect by 62% on conversion and 31% on visit. Structurally identical to the Cookie Cats gate problem.",
+      "binding_on_08": "08 must pre-specify ITT by ASSIGNMENT as its primary estimand. An 'among users who opened the email' analysis is this same error and will report mostly self-selection."
+    },
+    "uplift": {
+      "learners": "T-learner, X-learner and transformed-outcome, all implemented directly on LightGBM. econml/causalml are not installed and installing either would have downgraded numpy under the already-committed notebooks.",
+      "x_learner_g": "held at the DESIGN propensity 0.85, not a fitted e_hat(x). A fitted score is not a design propensity here, it is S2B's imbalance, and using it as a CATE weight imports that artefact as signal. S6A measures both; the design constant is also the more conservative choice.",
+      "x_learner_g_diagnostic": {
+        "conversion": {
+          "design_constant": 0.4562464464930426,
+          "fitted_e_hat": 0.6336368290095213
+        },
+        "visit": {
+          "design_constant": 0.6554991766571298,
+          "fitted_e_hat": 0.7377231960589059
+        }
+      },
+      "response_model_auc": {
+        "conversion": {
+          "mu1": 0.9590292988337565,
+          "mu0": 0.9586470840559252
+        },
+        "visit": {
+          "mu1": 0.9465086874950245,
+          "mu0": 0.947474712692849
+        }
+      },
+      "qini": {
+        "conversion | T-learner": {
+          "qini_ratio": 0.5933068609248855,
+          "ci": [
+            0.5263632750362591,
+            0.6639194037695271
+          ],
+          "auuc_ratio": 0.5867564500185773
+        },
+        "conversion | X-learner": {
+          "qini_ratio": 0.4562464464930426,
+          "ci": [
+            0.38454994376064777,
+            0.5228961430629586
+          ],
+          "auuc_ratio": 0.443848590076815
+        },
+        "conversion | transformed-outcome": {
+          "qini_ratio": 0.22065085080704178,
+          "ci": [
+            0.1229714984403031,
+            0.3080909907209705
+          ],
+          "auuc_ratio": 0.21844477672014329
+        },
+        "conversion | mu0 baseline response": {
+          "qini_ratio": 0.8213770992939252,
+          "ci": [
+            0.8000365960788149,
+            0.8420756239461749
+          ],
+          "auuc_ratio": 0.8158528145653722
+        },
+        "conversion | mu0 REVERSED = 'at risk'": {
+          "qini_ratio": -0.9006151249267453,
+          "ci": [
+            -0.9187973429900791,
+            -0.8828127193091513
+          ],
+          "auuc_ratio": -0.9005269865141996
+        },
+        "conversion | random ranking": {
+          "qini_ratio": 0.021115907555147778,
+          "ci": [
+            -0.02807873792034272,
+            0.07156907167655088
+          ],
+          "auuc_ratio": 0.0210957731969497
+        },
+        "conversion | X-learner, fitted e_hat (diagnostic)": {
+          "qini_ratio": 0.6336368290095213,
+          "ci": [
+            0.5769330961642458,
+            0.6936623181204644
+          ],
+          "auuc_ratio": 0.627525724749629
+        },
+        "visit | T-learner": {
+          "qini_ratio": 0.7271915954221864,
+          "ci": [
+            0.6952249530891867,
+            0.7588433237931864
+          ],
+          "auuc_ratio": 0.7199372124355364
+        },
+        "visit | X-learner": {
+          "qini_ratio": 0.6554991766571298,
+          "ci": [
+            0.6269396322016121,
+            0.684573870545379
+          ],
+          "auuc_ratio": 0.6460618239561796
+        },
+        "visit | transformed-outcome": {
+          "qini_ratio": 0.41341050086624287,
+          "ci": [
+            0.3827688021831096,
+            0.443819059957287
+          ],
+          "auuc_ratio": 0.40412132038949855
+        },
+        "visit | mu0 baseline response": {
+          "qini_ratio": 0.6916889665303044,
+          "ci": [
+            0.6783442590747264,
+            0.7056950726750325
+          ],
+          "auuc_ratio": 0.6879057236434595
+        },
+        "visit | mu0 REVERSED = 'at risk'": {
+          "qini_ratio": -0.822008838444112,
+          "ci": [
+            -0.8299280758767217,
+            -0.8133132484085748
+          ],
+          "auuc_ratio": -0.8218599773350457
+        },
+        "visit | random ranking": {
+          "qini_ratio": 0.014988507678001757,
+          "ci": [
+            -0.007638291893464159,
+            0.03695314512849637
+          ],
+          "auuc_ratio": 0.015153212652780391
+        },
+        "visit | X-learner, fitted e_hat (diagnostic)": {
+          "qini_ratio": 0.7377231960589059,
+          "ci": [
+            0.7102163505274396,
+            0.7694324283265529
+          ],
+          "auuc_ratio": 0.7307579678693865
+        }
+      },
+      "paired_deltas": [
+        {
+          "outcome": "conversion",
+          "a": "T-learner",
+          "b": "mu0 baseline response",
+          "delta": -0.2280693700389601,
+          "ci": [
+            -0.29813769652057226,
+            -0.15895393685574513
+          ],
+          "excludes_zero": true
+        },
+        {
+          "outcome": "conversion",
+          "a": "X-learner",
+          "b": "T-learner",
+          "delta": -0.13706057190080095,
+          "ci": [
+            -0.21114846846588026,
+            -0.06368834562277785
+          ],
+          "excludes_zero": true
+        },
+        {
+          "outcome": "visit",
+          "a": "T-learner",
+          "b": "mu0 baseline response",
+          "delta": 0.03550321292777692,
+          "ci": [
+            0.0022316240800116156,
+            0.06857372420071578
+          ],
+          "excludes_zero": true
+        },
+        {
+          "outcome": "visit",
+          "a": "X-learner",
+          "b": "T-learner",
+          "delta": -0.07169527705243384,
+          "ci": [
+            -0.09673970198471064,
+            -0.04592338880334411
+          ],
+          "excludes_zero": true
+        }
+      ],
+      "sleeping_dogs": {
+        "groups_with_ci_below_zero": 0,
+        "searched": "2 outcomes x 3 rankings x {10, 20} groups",
+        "verdict": "NONE FOUND, at 5% resolution. This does not establish that no harmed users exist -- only that no group of >=5% of the population, along a direction one of these models ranks, is measurably harmed."
+      },
+      "why_uplift_lost_on_conversion": {
+        "learning_curve": [
+          {
+            "train_fraction": 0.03125,
+            "n_train": 218217,
+            "n_visits_train": 10176,
+            "T-learner": 0.39279618854918535,
+            "X-learner": 0.4762001715475182,
+            "mu0 baseline response": 0.6870888343616837
+          },
+          {
+            "train_fraction": 0.125,
+            "n_train": 873335,
+            "n_visits_train": 40901,
+            "T-learner": 0.5621070513718682,
+            "X-learner": 0.5004265453877829,
+            "mu0 baseline response": 0.6920399942356396
+          },
+          {
+            "train_fraction": 0.5,
+            "n_train": 3496571,
+            "n_visits_train": 164316,
+            "T-learner": 0.6808585146811765,
+            "X-learner": 0.5286638213379432,
+            "mu0 baseline response": 0.6921220996677463
+          },
+          {
+            "train_fraction": 1.0,
+            "n_train": 6989796,
+            "n_visits_train": 328910,
+            "T-learner": 0.7271915954221864,
+            "X-learner": 0.6554991766571298,
+            "mu0 baseline response": 0.6916889665303044
+          }
+        ],
+        "train_conversions": 20363,
+        "verdict": "A POWER result, not a verdict on uplift modelling. On `visit` the baseline-response ranking is flat at ~0.69 Qini from 10k events upward while the uplift learners climb monotonically and only overtake it at 329k events. Conversion offers 20k. The uplift models land exactly where the visit curve predicts."
+      }
+    },
+    "policy_comparison": {
+      "outcome": "conversion",
+      "evaluated_on": "held-out half, 6,989,796 users, no model fitted on it; incremental = |S| x (mean_T - mean_C) measured INSIDE each targeted set",
+      "policies": [
+        {
+          "policy": "a) treat everyone",
+          "n_targeted": 6989796,
+          "budget_pct": 100.0,
+          "incremental": 7742.83187802284,
+          "ci": [
+            7082.196538188399,
+            8380.117310328716
+          ],
+          "pct_of_total_effect": 100.0,
+          "inc_per_1000_targeted": 1.1077335988092987
+        },
+        {
+          "policy": "b1) top 50% by RESPONSE propensity",
+          "n_targeted": 3494898,
+          "budget_pct": 50.0,
+          "incremental": 7540.4559014277,
+          "ci": [
+            6882.990301552184,
+            8161.0107360599695
+          ],
+          "pct_of_total_effect": 97.38627959662197,
+          "inc_per_1000_targeted": 2.1575610794442928
+        },
+        {
+          "policy": "b2) bottom 50% by propensity = HIGHEST RISK",
+          "n_targeted": 3494898,
+          "budget_pct": 50.0,
+          "incremental": 81.23936176740784,
+          "ci": [
+            7.448627738678102,
+            153.79774592922797
+          ],
+          "pct_of_total_effect": 1.049220272985607,
+          "inc_per_1000_targeted": 0.023245130978760423
+        },
+        {
+          "policy": "c) top 50% by predicted UPLIFT (T-learner)",
+          "n_targeted": 3494898,
+          "budget_pct": 50.0,
+          "incremental": 6490.135572325084,
+          "ci": [
+            5911.1386757959735,
+            7051.057530370511
+          ],
+          "pct_of_total_effect": 83.82121263341136,
+          "inc_per_1000_targeted": 1.8570314705393642
+        },
+        {
+          "policy": "c') top 50% by predicted UPLIFT (X-learner)",
+          "n_targeted": 3494898,
+          "budget_pct": 50.0,
+          "incremental": 7312.112634020261,
+          "ci": [
+            6719.15055845586,
+            7898.207585754876
+          ],
+          "pct_of_total_effect": 94.43718718437982,
+          "inc_per_1000_targeted": 2.0922249044236088
+        },
+        {
+          "policy": "d) random 50% (budget floor)",
+          "n_targeted": 3496571,
+          "budget_pct": 50.023934890231416,
+          "incremental": 3854.327350312392,
+          "ci": [
+            3383.512109737526,
+            4321.706567046424
+          ],
+          "pct_of_total_effect": 49.77929794979105,
+          "inc_per_1000_targeted": 1.1023163408700674
+        }
+      ],
+      "contrasts": [
+        {
+          "contrast": "b1 propensity-50%   minus  d random-50%",
+          "point": 3686.1285511153083,
+          "ci": [
+            3209.441251789238,
+            4166.349805521072
+          ],
+          "excludes_zero": true
+        },
+        {
+          "contrast": "c  uplift-50% (T)   minus  d random-50%",
+          "point": 2635.8082220126917,
+          "ci": [
+            2161.500382044626,
+            3104.3506194085758
+          ],
+          "excludes_zero": true
+        },
+        {
+          "contrast": "c' uplift-50% (X)   minus  d random-50%",
+          "point": 3457.785283707869,
+          "ci": [
+            2992.283497628879,
+            3917.016944384721
+          ],
+          "excludes_zero": true
+        },
+        {
+          "contrast": "b2 RISK-50%         minus  d random-50%",
+          "point": -3773.087988544984,
+          "ci": [
+            -4241.510776078595,
+            -3298.7068993448247
+          ],
+          "excludes_zero": true
+        },
+        {
+          "contrast": "b1 propensity-50%   minus  c uplift-50% (T)",
+          "point": 1050.3203291026166,
+          "ci": [
+            742.7422124553784,
+            1351.9408316561248
+          ],
+          "excludes_zero": true
+        },
+        {
+          "contrast": "b1 propensity-50%   minus  b2 RISK-50%",
+          "point": 7459.216539660292,
+          "ci": [
+            6785.0866305150885,
+            8095.434536091876
+          ],
+          "excludes_zero": true
+        },
+        {
+          "contrast": "b1 propensity-50%   minus  a treat-everyone (at HALF the cost)",
+          "point": -202.37597659513995,
+          "ci": [
+            -283.88402195096944,
+            -123.43908258616776
+          ],
+          "excludes_zero": true
+        }
+      ],
+      "selection_overlap": {
+        "b1 propensity vs c  uplift (T)": 66.26390813122443,
+        "b1 propensity vs c' uplift (X)": 87.5439569337932,
+        "b2 RISK       vs c  uplift (T)": 33.73609186877557,
+        "c  uplift (T) vs c' uplift (X)": 69.8289621041873
+      },
+      "headline": "Uplift targeting captured 83.8% of the total effect at 50% of the cost and response-propensity targeting captured 97.4%. RISK targeting -- the bottom 50% of baseline propensity, which is what pointing 06's model at its churn tail means -- captured 1.0%, against random-50%'s 49.8%.",
+      "the_expected_result_that_did_not_hold": "The brief expected uplift targeting to beat propensity targeting and risk targeting to perform close to random. Uplift did beat random decisively; it did NOT beat propensity on conversion (see uplift.why_uplift_lost_on_conversion). Risk targeting did not perform close to random -- it performed far worse."
+    },
+    "carry_back_to_rees46": {
+      "what_transfers": [
+        "Risk targeting and uplift targeting select different people -- 33.7% overlap at a 50% budget here.",
+        "The DIRECTION of the propensity/uplift relationship decides whether a campaign earns its budget, and observational data cannot reveal it.",
+        "Conditioning on a post-randomisation variable (exposure, email-open) inflates the estimate; ITT by assignment is the estimand."
+      ],
+      "what_does_not_transfer": [
+        "Every effect size. Criteo is display advertising over a multi-day window; REES46 is cosmetics repeat purchase over 30 days.",
+        "The SIGN of the heterogeneity. Here uplift RISES with baseline propensity. The retention intuition is the opposite. Both are coherent and only an experiment settles it for REES46."
+      ],
+      "joins_03": "03's cost sweep is degenerate because return probability never exceeds ~27%, so for R >= 0.47 the cost-minimising rule flags everyone. 03: a risk threshold cannot be PRICED from observational data. 07: a risk ranking would be the wrong INPUT to that price even if you had one. Same wall, two sides.",
+      "binding_rules_for_08": [
+        "08 IS A DESIGN, NOT A TARGETING RULE. Do not select the treatment group with 06's scores. Use the score for stratification and pre-specified subgroups only.",
+        "Pre-specify ITT by randomised assignment as the primary estimand. Open-conditional or click-conditional analysis is the exposure error of S4 and is exploratory at best.",
+        "Power on EVENT count, not user count. S6E: the response ranking stabilised by ~10k events; the uplift learners needed ~330k to overtake it.",
+        "Expect to measure an ATE, not a CATE. With 91,334 eligible users at a 13.7% base rate, a REES46 test will not support a reliable uplift model. Say so in the design rather than promising heterogeneity analysis it cannot deliver.",
+        "Sleeping dogs were not found here at 5% resolution and that is not a licence to assume none exist in a retention context, where an unwanted email is a plausible way to lose a customer. 08 should power a pre-specified check for negative effects."
+      ]
+    },
+    "honesty_constraints_observed": [
+      "Criteo is advertising, not cosmetics. Mechanism transfers; magnitudes do not. Stated in S0, S8 and on the carry-back figure.",
+      "No user id, no timestamp, one row per randomised user -- no retention, cadence or lifecycle analysis was attempted.",
+      "f0-f11 are randomly projected and uninterpretable, so uplift heterogeneity is MEASURED and never explained. No section speculates about why a segment responds."
+    ]
   }
 }

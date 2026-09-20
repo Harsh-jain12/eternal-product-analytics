@@ -1,0 +1,13 @@
+outcome,ranking,resolution,n_point_negative,n_CI_below_zero,groups_CI_below_zero
+conversion,T-learner,10 groups,0,0,[]
+conversion,T-learner,20 groups,1,0,[]
+conversion,X-learner,10 groups,1,0,[]
+conversion,X-learner,20 groups,3,0,[]
+conversion,mu0 baseline response,10 groups,0,0,[]
+conversion,mu0 baseline response,20 groups,3,0,[]
+visit,T-learner,10 groups,0,0,[]
+visit,T-learner,20 groups,0,0,[]
+visit,X-learner,10 groups,0,0,[]
+visit,X-learner,20 groups,2,0,[]
+visit,mu0 baseline response,10 groups,0,0,[]
+visit,mu0 baseline response,20 groups,0,0,[]

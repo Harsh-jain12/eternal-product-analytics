@@ -1,0 +1,35 @@
+check,passed,detail
+"SRM and balance were computed BEFORE any treatment effect (wall clock, not assertion)",True,"last validity check t=1789931683.181 < first effect estimate t=1789931683.229 (visit), margin 0.0s"
+"the validity gate is live, not decorative: require_validity() raises when a flag is unset",True,"srm flag temporarily unset, require_validity() raised RuntimeError, flag restored"
+no model was fitted on anything but the train frame,True,"23 fits logged, every one guarded on `Xsrc is Xtr`"
+"the fit guard actually refuses the test frame (demonstrated, not asserted)",True,"fit_guard(Xte, ...) raised RuntimeError as designed"
+train and test index sets are disjoint and exhaust the file,True,"6,989,796 + 6,989,796 = 13,979,592, intersection empty"
+every fit consumed at most the train half's rows,True,"largest fit 6,989,796 rows vs train 6,989,796"
+the policy comparison is scored on held-out rows only,True,"6,989,796 rows scored, all from IDX_TE"
+row count matches the certified file,True,"13,979,592"
+sha256 and byte count match the certified file,True,both
+treated/control counts match the handoff,True,"T 11,882,655 / C 2,096,937"
+visit rate reproduces the verified spec to 6dp,True,0.046992 vs 0.046992
+conversion rate reproduces the verified spec to 6dp,True,0.002917 vs 0.002917
+exposure rate reproduces the verified spec to 6dp,True,0.030631 vs 0.030631
+derived ITT on visit reproduces the stored naive difference to 6dp,True,"0.010342 vs 0.010342 (derived independently, not copied)"
+derived ITT on conversion reproduces the stored naive difference to 6dp,True,"0.001152 vs 0.001152 (derived independently, not copied)"
+balance passes the conventional |SMD| < 0.10 rule on all 12 covariates,True,max 0.0488 on f3
+"RECORDED, NOT ASSERTED AWAY: those same SMDs exceed true randomisation noise",True,all 12 features sit 7-65 SDs above the 0.000749 an 85/15 draw produces; propensity ROC 0.5105
+"RECORDED: covariate adjustment moves the ATE, and all three estimators agree in direction",True,"ANCOVA, Lin and propensity-stratification all reduce both ATEs; visit 1.0342 -> 0.7734 pp"
+"exposure is one-sided, which is what licenses the Bloom/Wald TOT",True,zero control users exposed
+"TOT is derived from the ITT and compliance, never from an exposed-vs-control contrast",True,"TOT = ITT / 0.036037 exactly, for both outcomes"
+mean CATE reproduces the observed ITT on the test half (all three learners),True,"E[tau_hat] within 0.0003 of the measured test ITT for T, X and transformed-outcome"
+uplift models are never scored by accuracy anywhere in this notebook,True,"Qini and AUUC only; roc_auc_score is used solely for the response models and the propensity check, both of which ARE classifiers"
+"a random ranking scores ~0 on Qini, so the metric's zero point is where it should be",True,"conversion +0.0211, visit +0.0150"
+Qini and AUUC agree to within 0.02 on every ranking (no metric-choice artefact),True,max |Qini - AUUC| = 0.0124
+"REPORTED AS FOUND, NOT AS EXPECTED: uplift ranking LOSES to baseline response on conversion",True,"mu0 0.8214 vs T-learner 0.5933; paired dQini -0.2281 [-0.2981, -0.1590]"
+"and WINS on visit, where events are 16x more plentiful -- the power explanation",True,"paired dQini +0.0355 [+0.0022, +0.0686], and §6E traces the crossover"
+sleeping-dog search ran at two resolutions on three rankings and both outcomes,True,"12 searches, 0 groups with CI below zero"
+"all 50%-budget policies target the same number of users (matched budget, not approximately)",True,"3,494,898 users each; the random floor is 3,496,571 because it is a coin flip, not a top-k"
+"policy incrementals are measured, not modelled: each is |S| x (mean_T - mean_C) inside S",True,identity holds for all six policies
+"RISK targeting underperforms RANDOM targeting, with a paired CI excluding zero",True,"-3773 conversions [-4242, -3299] vs random-50%"
+risk and uplift targeting genuinely select different people,True,33.7% of selections shared
+"no retention, cadence or lifecycle quantity was computed on Criteo",True,the file has no user id and no timestamp; none was attempted
+"the carry-back uses 06's PERSISTED predictions, not a re-fit, so nothing about 06 moved here",True,"27,400 test rows at 11.6533% positive, both matching 06's handoff exactly"
+06's decile-1 lift re-derives from those predictions to 3dp,True,1.882 vs 06's 1.882

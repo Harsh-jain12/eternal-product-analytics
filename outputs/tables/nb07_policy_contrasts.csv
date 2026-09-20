@@ -1,0 +1,8 @@
+contrast,point,lo,hi,excludes_zero
+b1 propensity-50%   minus  d random-50%,3686.13,3209.44,4166.35,True
+c  uplift-50% (T)   minus  d random-50%,2635.81,2161.5,3104.35,True
+c' uplift-50% (X)   minus  d random-50%,3457.79,2992.28,3917.02,True
+b2 RISK-50%         minus  d random-50%,-3773.09,-4241.51,-3298.71,True
+b1 propensity-50%   minus  c uplift-50% (T),1050.32,742.74,1351.94,True
+b1 propensity-50%   minus  b2 RISK-50%,7459.22,6785.09,8095.43,True
+b1 propensity-50%   minus  a treat-everyone (at HALF the cost),-202.38,-283.88,-123.44,True

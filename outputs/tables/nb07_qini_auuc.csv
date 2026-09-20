@@ -1,0 +1,15 @@
+outcome,ranking,qini_ratio,qini_lo,qini_hi,auuc_ratio,qini_area,total_incremental
+conversion,T-learner,0.5933,0.5264,0.6639,0.5868,1952.311,6581.1173
+conversion,X-learner,0.4562,0.3845,0.5229,0.4438,1501.3057,6581.1173
+conversion,transformed-outcome,0.2207,0.123,0.3081,0.2184,726.0646,6581.1173
+conversion,mu0 baseline response,0.8214,0.8,0.8421,0.8159,2702.7895,6581.1173
+conversion,mu0 REVERSED = 'at risk',-0.9006,-0.9188,-0.8828,-0.9005,-2963.5269,6581.1173
+conversion,random ranking,0.0211,-0.0281,0.0716,0.0211,69.4831,6581.1173
+conversion,"X-learner, fitted e_hat (diagnostic)",0.6336,0.5769,0.6937,0.6275,2085.0192,6581.1173
+visit,T-learner,0.7272,0.6952,0.7588,0.7199,21924.5107,60299.1312
+visit,X-learner,0.6555,0.6269,0.6846,0.6461,19763.0154,60299.1312
+visit,transformed-outcome,0.4134,0.3828,0.4438,0.4041,12464.147,60299.1312
+visit,mu0 baseline response,0.6917,0.6783,0.7057,0.6879,20854.1219,60299.1312
+visit,mu0 REVERSED = 'at risk',-0.822,-0.8299,-0.8133,-0.8219,-24783.2094,60299.1312
+visit,random ranking,0.015,-0.0076,0.037,0.0152,451.897,60299.1312
+visit,"X-learner, fitted e_hat (diagnostic)",0.7377,0.7102,0.7694,0.7308,22242.0339,60299.1312

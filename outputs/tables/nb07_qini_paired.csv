@@ -1,0 +1,5 @@
+outcome,ranking_A,ranking_B,qini_A,qini_B,delta,lo,hi,p_delta_gt_0,excludes_zero
+conversion,T-learner,mu0 baseline response,0.5933,0.8214,-0.2281,-0.2981,-0.159,0.0,True
+conversion,X-learner,T-learner,0.4562,0.5933,-0.1371,-0.2111,-0.0637,0.0,True
+visit,T-learner,mu0 baseline response,0.7272,0.6917,0.0355,0.0022,0.0686,0.986,True
+visit,X-learner,T-learner,0.6555,0.7272,-0.0717,-0.0967,-0.0459,0.0,True

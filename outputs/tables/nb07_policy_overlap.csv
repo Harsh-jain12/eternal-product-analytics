@@ -1,0 +1,5 @@
+pair,shared_pct
+b1 propensity vs c  uplift (T),66.3
+b1 propensity vs c' uplift (X),87.5
+b2 RISK       vs c  uplift (T),33.7
+c  uplift (T) vs c' uplift (X),69.8
