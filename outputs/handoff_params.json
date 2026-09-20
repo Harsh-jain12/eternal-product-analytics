@@ -938,5 +938,338 @@
         "14B reports the univariate AUC ceiling over all 81 model-eligible features"
       ]
     }
+  },
+  "modelling": {
+    "generated_by": "06_modelling.ipynb",
+    "target": "repeat_purchase_30d",
+    "target_naming": "repeat_purchase_30d. NOT churn -- D30 cannot carry a churn label under the 42.2d rule.",
+    "population": {
+      "n_eligible": 91334,
+      "n_train": 63934,
+      "n_test": 27400,
+      "split_ts": "2019-12-18 06:04:25",
+      "validation_ts": "2019-11-29 23:07:59",
+      "positive_rate_pct": {
+        "overall": 13.7298,
+        "train": 14.6198,
+        "test": 11.6533
+      },
+      "base_rate_drift_pp": 2.9665,
+      "drift_note": "The base rate falls 17.2% (Oct cohort) -> 10.1% (Dec). A chronological split therefore trains at a higher base rate than it tests at. Ranking metrics are unaffected; level calibration is, and is corrected by a validation-fitted intercept shift, never on test labels."
+    },
+    "encoding_rules": {
+      "categoricals": "OOF target encoding (5-fold stratified, m=50, seed 42) fitted INSIDE the train fold",
+      "nulls": "sentinel 0 paired with one indicator per DISTINCT train missingness pattern; NOT imputation -- the indicator absorbs the sentinel rows so slopes are identified off observed rows",
+      "n_missingness_patterns": 11,
+      "collinearity": "connected components of 05's 23 flagged pairs; keep the member with the highest TRAIN univariate AUC, ties on lower train missingness then alphabetical",
+      "n_features_dropped": 19,
+      "n_features_kept": 62,
+      "dropped": [
+        "cad_day_n_hist_gaps",
+        "cad_n_hist_gaps",
+        "fo_dow",
+        "fo_has_discount",
+        "fo_hour",
+        "fo_median_price",
+        "fo_n_items",
+        "fo_value_w",
+        "fs_n_events",
+        "fs_n_view_ev",
+        "has_day_cadence",
+        "pre_events_per_tenure_day",
+        "pre_n_events",
+        "pre_n_prior_sessions",
+        "pre_n_removals",
+        "pre_n_view_ev",
+        "pre_p_carted",
+        "pre_products_per_tenure_day",
+        "pre_sessions_per_tenure_day"
+      ]
+    },
+    "ladder": {
+      "order_A": {
+        "M1 first order": {
+          "LR_chi2": 1118.8,
+          "df": 18,
+          "p": 2.746702175627395e-226,
+          "chi2_per_df": 62.2
+        },
+        "M2 first-order session": {
+          "LR_chi2": 262.2,
+          "df": 14,
+          "p": 8.56701514166026e-48,
+          "chi2_per_df": 18.7
+        },
+        "M3 pre-t0 browsing": {
+          "LR_chi2": 926.8,
+          "df": 25,
+          "p": 1.8672040736123162e-179,
+          "chi2_per_df": 37.1
+        },
+        "M4 cadence": {
+          "LR_chi2": 121.5,
+          "df": 12,
+          "p": 3.097931518525497e-20,
+          "chi2_per_df": 10.1
+        }
+      },
+      "order_B": {
+        "M3 pre-t0 browsing": {
+          "LR_chi2": 1598.5,
+          "df": 25,
+          "p": 0.0,
+          "chi2_per_df": 63.9
+        },
+        "M4 cadence": {
+          "LR_chi2": 123.3,
+          "df": 12,
+          "p": 1.3861092971653863e-20,
+          "chi2_per_df": 10.3
+        },
+        "M2 first-order session": {
+          "LR_chi2": 210.8,
+          "df": 14,
+          "p": 3.379957637879068e-37,
+          "chi2_per_df": 15.1
+        },
+        "M1 first order": {
+          "LR_chi2": 496.8,
+          "df": 18,
+          "p": 4.888950573527763e-94,
+          "chi2_per_df": 27.6
+        }
+      },
+      "standalone": {
+        "M3 pre-t0 browsing": {
+          "LR_chi2": 1598.5,
+          "df": 25,
+          "chi2_per_df": 63.9,
+          "test_ROC": 0.6191
+        },
+        "M4 cadence": {
+          "LR_chi2": 1223.3,
+          "df": 15,
+          "chi2_per_df": 81.6,
+          "test_ROC": 0.5911
+        },
+        "M1 first order": {
+          "LR_chi2": 1128.4,
+          "df": 20,
+          "chi2_per_df": 56.4,
+          "test_ROC": 0.5852
+        },
+        "M2 first-order session": {
+          "LR_chi2": 505.7,
+          "df": 14,
+          "chi2_per_df": 36.1,
+          "test_ROC": 0.5709
+        }
+      },
+      "verdict": "THE TOP TWO FLIP WITH ENTRY ORDER AND THE BOTTOM TWO DO NOT. Order A (M1 first) makes M1 the strongest block at 62.2 chi2/df against M3's 37.1; order B (M3 first) makes M3 strongest at 63.9 against M1's 27.6. Whichever block enters first wins, so NEITHER LADDER ALONE SETTLES M1 vs M3 and 05's warning about the specified order was justified. M3 wins every order-controlled comparison: entering first 63.9 vs 62.2, entering late 37.1 vs 27.6, standalone 63.9 vs 56.4 and standalone test ROC 0.6191 vs 0.5852. M2 is third and M4 last in both orders and at all three horizons -- that part is order-invariant.",
+      "order_sensitivity": "M1 chi2/df 62.2 (first) -> 27.6 (last); M3 63.9 (first) -> 37.1 (third); M2 18.7 -> 15.1; M4 10.3 (second) -> 10.1 (last)."
+    },
+    "m4_is_m3": {
+      "statement": "cad_n_hist_gaps == pre_n_sessions - 2 on 100% of the 42,190 D30 rows where both are defined. It is an identity, not a correlation.",
+      "consequence": "The global pruning rule assigns M4's two volume features to M3, which is why M4 adds ~122 chi2 on 13 df in both orders while scoring the highest STANDALONE chi2/df of any block. 05's best-per-block AUC for M4 (cad_day_n_hist_gaps, 0.5735) was never a cadence result.",
+      "m4_timing_only_max_train_auc": 0.558
+    },
+    "one_dimensionality": {
+      "pc1_variance_explained": 0.6849,
+      "pc1_features": [
+        "pre_n_products",
+        "pre_n_events",
+        "pre_n_cart_ev",
+        "pre_n_categories",
+        "pre_p_carted",
+        "pre_n_removals",
+        "pre_n_active_days",
+        "pre_n_brands",
+        "tenure_d",
+        "pre_n_sessions",
+        "pre_n_view_ev"
+      ],
+      "pc1_test_AP": 0.1684,
+      "pc1_test_ROC": 0.6145,
+      "pct_of_model_excess_AP_recovered_by_pc1": 80.5,
+      "pct_recovered_by_one_raw_feature": 74.2,
+      "verdict": "Mostly, not entirely. The full model beats PC1 by dAP +0.0126 [+0.0066, +0.0192], a CI that excludes zero, but PC1 alone already recovers ~81% of the model's excess AP over the base rate and one raw feature recovers ~74%. Repeat purchase here is predicted by pre-purchase engagement VOLUME and very little else."
+    },
+    "shipped_model": {
+      "name": "logistic M4 -- 62 features after collinearity pruning plus 11 missingness indicators, 69 columns at full rank",
+      "n_features": 62,
+      "n_missingness_indicators": 11,
+      "n_fitted_columns": 69,
+      "file": "data/processed/nb06_model_m4_logistic.joblib",
+      "predictions": "data/processed/nb06_predictions_d30.parquet",
+      "test_AP": 0.1809,
+      "test_AP_lift_vs_base": 1.5526,
+      "test_ROC_AUC": 0.6278,
+      "test_Brier_shipped": 0.10089,
+      "decile1_lift": 1.882,
+      "top3_decile_capture_pct": 44.9,
+      "univariate_ceiling_cleared": {
+        "ceiling_05": 0.6097,
+        "test_ROC": 0.6278,
+        "one_feature_test_ROC": 0.6051
+      }
+    },
+    "why_lightgbm_was_not_shipped": {
+      "lgbm_test_AP": 0.1849,
+      "lgbm_test_ROC": 0.6412,
+      "delta_AP_vs_logistic": [
+        -0.0017,
+        0.0039,
+        0.0101
+      ],
+      "delta_ROC_vs_logistic": [
+        0.0076,
+        0.0133,
+        0.0192
+      ],
+      "decision": "The AP CI includes zero and AP is the primary metric (principle 7). ROC improves by +0.013 with a CI excluding zero, but ROC is secondary. Nonlinearity is not paid for; the logistic ships.",
+      "hyperparameters": {
+        "num_leaves": 15,
+        "min_child_samples": 300,
+        "learning_rate": 0.05,
+        "feature_fraction": 0.9,
+        "bagging_fraction": 0.8,
+        "bagging_freq": 1,
+        "lambda_l2": 10.0
+      },
+      "best_iteration": 127,
+      "grid_AP_spread": 0.0033
+    },
+    "baselines": {
+      "BASE  prevalence only": {
+        "AP": 0.1165,
+        "ROC": 0.5,
+        "pct_of_shipped_excess_AP": 0.0
+      },
+      "NAIVE first-order value quintile": {
+        "AP": 0.1355,
+        "ROC": 0.5638,
+        "pct_of_shipped_excess_AP": 29.4
+      },
+      "NAIVE pre_n_products alone (1 feature)": {
+        "AP": 0.1643,
+        "ROC": 0.6051,
+        "pct_of_shipped_excess_AP": 74.2
+      },
+      "NAIVE PC1 activity-intensity score": {
+        "AP": 0.1684,
+        "ROC": 0.6145,
+        "pct_of_shipped_excess_AP": 80.5
+      },
+      "SHIPPED  logistic M4 (62 features)": {
+        "AP": 0.1809,
+        "ROC": 0.6278,
+        "pct_of_shipped_excess_AP": 100.0
+      },
+      "LightGBM (81 features)": {
+        "AP": 0.1849,
+        "ROC": 0.6412,
+        "pct_of_shipped_excess_AP": 106.2
+      }
+    },
+    "operating_point": {
+      "data_derived": [
+        "test base rate 11.653%",
+        "all confusion counts",
+        "precision/recall/lift"
+      ],
+      "assumption": "R = cost(false negative)/cost(false positive) = 5",
+      "threshold": 0.1667,
+      "flagged_pct": 11.37,
+      "precision_pct": 21.31,
+      "precision_lift": 1.829,
+      "recall_pct": 20.8,
+      "degeneracy_note": "At R <= 3 the rule flags under 1.5% of users because the model's probabilities never get high enough; at R = 1 it flags 7 users out of 27,400. A symmetric threshold is not a neutral default at a 11.65% base rate.",
+      "uplift_caveat": "This selects by PROPENSITY TO REPEAT, not by responsiveness to an intervention. 07 (Criteo) and 08 own that distinction. Nothing here licenses a targeting decision."
+    },
+    "secondary_horizons": {
+      "D30": {
+        "n_eligible": 91334,
+        "pos_test_pct": 11.653,
+        "AP": 0.1809,
+        "AP_lift": 1.5526,
+        "ROC": 0.6278
+      },
+      "D60": {
+        "n_eligible": 71727,
+        "pos_test_pct": 15.647,
+        "AP": 0.2494,
+        "AP_lift": 1.5941,
+        "ROC": 0.6467
+      },
+      "D90": {
+        "n_eligible": 52737,
+        "pos_test_pct": 22.268,
+        "AP": 0.3569,
+        "AP_lift": 1.6027,
+        "ROC": 0.6592
+      }
+    },
+    "second_order_anchor": {
+      "question": "04 section 9B: does a personalised cadence-multiple beat a global churn threshold?",
+      "why_here": "05 could not test it -- purchase cadence is undefined at a first-order anchor. Re-anchored on the SECOND order, where it is defined for 100% of the population.",
+      "rebuilt_from_scratch": true,
+      "population": {
+        "set_B": 24731,
+        "eligible_30d": 19690,
+        "censored_excluded": 5041,
+        "positive_rate_pct": 27.628,
+        "personal_gap_median_d": 18.63
+      },
+      "predictive_test": {
+        "gap1_univariate_AUC": 0.5337,
+        "nested_LR_chi2_1df": 15.4,
+        "p": 8.489236712762207e-05
+      },
+      "lapse_rule_head_to_head": {
+        "tune_flag_date": "2019-12-31 23:59:59",
+        "eval_flag_date": "2020-01-30 23:59:59",
+        "forward_window_days": 30.0,
+        "n_evaluated": 19690,
+        "at_risk_base_pct": 77.15,
+        "global_certified_42_2d_J": 24.565,
+        "global_tuned_K_days": 38.0,
+        "global_tuned_J": 25.482,
+        "personalised_tuned_k": 2.95,
+        "personalised_tuned_J": 25.124,
+        "delta_J_vs_certified": [
+          -0.93,
+          0.554,
+          1.936
+        ],
+        "delta_J_vs_tuned_global": [
+          -1.807,
+          -0.369,
+          1.088
+        ]
+      },
+      "verdict": "NOT SUPPORTED. The personalised rule's advantage over the certified 42.2d threshold has a 95% CI that includes zero, and it LOSES to a global threshold given the same tuning budget. 04 section 9B's recommendation should not be carried into 08.",
+      "limitation": "The population is selected -- every member has already repeated once, and they repeat again at 27.6% vs 13.7% at the first anchor. The result does not transfer to first-time buyers. It is decisive only in the negative direction: a rule that cannot win on the most cadence-rich population available cannot win on a less cadence-rich one."
+    },
+    "known_defect_leverage": {
+      "found_by": "Section 11B, the SHAP pass -- not by any ranking metric",
+      "statement": "A handful of heavy-tailed raw features, fs_duration_min above all, act as leverage points in the standardised linear predictor and drive a small number of users to degenerate probabilities.",
+      "n_test_users_below_p_0_001": 111,
+      "pct_of_test": 0.405,
+      "min_predicted_probability": 5.1934237301266425e-09,
+      "all_affected_are_true_negatives": true,
+      "why_metrics_did_not_catch_it": "AP, ROC and the decile table are rank-based and the affected rows are all at the bottom of the ranking, where they belong. Only the probability LEVEL is wrong.",
+      "root_cause": "00 Section 7's session-ID reuse: the longest first-order session in the train fold runs 109,587 minutes (76 days), 14x its own P99.",
+      "fix_for_a_rerun": "Winsorise or log-transform the heavy-tailed M1/M2 features before standardisation. NOT applied here: re-specifying a feature after seeing the test fold is the move the brief forbids.",
+      "consequence_for_09": "Do not use these probabilities as absolute levels below about the 1st percentile of the score. The decile table is safe; the tail is not."
+    },
+    "binding_rules_for_07_08_09": [
+      "The shipped model is WEAK and it is honest about it: test ROC 0.628, AP 0.181 against a 0.117 base rate, decile-1 lift 1.88x. Do not build an ROI chain that assumes a strong propensity model.",
+      "Repeat purchase here is predicted by pre-purchase engagement VOLUME. A single feature recovers ~74% of the model's excess AP. If 09 needs a simple, auditable score, pre_n_products is defensible.",
+      "PROPENSITY IS NOT UPLIFT. Every number here ranks users by probability of repeating unaided. 07 must show on Criteo that risk-targeting and uplift-targeting select different people; 08's design must randomise rather than target on this score.",
+      "The base rate drifts 17.2% -> 10.1% across the observation window. Any scoring in production must recalibrate the intercept on recent data; ranking survives, levels do not.",
+      "04 section 9B (personalised churn threshold) is FALSIFIED at the second-order anchor. Do not resurrect it in 08 without new evidence.",
+      "The operating threshold depends on an ASSUMED cost ratio, not on anything in the data. 09 must carry R explicitly and show the sweep, exactly as 03 refused to certify a threshold on economics.",
+      "The shipped probabilities have a degenerate lower tail (0.41% of test users below p = 0.001) from heavy-tailed feature leverage -- see modelling.known_defect_leverage. Use deciles, not absolute levels, at the bottom of the score."
+    ]
   }
 }

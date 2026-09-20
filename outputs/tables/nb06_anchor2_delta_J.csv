@@ -1,0 +1,3 @@
+comparison,delta_J,lo,hi,excludes_zero
+personalised k*=2.95x  -  global 42.2d (certified),0.5541,-0.9296,1.9358,False
+personalised k*=2.95x  -  global 38.0d (tuned),-0.3694,-1.8071,1.0884,False

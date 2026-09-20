@@ -1,0 +1,70 @@
+feature,block,mean_abs_shap,median_abs_shap,max_abs_shap
+log1p_pre_n_removals,M3 pre-t0 browsing,0.18381,0.14871,0.90438
+fo_price_vs_prior_mean,M1 first order,0.1652,0.14892,2.77124
+fo_primary_category__te,M1 first order,0.14826,0.12505,0.46111
+miss__fo_discount_vs_prior_max,missingness indicator,0.12657,0.12461,4.02916
+miss__gap_before_purchase_day,missingness indicator,0.12072,0.1031,0.14836
+fo_discount_vs_prior_max,M1 first order,0.11492,0.10346,3.19699
+miss__cad_day_median_gap_d,missingness indicator,0.10452,0.06638,0.19915
+tenure_d,M3 pre-t0 browsing,0.09892,0.03788,0.6284
+miss__pre_mean_price_pct_viewed,missingness indicator,0.09489,0.06886,0.42299
+miss__gap_before_purchase_visit,missingness indicator,0.08471,0.09122,0.09122
+fs_duration_min,M2 first-order session,0.08168,0.03041,15.29128
+has_prior_sessions,M3 pre-t0 browsing,0.08037,0.0489,0.1467
+fo_n_categories,M1 first order,0.06958,0.0628,1.42595
+pre_n_categories,M3 pre-t0 browsing,0.05592,0.04535,0.73355
+miss__pre_view_to_cart,missingness indicator,0.05422,0.03565,0.2884
+pre_n_active_days,M3 pre-t0 browsing,0.05422,0.03177,1.52347
+fo_value,M1 first order,0.05325,0.04327,1.69564
+pre_price_range_viewed,M3 pre-t0 browsing,0.049,0.05357,0.12211
+pre_cart_not_in_first_order_rate,M3 pre-t0 browsing,0.04684,0.04421,0.14904
+fo_price_z_in_category,M1 first order,0.04583,0.03799,0.38033
+miss__fs_max_price_viewed,missingness indicator,0.04434,0.03762,0.06406
+pre_category_entropy,M3 pre-t0 browsing,0.03928,0.0414,0.15496
+pre_n_products,M3 pre-t0 browsing,0.03653,0.02649,0.69629
+fo_primary_brand__te,M1 first order,0.03539,0.01372,0.21658
+fs_n_cart_ev,M2 first-order session,0.03492,0.02618,1.04222
+fo_price_ref_coverage,M1 first order,0.0338,0.03255,0.98804
+pre_mean_session_depth,M3 pre-t0 browsing,0.03314,0.02844,1.40304
+miss__fs_n_cart_ev,missingness indicator,0.03189,0.02185,0.12381
+pre_views_per_tenure_day,M3 pre-t0 browsing,0.03056,0.02698,0.4459
+cad_median_gap_d,M4 cadence,0.02892,0.01229,1.07737
+cad_day_median_gap_d,M4 cadence,0.02647,0.01412,0.64508
+pre_mean_price_pct_viewed,M3 pre-t0 browsing,0.02468,0.02065,0.06053
+fo_brand_null_share,M1 first order,0.02324,0.02318,0.04764
+pre_brand_entropy,M3 pre-t0 browsing,0.02198,0.02523,0.06993
+has_session_cadence,M4 cadence,0.02121,0.02284,0.02284
+fs_n_categories,M2 first-order session,0.01786,0.01675,0.28893
+pre_view_to_cart,M3 pre-t0 browsing,0.01679,0.01265,0.59781
+pre_n_brands,M3 pre-t0 browsing,0.01637,0.01279,0.21271
+pre_brand_coverage,M3 pre-t0 browsing,0.01582,0.01613,0.02653
+fs_start_hour,M2 first-order session,0.01478,0.01334,0.0361
+cad_iqr_gap_d,M4 cadence,0.01378,0.00664,0.30495
+gap_before_purchase_day,M4 cadence,0.01267,0.00535,0.27418
+fo_min_price,M1 first order,0.01148,0.00592,0.61888
+pre_p_viewed,M3 pre-t0 browsing,0.01119,0.00765,0.3087
+fs_price_range_viewed,M2 first-order session,0.00911,0.00573,0.50117
+fs_start_dow,M2 first-order session,0.00763,0.00703,0.01576
+miss__pre_removal_per_cart,missingness indicator,0.00754,0.00497,0.24367
+gap_before_purchase_visit,M4 cadence,0.00743,0.00268,0.29188
+fs_n_removals,M2 first-order session,0.00714,0.00571,0.72824
+fs_n_brands,M2 first-order session,0.00652,0.00511,0.10723
+cad_day_lapse_ratio,M4 cadence,0.00509,0.00103,0.48813
+fs_p_touched,M2 first-order session,0.005,0.00408,0.16763
+fo_product_price_pct_prior,M1 first order,0.00439,0.00364,0.01232
+pre_n_sessions,M3 pre-t0 browsing,0.00406,0.00267,0.22995
+cad_regularity,M4 cadence,0.00396,0.00263,0.94208
+has_pre_t0_history,M3 pre-t0 browsing,0.00352,0.0024,0.23777
+pre_n_cart_ev,M3 pre-t0 browsing,0.00332,0.00227,0.09708
+fs_max_price_viewed,M2 first-order session,0.00269,0.00166,0.07498
+cad_lapse_ratio,M4 cadence,0.00223,0.00022,1.06422
+pre_removal_per_cart,M3 pre-t0 browsing,0.00216,0.00181,0.3847
+fo_n_products,M1 first order,0.00198,0.00175,0.0636
+pre_days_since_last_event,M3 pre-t0 browsing,0.00191,0.00015,0.61548
+fo_is_weekend,M1 first order,0.00156,0.00096,0.00342
+fo_catz_coverage,M1 first order,0.00141,0.00132,0.02081
+fs_p_viewed,M2 first-order session,0.0014,0.00111,0.07634
+first_order_is_bulk,M1 first order,0.00095,0.0,0.54301
+fs_entry_event_type__te,M2 first-order session,0.00081,0.00096,0.00341
+fo_max_price,M1 first order,0.00052,0.00033,0.01503
+fo_n_brands,M1 first order,0.00015,0.00014,0.00114

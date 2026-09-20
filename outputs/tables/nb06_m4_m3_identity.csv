@@ -1,0 +1,4 @@
+m4_feature,m3_feature,n_both_defined,relation,share_exact_pct,spearman_in_05,m4_train_auc,m3_train_auc
+cad_n_hist_gaps,pre_n_sessions,42190,pre_n_sessions - 2,100.0,1.0,0.5311,0.5874
+cad_day_n_hist_gaps,pre_n_active_days,43092,pre_n_active_days - 1 (not exact),20.9807,0.9676,0.5772,0.5994
+has_session_cadence,pre_n_sessions >= 2,91334,indicator that the same count exceeds 1,82.3264,,0.5715,

@@ -1,0 +1,4 @@
+version,mean_pred_pct,observed_pct,level_gap_pp,Brier,AP,ROC_AUC
+raw (as fitted on train),13.6906,11.65328,2.03732,0.10136,0.18093,0.62783
+intercept shift fitted on VALIDATION -- SHIPPED,10.18767,11.65328,-1.46561,0.10089,0.18093,0.62783
+oracle shift fitted on test labels -- DIAGNOSTIC ONLY,11.65328,11.65328,0.0,0.10075,0.18093,0.62783

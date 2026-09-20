@@ -1,0 +1,9 @@
+feature,block,train_univariate_AUC,missing_pct_train
+cad_median_gap_d,M4 cadence,0.558,54.4186
+cad_iqr_gap_d,M4 cadence,0.5561,54.4186
+gap_before_purchase_visit,M4 cadence,0.5385,54.0698
+cad_day_median_gap_d,M4 cadence,0.5285,74.0248
+cad_regularity,M4 cadence,0.5275,54.4186
+cad_lapse_ratio,M4 cadence,0.522,54.4186
+cad_day_lapse_ratio,M4 cadence,0.5136,74.0248
+gap_before_purchase_day,M4 cadence,0.5094,63.3372

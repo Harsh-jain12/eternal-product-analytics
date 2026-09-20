@@ -1,0 +1,26 @@
+check,passed,detail
+split is chronological: max(train t0) < min(test t0),True,2019-12-18 06:03:48 < 2019-12-18 06:04:25
+no user appears in both train and test,True,0 overlapping user_ids
+no model_eligible == False column entered any fit,True,"69 fitted columns, all from the 81 eligible"
+LightGBM design matrix is also eligible-only,True,81 columns
+eligible N matches 05,True,"91,334 vs 91,334"
+positive rate matches 05,True,13.7298% vs 13.73%
+eligible N and positive rate match 05 at D60,True,"n=71,727, rate=21.08%"
+eligible N and positive rate match 05 at D90,True,"n=52,737, rate=27.05%"
+both ladder orders reach the same full-model log-likelihood,True,|diff| = 0.00e+00
+every LR statistic is positive (nesting holds at every step),True,min chi2 = 121.5
+"RECORDED, NOT ASSERTED AWAY: the M1/M3 top-two ranking FLIPS between orders",True,"order A tops out on M1 (62.2/df), order B on M3 (63.9/df) -- whichever enters first wins, so neither ladder alone settles M1 vs M3"
+M2 is third and M4 last by chi2/df in BOTH orders (the part that does not flip),True,"M2 3rd, M4 4th in A and B"
+M3 beats M1 on all three order-controlled comparisons,True,entering first 63.9 vs 62.2; entering late 37.1 vs 27.6; standalone test ROC 0.6191 vs 0.5852
+no censored user entered the D30 frame,True,all t0 + 30d <= DATA_END in exact seconds
+"anchor-2 eligibility is exact-seconds and censored users are dropped, not zero-filled",True,"5,041 censored users excluded"
+anchor-2 population reconciles with 01's Set B,True,"24,731 users with >= 2 orders"
+no value was imputed: every train missingness pattern is in the fitted column space,True,"11 distinct patterns; design matrix rank 70 == 69 fitted columns + intercept, so pivoted QR dropped only redundant columns"
+every NaN cell in the fitted design was replaced by the sentinel 0 and nothing else,True,"434,328 sentinel cells in train"
+"the shipped intercept shift was fitted on the validation fold, not on test",True,"offset -0.3466 from 12,787 validation rows"
+target encoding is deterministic across repeated calls,True,"two calls, identical output"
+DuckDB fetch used all three determinism guards (fetch_block),True,"threads=1 fetch, round_sig(6), sort by user_id"
+shipped model beats the one-feature rule on AP with a CI excluding zero,True,"dAP +0.0167 [+0.0099, +0.0237]"
+shipped model's test ROC exceeds 05's univariate ceiling,True,0.6278 vs 0.6097
+cad_n_hist_gaps == pre_n_sessions - 2 wherever both are defined,True,"42,190 rows, 100.0000%"
+PC1 recovers the majority of the shipped model's excess AP,True,80.5%

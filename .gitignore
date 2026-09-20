@@ -1,6 +1,7 @@
 data/raw/*.csv
 data/raw/criteo/
 data/processed/*.parquet
+data/processed/*.joblib
 *.duckdb
 outputs/figures/*.png
 .ipynb_checkpoints/

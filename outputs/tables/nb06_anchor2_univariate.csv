@@ -1,0 +1,6 @@
+feature,description,n,univariate_AUC
+gap1_d,"personal inter-purchase gap, t0_2 - t0_1 (days)",19690,0.5337
+v2,2nd order value,19690,0.5456
+i2,2nd order items,19690,0.5452
+v1,1st order value,19690,0.5361
+i1,1st order items,19690,0.5451

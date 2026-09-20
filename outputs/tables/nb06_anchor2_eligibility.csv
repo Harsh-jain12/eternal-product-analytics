@@ -1,0 +1,3 @@
+step,n,pct_of_prev
+Set B: users reaching a 2nd order,24731,100.0
+drop censored (t0_2 + 30d > DATA_END),19690,79.62

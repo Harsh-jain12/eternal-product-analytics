@@ -1,0 +1,6 @@
+rule,J,recall_pct,specificity_pct,precision_pct,n_flagged
+GLOBAL  K = 42.2d  (03's certified threshold),24.565,48.614,75.95,87.221,8467
+GLOBAL  K* = 38.0d  (tuned on the earlier date),25.482,52.577,72.905,86.759,9206
+PERSONALISED  k* = 2.95x personal gap  (tuned),25.124,42.861,82.263,89.082,7309
+PERSONALISED  k = 1.0x personal gap,22.162,64.216,57.946,83.755,11647
+PERSONALISED  k = 2.0x personal gap,25.155,50.583,74.572,87.041,8828

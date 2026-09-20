@@ -1,0 +1,6 @@
+block,total_mean_abs_shap,share_pct
+M3 pre-t0 browsing,0.8304,32.9126
+M1 first order,0.7119,28.2165
+missingness indicator,0.6694,26.5318
+M2 first-order session,0.1896,7.5131
+M4 cadence,0.1218,4.826

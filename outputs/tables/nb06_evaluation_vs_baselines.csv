@@ -1,0 +1,7 @@
+model,AP,AP_lift_vs_base,ROC_AUC,Brier,mean_pred_pct,pct_of_shipped_AP_excess
+BASE  prevalence only,0.1165,1.0,0.5,0.1038,14.6198,0.0
+NAIVE first-order value quintile,0.1355,1.1627,0.5638,0.1032,14.3669,29.4454
+NAIVE pre_n_products alone (1 feature),0.1643,1.4102,0.6051,0.1029,14.5008,74.2236
+NAIVE PC1 activity-intensity score,0.1684,1.4448,0.6145,0.1022,14.5261,80.489
+SHIPPED  logistic M4 (62 features),0.1809,1.5526,0.6278,0.1014,13.6906,100.0
+LightGBM (81 features),0.1849,1.5866,0.6412,0.1002,11.9448,106.1536
