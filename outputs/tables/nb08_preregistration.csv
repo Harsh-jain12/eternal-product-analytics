@@ -9,16 +9,19 @@ salt,eternal-08-activation-v1
 allocation,"50/50, blocked systematic allocation on the hash order within each block."
 blocks,acquisition month x 06 shipped-score tercile (terciles cut on the enrolled population at assignment time and frozen). Promo-spike days add a third key if 02's detector fires.
 primary_estimand,ITT by randomised assignment. Delivery / open / click are post-randomisation and are never conditioned on (07 S4: the naive exposed-vs-control comparison inflated the complier effect 1.62x on conversion).
-primary_metric,"repeat_purchase in (t0+14d, t0+44d], 05/06 definition: a further order in a session other than the first-order session."
+primary_metric,"repeat_30d_from_trigger -- a further order in a session other than the first-order session, in (t0 + 14d, t0 + 44d]. NOT 06's repeat_purchase_30d: different population, different window, base 10.25% vs 13.73%. Never quote them as the same number."
 base_rate,"10.248% (DATA: 74,548 historical analogues at the day-14 trigger)."
 break_even_lift,"0.3920 pp absolute (3.82% relative), from c/V with c=EUR 0.05 (ASSUMPTION), V=EUR 12.7567."
 mde,"1.00 pp absolute (9.8% relative), alpha 0.05 two-sided, power 0.80."
-sample_size,"15,058 per arm, 30,116 total, ~1,543 repeat events per arm."
-duration,7 weeks enrolment; 14 weeks to primary readout; day-90 G2 readout 21 weeks.
+sample_size,"40,721 per arm, 81,442 total, ~4,173 repeat events per arm."
+power_basis,"80% probability that the 95% CI LOWER BOUND clears break-even (0.39 pp) when the true effect is 1.00 pp -- NOT 80% power against a null of zero. Powering against zero would give 15,058 per arm and ship only 40% of the time at that same true effect. See S6G-S6J."
+operating_characteristics,true 0.00 pp -> ship 0% / kill 45% / inconclusive 55%; true 0.39 pp -> ship 2% / kill 2% / inconclusive 95%; true 0.75 pp -> ship 38% / kill 0% / inconclusive 62%; true 1.00 pp -> ship 80% / kill 0% / inconclusive 20%; true 1.50 pp -> ship 100% / kill 0% / inconclusive 0%
+alternative_design_not_chosen,"A) 15,058 per arm, 14 weeks, EUR 753. Detects a large effect; CANNOT adjudicate break-even (inconclusive 60% of the time at a true 1.00 pp effect). Kept visible, not deleted."
+duration,19 weeks enrolment; 26 weeks to primary readout; day-90 G2 readout 33 weeks.
 analysis,"Difference in proportions with a 95% CI on the absolute difference (unpooled SE); block-adjusted estimate reported alongside as the pre-specified secondary. Effect size and CI always, per principle 12 -- never a p-value alone."
 decision_rule,"THREE-WAY against break-even, not a test against zero. CI lower bound > 0.39 pp -> ship. CI upper bound < 0.39 pp -> kill. Straddles -> INCONCLUSIVE, reported as such."
 guardrails,"G1 AOV (two-sided); G2 orders in (t0+14d, t0+90d] REQUIRED pull-forward readout; G3 opt-out (one-sided, hard stop); G4 support contacts (one-sided, hard stop)."
-exploratory,"ITT by 06 score tercile, two-sided, NO predicted direction -- 07 records that the sign may invert from Criteo's. Labelled EXPLORATORY; per-tercile MDE 1.76 pp. No CATE model is fitted: 07 S6E needed ~330,000 events for a reliable uplift ranking and this design buys ~3,086."
+exploratory,"ITT by 06 score tercile, two-sided, NO predicted direction -- 07 records that the sign may invert from Criteo's. Labelled EXPLORATORY; per-tercile MDE 1.05 pp. No CATE model is fitted: 07 S6E needed ~330,000 events for a reliable uplift ranking and this design buys ~8,347."
 monitoring,"Daily SRM; delivery failures; G3/G4. NO interim effect estimates, no peeking, fixed horizon."
 what_would_falsify_it,"A 95% CI whose upper bound falls below 0.39 pp at the primary readout, or a positive primary with a null G2 at day 90 (pull-forward, not lift)."
 pre_registered_negative_results,"An inconclusive CI straddling break-even is a reportable outcome, not a failed experiment. A negative tercile is reported, not dropped."

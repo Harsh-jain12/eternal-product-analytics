@@ -1831,8 +1831,19 @@
    "secondary_if_compliance_is_low": "pre-specified CACE/IV with assignment as the instrument"
   },
   "metrics": {
-   "primary": "repeat purchase in (t0+14d, t0+44d], 05/06 definition",
+   "primary": "repeat_30d_from_trigger -- a further order in a session other than the first-order session, in (t0 + 14d, t0 + 44d]",
    "clock_starts_at": "ASSIGNMENT (t0 + 14d), not t0",
+   "naming_rule": {
+    "experiment_metric": "repeat_30d_from_trigger",
+    "experiment_window": "(t0 + 14d, t0 + 44d]",
+    "experiment_population": "first-time buyers still un-repeated at day 14",
+    "experiment_base_rate_pct": 10.248,
+    "nb06_metric": "repeat_purchase_30d",
+    "nb06_window": "(t0, t0 + 30d]",
+    "nb06_population": "all D30-eligible first-time buyers",
+    "nb06_base_rate_pct": 13.73,
+    "rule": "These are DIFFERENT quantities on DIFFERENT populations over DIFFERENT windows. 10.25% and 13.73% must never be quoted as the same number, compared to each other, or substituted for one another in an ROI chain."
+   },
    "guardrails": [
     {
      "id": "G1",
@@ -1934,13 +1945,106 @@
    "break_even_lift_rel_pct": 3.825,
    "mde_pp": 1.0,
    "mde_over_breakeven": 2.55,
-   "n_per_arm": 15058,
-   "events_per_arm": 1543,
+   "n_per_arm": 40721,
+   "events_per_arm": 4173,
+   "power_basis": {
+    "shipped": "80% probability that the 95% CI LOWER BOUND clears break-even when the true effect is 1.00 pp. Solved as SE = (delta - delta*)/(z_a + z_b), n = (p0 q0 + p1 q1)/SE^2, unpooled on both sides because the comparison is against a non-zero boundary.",
+    "superseded": "S6D sized for 80% power against a null of ZERO, giving 15,058 per arm. That is a different hypothesis from the decision rule and the two were never checked against each other. S6G reproduces the defect and S6H re-sizes.",
+    "required_se_pp": 0.217,
+    "n_scales_as": "1/(delta - delta*)^2, NOT 1/delta^2 -- targets near break-even diverge",
+    "recorded_by": "08 S6G-S6J"
+   },
+   "operating_characteristics": [
+    {
+     "design": "A) detect-vs-zero, 15,058/arm",
+     "true_effect_pp": 0.0,
+     "P_ship_pct": 0.1,
+     "P_kill_pct": 20.1,
+     "P_inconclusive_pct": 79.8
+    },
+    {
+     "design": "A) detect-vs-zero, 15,058/arm",
+     "true_effect_pp": 0.392,
+     "P_ship_pct": 2.5,
+     "P_kill_pct": 2.5,
+     "P_inconclusive_pct": 95.0
+    },
+    {
+     "design": "A) detect-vs-zero, 15,058/arm",
+     "true_effect_pp": 0.75,
+     "P_ship_pct": 17.1,
+     "P_kill_pct": 0.1,
+     "P_inconclusive_pct": 82.8
+    },
+    {
+     "design": "A) detect-vs-zero, 15,058/arm",
+     "true_effect_pp": 1.0,
+     "P_ship_pct": 39.9,
+     "P_kill_pct": 0.0,
+     "P_inconclusive_pct": 60.1
+    },
+    {
+     "design": "A) detect-vs-zero, 15,058/arm",
+     "true_effect_pp": 1.5,
+     "P_ship_pct": 86.7,
+     "P_kill_pct": 0.0,
+     "P_inconclusive_pct": 13.3
+    },
+    {
+     "design": "B) decision-powered, 40,721/arm",
+     "true_effect_pp": 0.0,
+     "P_ship_pct": 0.0,
+     "P_kill_pct": 45.4,
+     "P_inconclusive_pct": 54.6
+    },
+    {
+     "design": "B) decision-powered, 40,721/arm",
+     "true_effect_pp": 0.392,
+     "P_ship_pct": 2.5,
+     "P_kill_pct": 2.5,
+     "P_inconclusive_pct": 95.0
+    },
+    {
+     "design": "B) decision-powered, 40,721/arm",
+     "true_effect_pp": 0.75,
+     "P_ship_pct": 38.1,
+     "P_kill_pct": 0.0,
+     "P_inconclusive_pct": 61.8
+    },
+    {
+     "design": "B) decision-powered, 40,721/arm",
+     "true_effect_pp": 1.0,
+     "P_ship_pct": 80.0,
+     "P_kill_pct": 0.0,
+     "P_inconclusive_pct": 20.0
+    },
+    {
+     "design": "B) decision-powered, 40,721/arm",
+     "true_effect_pp": 1.5,
+     "P_ship_pct": 99.9,
+     "P_kill_pct": 0.0,
+     "P_inconclusive_pct": 0.1
+    }
+   ],
+   "alternative_design": {
+    "design": "A) detect-vs-zero",
+    "status": "ALTERNATIVE -- detects a large effect, cannot adjudicate break-even",
+    "n_per_arm": 15058,
+    "n_total": 30116,
+    "events_per_arm": 1543,
+    "enrolment_weeks": 7,
+    "weeks_to_readout": 14,
+    "contact_cost_eur": 753.0,
+    "P_ship_at_target_pct": 39.9,
+    "P_kill_at_zero_pct": 20.1,
+    "powered_for": "80% power to reject a null of ZERO at 1.00 pp"
+   },
+   "designs_table": "outputs/tables/nb08_design_comparison.csv",
    "enrolment_rate_per_day": 637.5,
-   "enrolment_weeks": 7,
-   "weeks_to_primary_readout": 14,
-   "weeks_to_g2_readout": 21,
-   "contact_spend_eur": 752.9,
+   "enrolment_weeks": 19,
+   "weeks_to_primary_readout": 26,
+   "weeks_to_g2_readout": 33,
+   "contact_spend_eur": 2036.05,
    "no_offer_in_the_first_test": "a 10% discount raises the break-even from 3.8% to 52.8% relative lift, and at a 20% margin a 20% discount never breaks even, because the offer is paid to the ~90% of converters who needed no help.",
    "mde_is_not_from_criteo": "the MDE is solved from contact cost, contribution margin, AOV and the trigger base rate. S10 asserts mechanically that no registered input names Criteo. 07's magnitudes carry a transfer caveat and a +/-25% adjustment bias band and are used for STRUCTURE only.",
    "tables": [
@@ -1959,10 +2063,10 @@
   "heterogeneity": {
    "status": "EXPLORATORY, pre-registered, two-sided with no predicted direction",
    "strata": "06 shipped-score terciles, frozen at assignment",
-   "per_tercile_mde_pp": 1.758,
-   "events_available": 3086,
+   "per_tercile_mde_pp": 1.054,
+   "events_available": 8347,
    "events_07_needed_for_a_reliable_uplift_ranking": 330000,
-   "shortfall_x": 107,
+   "shortfall_x": 40,
    "sign_may_invert": "07 found uplift RISING with baseline propensity on Criteo and recorded that the retention intuition is the opposite -- persuadables plausibly sit mid-propensity. Both a monotone rise and a middle peak are admissible; neither is confirmatory.",
    "no_cate_model_will_be_fitted": true
   },
@@ -2056,12 +2160,16 @@
    "Value per incremental second order is EUR 12.76, of which EUR 0.49 is the downstream term at 02's 1.27x residual. Do NOT use the naive 2.00x -- it overstates that term 3.7x.",
    "Contact cost and contribution margin are ASSUMPTIONS and must stay visually separate from the base rate, AOV, inflow and guardrail baselines, which are DATA (principle 13).",
    "The pull-forward risk is unresolved and unresolvable without the experiment. A 30-day lift that does not appear in the 90-day order count is rescheduling, not incremental demand. 09 must carry this as an explicit scenario, not a footnote.",
-   "Every duration in 09 must use the October-excluded inflow rate (695.4/day). Including October inflates it 4.5% because the window is left-censored."
+   "Every duration in 09 must use the October-excluded inflow rate (695.4/day). Including October inflates it 4.5% because the window is left-censored.",
+   "THE EXPERIMENT'S METRIC IS NOT 06's. repeat_30d_from_trigger has a 10.25% base rate on users who survived 14 days un-repeated; 06's repeat_purchase_30d has 13.73% measured from t0 on everyone. They are different quantities and must never be substituted for one another in an ROI chain.",
+   "IF 09 QUOTES A SAMPLE SIZE OR A DURATION, IT IS 40,721 PER ARM AND 26 WEEKS, the decision-powered design. The 15,058/arm figure in S6D-S6F is superseded and is retained only as the record of how it was first derived. A cost line built on it understates the spend 2.7x."
   ],
   "honesty_constraints_observed": [
    "No treatment effect is estimated. No outcome is split by arm, anywhere -- a null simulation printed next to a design invites being read as a result.",
    "No Criteo magnitude sets any design parameter; 07 supplies structure (estimand, exposure trap, risk-vs-uplift) and nothing else.",
    "The gap between break-even (0.39 pp) and the MDE (1.00 pp) is stated rather than hidden, and it is what forces the three-way decision rule.",
+   "S6D's sample size was wrong and S6G says so with the arithmetic rather than quietly restating the number: it solved for power against a null of zero while the pre-registered rule tests the CI against break-even. The superseded sections are left standing, as 03 S9, 04 S9 and 05 S14 left theirs.",
+   "The rejected design is kept in nb08_design_comparison.csv with what it can and cannot answer, so the cost of the cheaper option is legible rather than merely forgone.",
    "G3 and G4 have no baseline in this dataset and are marked ASSUMPTION rather than given invented numbers.",
    "Interference between household members is named as unhandled rather than omitted."
   ],
@@ -2082,7 +2190,12 @@
    "outputs/tables/nb08_base_rate_drift_trigger_pop.csv",
    "outputs/tables/nb08_threats_to_validity.csv",
    "outputs/tables/nb08_preregistration.csv",
-   "outputs/tables/nb08_self_verification.csv"
+   "outputs/tables/nb08_self_verification.csv",
+   "outputs/tables/nb08_operating_characteristics_current.csv",
+   "outputs/tables/nb08_operating_characteristics_resized.csv",
+   "outputs/tables/nb08_operating_characteristics_both.csv",
+   "outputs/tables/nb08_mde_duration_decision_powered.csv",
+   "outputs/tables/nb08_design_comparison.csv"
   ],
   "figures": [
    "nb08_trigger_selection",
@@ -2090,6 +2203,7 @@
    "nb08_economics_ledger",
    "nb08_breakeven_sensitivity",
    "nb08_mde_duration",
+   "nb08_operating_characteristics",
    "nb08_base_rate_drift_concurrent"
   ]
  }

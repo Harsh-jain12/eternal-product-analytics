@@ -14,7 +14,7 @@ the trigger rule references no churn threshold and no score,True,trigger = t0 + 
 the enrolment population is not selected on 06's score,True,"POOL built from trailing/recency only; the score is joined afterwards, for blocking"
 06's score is used only for blocking and the exploratory readout,True,score enters `block` and S7; it appears in no enrolment or targeting rule
 "the primary estimand is ITT by assignment, not by exposure",True,pre-registration field primary_estimand
-"the outcome window starts at ASSIGNMENT, not at t0",True,"window = (t0+14d, t0+44d]"
+"the outcome window starts at ASSIGNMENT, not at t0",True,"pre-registered window (t0 + 14d, t0 + 44d] opens at the day-14 trigger, against 06's (t0, t0 + 30d]"
 "the power base rate is the trigger-population rate, not 05/06's 13.73%",True,"powered on 10.248% (survivors to day 14), not 13.73%"
 "the downstream value term uses 02's 1.27x residual, not the naive 2.00x",True,"+4.00 pp (1.27x) against +14.84 pp (2.00x), a 3.7x difference in the downstream term"
 no stored segment label is used anywhere in the design,True,"the blocking key is exactly ['acq_month', 'score_tercile']; `pre_segment` IS present in the trigger pool and is deliberately unused (04 kappa 0.309; 05 S6A: segment_model.json is degenerate in a pre-purchase window)"
@@ -31,14 +31,27 @@ no outcome is compared between arms anywhere in this notebook,True,"deliberate: 
 the sample-size formula reproduces a textbook value,True,"n_per_arm(p0=0.10, delta=0.02) = 3841 (textbook ~3,835)"
 the MDE solver inverts the sample-size formula,True,round trip on 1.00 pp
 the chosen design point is above break-even,True,"MDE 1.00 pp > break-even 0.39 pp, ratio 2.55x"
+"the shipped sample size is powered for the DECISION RULE, not for a null of zero",True,"40,721/arm (decision-powered) shipped, not 15,058/arm (detect-vs-zero)"
+"the re-sized design hits 80% P(ship) at the target effect, to within 0.5 pp",True,P(ship) at a true 1.00 pp effect = 80.0%
+"the detect-vs-zero design would NOT have hit it -- the defect is reproduced, not asserted",True,"P(ship) at the same true effect on design A = 39.9%, against the 80% its nominal power implied"
+"the ship threshold exceeds the MDE under design A, which is the whole defect",True,design A ships only above 1.091 pp while being sized to detect 1.00 pp
+the ship threshold sits BELOW the MDE under the shipped design,True,"design B ships above 0.817 pp, inside the 1.00 pp target"
+the decision-powered n inverts its own formula,True,"n_for_decision -> 40,720.1, shipped 40,721 (ceil)"
+every operating-characteristic row sums to 100%,True,10 rows across both designs
+"at exactly break-even neither design can adjudicate, as a 95% CI requires",True,both designs sit at ~2.5% ship / ~2.5% kill / ~95% inconclusive at the boundary -- no sample size can settle an effect that IS break-even
+the MDE was not changed by the re-sizing; only the sample size was,True,"MDE 1.00 pp on both designs; n moved 15,058 -> 40,721 (2.70x)"
+the decision-powered duration table is monotone and never cheaper than detect-vs-zero,True,"ratio spans 1.32x..21.41x, rising as the target approaches break-even"
+"the alternative design is kept and labelled, not deleted",True,"nb08_design_comparison.csv carries both, each with what it can and cannot answer"
+the experiment's metric carries a name distinct from 06's target,True,repeat_30d_from_trigger vs repeat_purchase_30d
+"the two base rates are recorded as different quantities, not reconciled",True,"10.25% (trigger, powers this design) vs 13.73% (06, from t0) -- 3.48 pp apart"
 the duration table is monotone: a smaller MDE never costs less time,True,50 weeks at 0.39 pp down to 8 weeks at 3.00 pp
 "duration = ramp + enrolment + outcome window, for every row",True,ramp 2w + enrolment + outcome 5w
-the heterogeneity readout is labelled exploratory and carries its own MDE,True,per-tercile MDE 1.76 pp vs primary 1.00 pp
-the design does not promise a CATE,True,"~3,086 events against the ~330,000 07 measured as necessary"
+the heterogeneity readout is labelled exploratory and carries its own MDE,True,per-tercile MDE 1.05 pp vs primary 1.00 pp
+the design does not promise a CATE,True,"~8,347 events against the ~330,000 07 measured as necessary"
 every inherited constraint is mapped to a section,True,"15 constraints, all mapped"
 all four of 07's binding rules for 08 are discharged,True,"5 rules recorded by 07, 7 entries carrying them"
 every threat carries a residual-risk statement,True,9 threats
 the cookie-identity bias direction is stated as toward the null,True,T2 residual risk names attenuation explicitly
 "guardrails without a baseline in this dataset are labelled, not invented",True,G3/G4 baselines left NaN with the reason recorded
 the decision rule compares a CI to break-even rather than testing against zero,True,pre-registration field decision_rule
-every figure this notebook writes exists on disk,True,6 figures
+every figure this notebook writes exists on disk,True,7 figures
