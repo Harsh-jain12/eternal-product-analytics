@@ -1,0 +1,4 @@
+score_tercile,n,base_rate_pct,n_events,mean_score
+T1_low,24849,4.797,1192,0.05665
+T2_mid,24850,8.748,2174,0.09306
+T3_high,24849,17.2,4274,0.16631

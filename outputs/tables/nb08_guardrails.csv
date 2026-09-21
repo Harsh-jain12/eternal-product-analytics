@@ -1,0 +1,5 @@
+id,guardrail,baseline,unit,sd,n,direction,threshold,provenance
+G1,"average order value, post-trigger orders",42.5726,EUR,35.4834,9910,two-sided,ASSUMPTION: investigate if the 95% CI excludes a 5% relative decline,"DATA (baseline), ASSUMPTION (threshold)"
+G2,"orders in (t0+14d, t0+90d] -- pull-forward check",0.3414,orders/user,0.8481,47975,must move in the same direction as the primary,"REQUIRED day-90 readout; a null here with a positive primary = pull-forward, not lift","DATA (baseline), ASSUMPTION (threshold)"
+G3,opt-out / unsubscribe rate,,pct,,0,one-sided (increase is harm),ASSUMPTION: stop if treated opt-out exceeds control by > 0.50 pp,ASSUMPTION -- REES46 holds no email or consent data
+G4,"support contacts per 1,000 users",,per 1k,,0,one-sided (increase is harm),ASSUMPTION: stop if treated exceeds control by > 20% relative,ASSUMPTION -- REES46 holds no support data

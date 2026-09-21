@@ -1,0 +1,44 @@
+check,passed,detail
+no economic input traces to Criteo (source strings),True,8 registered inputs; sources cite 02/05/features.parquet/orders.parquet and business inputs only
+no economic input traces to Criteo (note strings),True,notes screened for the same tokens
+the MDE is reachable from the registered inputs alone,True,"break-even 0.391951 pp recomputed from the ledger, MDE 1.00 pp chosen from the sweep above it"
+no Criteo effect size appears as a design magnitude,True,MDE 1.0000 pp differs from every Criteo ITT/TOT magnitude
+every economic input carries a DATA or ASSUMPTION tag,True,"5 DATA, 3 ASSUMPTION, none untagged, 8 registered in total"
+every economic input carries a non-empty source string,True,all 8 sourced
+the DATA/ASSUMPTION split is the one the ledger figure renders,True,"5 DATA / 3 ASSUMPTION rendered, matching the 8 registered"
+the inflow rate reconciles against 05's purchaser count (Nov-Feb window),True,"695.3636/day x 121d = 84,139 vs 84,139 first orders in the window"
+05's purchaser count reconciles to the full-span monthly decomposition,True,"109,732 rows = 05's n_rows = sum over 5 monthly cohorts"
+the purchaser gap against 00's raw count is exactly the bot exclusion,True,"00 counted 110,518 purchasers / 159,382 orders; bot-excluded data holds 109,732 / 158,399 -- a gap of 786 users and 983 orders, matching the 0.6168% order share"
+October is excluded from the inflow rate and that is the conservative direction,True,695.4/day (Nov-Feb) < 726.7/day (all months) -- using all months would shorten every duration
+the trigger rule references no churn threshold and no score,True,trigger = t0 + 14d; the 42.2d rule appears only as the rejected alternative in S3B
+the enrolment population is not selected on 06's score,True,"POOL built from trailing/recency only; the score is joined afterwards, for blocking"
+06's score is used only for blocking and the exploratory readout,True,score enters `block` and S7; it appears in no enrolment or targeting rule
+"the primary estimand is ITT by assignment, not by exposure",True,pre-registration field primary_estimand
+"the outcome window starts at ASSIGNMENT, not at t0",True,"window = (t0+14d, t0+44d]"
+"the power base rate is the trigger-population rate, not 05/06's 13.73%",True,"powered on 10.248% (survivors to day 14), not 13.73%"
+"the downstream value term uses 02's 1.27x residual, not the naive 2.00x",True,"+4.00 pp (1.27x) against +14.84 pp (2.00x), a 3.7x difference in the downstream term"
+no stored segment label is used anywhere in the design,True,"the blocking key is exactly ['acq_month', 'score_tercile']; `pre_segment` IS present in the trigger pool and is deliberately unused (04 kappa 0.309; 05 S6A: segment_model.json is degenerate in a pre-purchase window)"
+assignment is deterministic: re-running the hash reproduces every arm,True,"74,548 ids re-hashed, 0 differences"
+assignment is a function of user_id and salt only,True,"corr(u, acquisition day) = -0.00178"
+a different salt produces an independent split,True,agreement 50.18% with a different salt -- chance
+SRM passes on the A/A,True,binomial p = 0.9795
+every block is balanced to within one user,True,"treated share 0.500000..0.500185 across 12 blocks; an odd block of size n lands at exactly 0.5 + 0.5/n, 8 of 12 blocks are odd-sized"
+A/A covariate balance clears the conventional bar,True,max |SMD| 0.00877 on tenure_d
+"A/A balance also clears the HONEST bar (07 S2B's test, not just the 0.10 rule)",True,largest deviation 0.84 SD of honest 50/50 noise -- Criteo's sat at 7-65 SD
+"blocking improves per-block balance over unblocked thresholding (shown, not assumed)",True,max per-block deviation: blocked 0.00019 vs unblocked 0.02028
+"the id-range counterexample fails, demonstrating the check has teeth",True,id-range max |SMD| 0.5000 on tenure_d vs blocked 0.0088
+no outcome is compared between arms anywhere in this notebook,True,"deliberate: no treatment exists, so an outcome split would be a null simulation presented next to a design. Only pre-trigger covariates are compared."
+the sample-size formula reproduces a textbook value,True,"n_per_arm(p0=0.10, delta=0.02) = 3841 (textbook ~3,835)"
+the MDE solver inverts the sample-size formula,True,round trip on 1.00 pp
+the chosen design point is above break-even,True,"MDE 1.00 pp > break-even 0.39 pp, ratio 2.55x"
+the duration table is monotone: a smaller MDE never costs less time,True,50 weeks at 0.39 pp down to 8 weeks at 3.00 pp
+"duration = ramp + enrolment + outcome window, for every row",True,ramp 2w + enrolment + outcome 5w
+the heterogeneity readout is labelled exploratory and carries its own MDE,True,per-tercile MDE 1.76 pp vs primary 1.00 pp
+the design does not promise a CATE,True,"~3,086 events against the ~330,000 07 measured as necessary"
+every inherited constraint is mapped to a section,True,"15 constraints, all mapped"
+all four of 07's binding rules for 08 are discharged,True,"5 rules recorded by 07, 7 entries carrying them"
+every threat carries a residual-risk statement,True,9 threats
+the cookie-identity bias direction is stated as toward the null,True,T2 residual risk names attenuation explicitly
+"guardrails without a baseline in this dataset are labelled, not invented",True,G3/G4 baselines left NaN with the reason recorded
+the decision rule compares a CI to break-even rather than testing against zero,True,pre-registration field decision_rule
+every figure this notebook writes exists on disk,True,6 figures

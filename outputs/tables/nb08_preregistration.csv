@@ -1,0 +1,24 @@
+field,value
+title,Second-purchase activation nudge: a randomised test at REES46 Cosmetics
+status,DESIGN ONLY -- not executed. REES46 contains no randomised experiment (principle 10).
+hypothesis,"A no-offer reminder sent 14 days after a first order increases the probability of a second order within the following 30 days. Direction: positive. No effect size is predicted, because none can be estimated from observational data."
+population,"Every user whose first order was placed during the enrolment window and who has not placed a second order by day 14. No score, segment or churn flag filters entry."
+trigger,"t0 + 14 days, where t0 is the first order timestamp under the certified reconstruction rule. One trigger per user, ever."
+unit,User. Deterministic: arm = f(sha256(salt || user_id)).
+salt,eternal-08-activation-v1
+allocation,"50/50, blocked systematic allocation on the hash order within each block."
+blocks,acquisition month x 06 shipped-score tercile (terciles cut on the enrolled population at assignment time and frozen). Promo-spike days add a third key if 02's detector fires.
+primary_estimand,ITT by randomised assignment. Delivery / open / click are post-randomisation and are never conditioned on (07 S4: the naive exposed-vs-control comparison inflated the complier effect 1.62x on conversion).
+primary_metric,"repeat_purchase in (t0+14d, t0+44d], 05/06 definition: a further order in a session other than the first-order session."
+base_rate,"10.248% (DATA: 74,548 historical analogues at the day-14 trigger)."
+break_even_lift,"0.3920 pp absolute (3.82% relative), from c/V with c=EUR 0.05 (ASSUMPTION), V=EUR 12.7567."
+mde,"1.00 pp absolute (9.8% relative), alpha 0.05 two-sided, power 0.80."
+sample_size,"15,058 per arm, 30,116 total, ~1,543 repeat events per arm."
+duration,7 weeks enrolment; 14 weeks to primary readout; day-90 G2 readout 21 weeks.
+analysis,"Difference in proportions with a 95% CI on the absolute difference (unpooled SE); block-adjusted estimate reported alongside as the pre-specified secondary. Effect size and CI always, per principle 12 -- never a p-value alone."
+decision_rule,"THREE-WAY against break-even, not a test against zero. CI lower bound > 0.39 pp -> ship. CI upper bound < 0.39 pp -> kill. Straddles -> INCONCLUSIVE, reported as such."
+guardrails,"G1 AOV (two-sided); G2 orders in (t0+14d, t0+90d] REQUIRED pull-forward readout; G3 opt-out (one-sided, hard stop); G4 support contacts (one-sided, hard stop)."
+exploratory,"ITT by 06 score tercile, two-sided, NO predicted direction -- 07 records that the sign may invert from Criteo's. Labelled EXPLORATORY; per-tercile MDE 1.76 pp. No CATE model is fitted: 07 S6E needed ~330,000 events for a reliable uplift ranking and this design buys ~3,086."
+monitoring,"Daily SRM; delivery failures; G3/G4. NO interim effect estimates, no peeking, fixed horizon."
+what_would_falsify_it,"A 95% CI whose upper bound falls below 0.39 pp at the primary readout, or a positive primary with a null G2 at day 90 (pull-forward, not lift)."
+pre_registered_negative_results,"An inconclusive CI straddling break-even is a reportable outcome, not a failed experiment. A negative tercile is reported, not dropped."
