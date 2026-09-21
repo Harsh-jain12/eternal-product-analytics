@@ -2,13 +2,13 @@ check,pass,detail
 cluster labels partition all purchasers exactly,True,"109,732 == 109,732, no nulls, 5 levels incl. No Behavioural Profile"
 eligible + ineligible == all purchasers,True,"103,919 + 5,813 == 109,732"
 k-means assigns every eligible user exactly once,True,"103,919 labels over 103,919 eligible users"
-RFM terciles partition all purchasers,True,"Low/Mid/High = [37742, 47953, 24037]"
-value terciles partition all purchasers,True,"Low/Mid/High = [35768, 54887, 19077]"
+RFM terciles partition all purchasers,True,"Low/Mid/High = [37748, 47949, 24035]"
+value terciles partition all purchasers,True,"Low/Mid/High = [35781, 54874, 19077]"
 cross-tab margins equal the population,True,"109,732 == 109,732"
 cross-tab row margins equal the RFM tercile counts,True,every row sums to its tercile size
 cross-tab column margins equal the cluster counts,True,every column sums to its segment size
 cell A1 equals the sum of its cross-tab cells,True,"5,287 == 5,287"
-cell B1 equals its cross-tab cell,True,"10,982 == 10,982"
+cell B1 equals its cross-tab cell,True,"10,983 == 10,983"
 A2 is a strict subset of A3,True,"A2 610 subset of A3 2,883"
 B3 is a strict subset of B2,True,"B3 7,741 subset of B2 17,395"
 bot list reproduces the certified exclusion exactly,True,"1,605 == 1,605"
@@ -28,6 +28,6 @@ Holm-adjusted p never below the raw p,True,Holm correction is monotone and non-d
 basket-value separation is weaker than fitted-feature separation,True,"eta^2 0.0416 (basket, external) < 0.4593 (session depth, fitted)"
 "recall correction is applied, not assumed",True,every cell scaled by 1/0.5309
 feature frame is in canonical user_id order (determinism guard 2),True,"every feature window sorted by user_id, so k-means++ seeding is reproducible"
-feature matrix is reproducible after round_sig (determinism guard 1),True,"4 features unstable raw (max |diff| 8.0e-15), 0 after rounding"
+feature matrix is reproducible after round_sig (determinism guard 1),True,"4 of 11 features unstable raw (magnitudes in nb04_float_determinism_audit.csv), 0 after rounding"
 k-means is reproducible on the rounded matrix,True,refitting k=4 on the same Z reproduces every label exactly
 "no Low-RFM user was acquired within 30 days (structural, as claimed in 4A)",True,"0 users -- Low RFM requires lapsed recency, which a 30-day-old customer cannot have"

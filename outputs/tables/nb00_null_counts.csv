@@ -2,9 +2,9 @@ column,n_null,pct_null
 category_code,20339246.0,98.29122537070793
 brand,8757117.0,42.3195511104324
 user_session,4598.0,0.022220246230096982
+category_id,0.0,0.0
 event_time,0.0,0.0
 event_type,0.0,0.0
-product_id,0.0,0.0
-category_id,0.0,0.0
 price,0.0,0.0
+product_id,0.0,0.0
 user_id,0.0,0.0

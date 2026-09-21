@@ -1,5 +1,5 @@
 block,n_float_cols,repeats,L0_row_order_stable,L1_diff_sorted_only,L1_max_abs_diff,L2_diff_sorted_and_rounded,L3_diff_threads1_raw
-M1,12,3,False,8951,8.526512829121202e-14,0,0
+M1,12,3,False,4773,1.1368683772161603e-13,0,0
 M2,3,3,False,0,0.0,0,0
-M3,12,3,False,39787,3.552713678800501e-15,0,0
+M3,12,3,False,39508,2.6645352591003757e-15,0,0
 M4,4,3,False,0,0.0,0,0

@@ -10,6 +10,7 @@ import os
 
 import duckdb
 import numpy as np
+import pandas as pd
 
 
 def round_sig(df, cols, sig=6):
@@ -58,6 +59,52 @@ def round_sig(df, cols, sig=6):
         df[c] = v
     return df
 
+
+def key_round(x, dp=6):
+    """Round a float BEFORE it is used as an ORDERING or BUCKETING key. The RC-1 guard.
+
+    THE FOURTH FAILURE MODE, and the only one that AMPLIFIES. connect()'s notes 1-3 cover
+    values that wobble in their last bits; that is cosmetic for a reported mean. It is not
+    cosmetic when the wobbling float is a SORT KEY, a rank key, or a quantile-cut key,
+    because then a difference of 1e-13 decides an ORDERING and comes back out as a whole
+    rank step -- a difference of order 1e-2 in a percentile, or a row moving to the other
+    side of a bucket boundary. A sub-reported-precision wobble is amplified into a
+    difference that is visible at reported precision. Measured in 05's prod_ref:
+
+        percent_rank() OVER (PARTITION BY d ORDER BY psp/pn, product_id)
+            two processes, same data -> 597,236 of 3,113,627 ranks differ, max |diff| 0.0423
+        percent_rank() OVER (PARTITION BY d ORDER BY round(psp/pn, 6), product_id)
+            two processes, same data -> 0 differ
+
+    The tie-break column (product_id) does not save you: two products at the same price are
+    not equal once their accumulated sums differ by one bit, so the tie-break never fires.
+    Rounding restores the tie, and only then does the declared tie-break decide it.
+
+    6 decimal places is the project default: coarser than any observed wobble (~1e-13) by
+    seven orders of magnitude, and finer than any quantity this project reports. Use
+    sig_round() instead for a key that spans many orders of magnitude, such as a predicted
+    probability, where a fixed decimal count would erase the small end.
+    """
+    if isinstance(x, pd.Series):
+        return x.round(dp)
+    return np.round(np.asarray(x, dtype="float64"), dp)
+
+
+def sig_round(x, sig=12):
+    """key_round() for a key spanning many orders of magnitude (e.g. a probability).
+
+    Keeps `sig` significant figures rather than `dp` decimals. 12 is the default: far finer
+    than anything reported (deciles are quoted to 3-4 s.f.), far coarser than the wobble.
+    """
+    v = np.asarray(x, dtype="float64").copy()
+    ok = np.isfinite(v) & (v != 0)
+    if ok.any():
+        mag = np.floor(np.log10(np.abs(v[ok])))
+        factor = np.power(10.0, (sig - 1) - mag)
+        v[ok] = np.round(v[ok] * factor) / factor
+    return pd.Series(v, index=x.index, name=x.name) if isinstance(x, pd.Series) else v
+
+
 RAW_GLOB = os.path.join("data", "raw", "*.csv")
 
 
@@ -82,8 +129,16 @@ def connect(memory_limit="5GB", threads=6):
          median across two runs -- materially different, not a rounding artefact.
          GUARD: use `quantile_cont` (exact) for every reported percentile.
       3. Raw float `sum`/`avg`: parallel summation order changes the last ~7
-         significant figures. Cosmetic only.
-         GUARD: round to reporting precision (2dp money, 6dp rates).
+         significant figures. Cosmetic only *as a value*, but see 4.
+         GUARD: round to reporting precision (2dp money, 6dp rates) -- round_sig().
+      4. ANY OF THE ABOVE USED AS AN ORDERING OR BUCKETING KEY. This is the one that
+         amplifies, and it is why 3 is not merely cosmetic. A wobble of 1e-13 in a
+         value is invisible; the same wobble in a `percent_rank` ORDER BY, a
+         `pd.qcut` key or a `np.digitize` key decides an ORDERING and re-emerges as a
+         whole rank step -- measured at max |diff| 0.0423 on a percentile in 05's
+         prod_ref, 597,236 of 3,113,627 ranks moving between two processes. A
+         tie-break column does not save you: the values are no longer tied.
+         GUARD: key_round() / sig_round() -- round the key BEFORE it is used as one.
 
       Deterministic (verified): count(*), count(DISTINCT), min/max, quantile_cont,
       and window functions over an already-materialised table.
@@ -161,8 +216,13 @@ def exclude_users(con, events_view, excluded_ids_view, out_view="ev"):
 
 
 CERTIFIED_ORDER_RULE_SQL = """
+    -- round(sum(price), 6): sum() is a parallel float reduction, so order_value differed
+    -- in its last bit on 10 of 158,399 orders between two clean runs. Cosmetic as a value
+    -- (6 dp on a euro sum is four orders of magnitude finer than anything reported) and
+    -- NOT cosmetic the moment anything sorts or buckets on it -- see connect() note 4.
+    -- Rounded here, once, so the view and data/processed/orders.parquet cannot disagree.
     SELECT user_id, user_session, event_time AS order_ts,
-           count(*) AS n_items, sum(price) AS order_value
+           count(*) AS n_items, round(sum(price), 6) AS order_value
     FROM {events_view}
     WHERE event_type = 'purchase'
     GROUP BY user_id, user_session, event_time
@@ -180,7 +240,7 @@ def create_orders_view(con, events_view="ev", view_name="orders"):
 
 REJECTED_SESSION_ONLY_ORDER_SQL = """
     SELECT user_id, user_session, min(event_time) AS order_ts,
-           count(*) AS n_items, sum(price) AS order_value
+           count(*) AS n_items, round(sum(price), 6) AS order_value
     FROM {events_view}
     WHERE event_type = 'purchase'
     GROUP BY user_id, user_session

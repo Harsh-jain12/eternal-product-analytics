@@ -1,4 +1,4 @@
 population,n,median_recency_d,one_order_pct,inside_30d_window,usable_as_08_target
-04 cell B1 (low RFM x most-engaged),10982,109.1,99.5,NO -- 109.1d past the last order,"No. 04 S9C: long tenure, not live engagement; ~109d too late."
+04 cell B1 (low RFM x most-engaged),10983,109.1,99.5,NO -- 109.1d past the last order,"No. 04 S9C: long tenure, not live engagement; ~109d too late."
 04 cell B3 (new x engaged),7741,15.4,95.6,YES,Yes -- 04's own recommendation. But it is a SNAPSHOT of one date.
 08 day-14 trigger pool,74548,14.0,100.0,YES -- by construction,"Yes. Same profile, produced continuously rather than as a snapshot."

@@ -4,25 +4,25 @@ rank,feature,scoring,n_scored,AUC,direction,block
 3,pre_n_cart_ev,numeric,90815,0.606,+,M3 pre-t0 browsing
 4,pre_n_categories,numeric,90815,0.6055,+,M3 pre-t0 browsing
 5,pre_p_carted,numeric,90815,0.6042,+,M3 pre-t0 browsing
-6,pre_n_removals,numeric,90815,0.6023,+,M3 pre-t0 browsing
-7,log1p_pre_n_removals,numeric,90815,0.6023,+,M3 pre-t0 browsing
+6,log1p_pre_n_removals,numeric,90815,0.6023,+,M3 pre-t0 browsing
+7,pre_n_removals,numeric,90815,0.6023,+,M3 pre-t0 browsing
 8,pre_n_active_days,numeric,90815,0.5972,+,M3 pre-t0 browsing
 9,pre_n_brands,numeric,90815,0.5962,+,M3 pre-t0 browsing
 10,tenure_d,numeric,90815,0.595,+,M3 pre-t0 browsing
-11,fo_n_products,numeric,91334,0.588,+,M1 first order
-12,fo_n_items,numeric,91334,0.588,+,M1 first order
+11,fo_n_items,numeric,91334,0.588,+,M1 first order
+12,fo_n_products,numeric,91334,0.588,+,M1 first order
 13,pre_n_sessions,numeric,90815,0.5868,+,M3 pre-t0 browsing
 14,pre_sessions_per_tenure_day,numeric,90815,0.5865,-,M3 pre-t0 browsing
 15,pre_n_prior_sessions,numeric,90815,0.5863,+,M3 pre-t0 browsing
 16,pre_category_entropy,numeric,84297,0.5819,+,M3 pre-t0 browsing
 17,pre_cart_not_in_first_order_rate,numeric,90152,0.5765,+,M3 pre-t0 browsing
-18,pre_price_range_viewed,numeric,83317,0.5759,+,M3 pre-t0 browsing
+18,pre_price_range_viewed,numeric,83317,0.5758,+,M3 pre-t0 browsing
 19,fo_primary_category,OOF target-encoded,91334,0.5753,+,M1 first order
 20,fo_n_categories,numeric,91334,0.5752,+,M1 first order
 21,pre_removal_per_cart,numeric,90152,0.5752,+,M3 pre-t0 browsing
 22,pre_p_viewed,numeric,90815,0.5748,+,M3 pre-t0 browsing
-23,fo_value_w,numeric,91334,0.5747,+,M1 first order
-24,fo_value,numeric,91334,0.5747,+,M1 first order
+23,fo_value,numeric,91334,0.5747,+,M1 first order
+24,fo_value_w,numeric,91334,0.5747,+,M1 first order
 25,cad_day_n_hist_gaps,numeric,43092,0.5735,+,M4 cadence
 26,pre_brand_entropy,numeric,84297,0.573,+,M3 pre-t0 browsing
 27,has_day_cadence,numeric,91334,0.5724,+,M4 cadence

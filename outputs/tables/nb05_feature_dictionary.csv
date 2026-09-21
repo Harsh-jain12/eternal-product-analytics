@@ -28,10 +28,10 @@ fo_hour,M1 first order,at t0,purchase,hour of t0,none,True,int64,24,0.0,0.0
 fo_dow,M1 first order,at t0,purchase,day of week of t0,none,True,int64,7,0.0,0.0
 fo_is_weekend,M1 first order,at t0,purchase,t0 falls on Sat/Sun,none,True,int32,2,0.0,0.0
 fo_discount_vs_prior_max,M1 first order,at t0,purchase,"mean over lines of max(1 - price / product's max price on STRICTLY PRIOR days, 0)",F3-safe by construction: .shift().expanding(); a full-dataset reference inflates this 5x,True,float64,16220,0.95,1.13
-fo_price_vs_prior_mean,M1 first order,at t0,purchase,mean over lines of price / product's mean price on strictly prior days,"F3-safe, same construction",True,float64,22639,0.95,1.13
-fo_product_price_pct_prior,M1 first order,at t0,purchase,"mean over lines of the product's cross-sectional price percentile among all products, computed from prior-day prices on the order's day",F3-safe,True,float64,100334,0.95,1.13
+fo_price_vs_prior_mean,M1 first order,at t0,purchase,mean over lines of price / product's mean price on strictly prior days,"F3-safe, same construction",True,float64,22619,0.95,1.13
+fo_product_price_pct_prior,M1 first order,at t0,purchase,"mean over lines of the product's cross-sectional price percentile among all products, computed from prior-day prices on the order's day",F3-safe,True,float64,100250,0.95,1.13
 fo_price_ref_coverage,M1 first order,at t0,purchase,share of first-order lines that had a prior-day reference at all,diagnostic for the three features above,True,float64,156,0.0,0.0
-fo_price_z_in_category,M1 first order,at t0,purchase,"mean over lines of (ln price - prior mean ln price in category) / prior sd, clipped to +/-5",F3-safe; NULL where the category has <50 prior priced rows or sd(ln p) < 0.05,True,float64,103619,0.0,0.0
+fo_price_z_in_category,M1 first order,at t0,purchase,"mean over lines of (ln price - prior mean ln price in category) / prior sd, clipped to +/-5",F3-safe; NULL where the category has <50 prior priced rows or sd(ln p) < 0.05,True,float64,103645,0.0,0.0
 fo_catz_coverage,M1 first order,at t0,purchase,share of lines with a usable category reference,diagnostic for fo_price_z_in_category,True,float64,430,0.0,0.0
 fo_has_discount,M1 first order,at t0,purchase,fo_discount_vs_prior_max > 0,F3-safe,True,int64,2,0.0,0.0
 first_order_is_bulk,M1 first order,at t0,purchase,fo_n_items >= 90.6 -- the leakage-safe replacement for is_bulk_buyer,F2-safe by construction,True,int64,2,0.0,0.0
@@ -73,8 +73,8 @@ pre_cart_not_in_first_order_rate,M3 pre-t0 browsing,< t0,all types,share of pre-
 pre_brand_entropy,M3 pre-t0 browsing,< t0,all types,"Shannon entropy of viewed brands, NULL kept as its own level",none,True,float64,22341,7.55,7.7
 pre_brand_coverage,M3 pre-t0 browsing,< t0,all types,share of pre-t0 views carrying a non-null brand,diagnostic for pre_brand_entropy,True,float64,4038,7.55,7.7
 pre_category_entropy,M3 pre-t0 browsing,< t0,all types,Shannon entropy of viewed category_id,none,True,float64,23604,7.55,7.7
-pre_mean_price_pct_viewed,M3 pre-t0 browsing,< t0,all types,mean prior-day price percentile of products viewed before t0,F3-safe; NOT the same variable 04 fitted on (it used a full-dataset percentile),True,float64,93889,8.45,8.78
-pre_price_range_viewed,M3 pre-t0 browsing,< t0,all types,P90-P10 of those percentiles,"F3-safe, same caveat",True,float64,84242,8.45,8.78
+pre_mean_price_pct_viewed,M3 pre-t0 browsing,< t0,all types,mean prior-day price percentile of products viewed before t0,F3-safe; NOT the same variable 04 fitted on (it used a full-dataset percentile),True,float64,93824,8.45,8.78
+pre_price_range_viewed,M3 pre-t0 browsing,< t0,all types,P90-P10 of those percentiles,"F3-safe, same caveat",True,float64,84178,8.45,8.78
 tenure_d,M3 pre-t0 browsing,< t0,all types,days from the user's FIRST EVENT to t0,"measured to t0, NOT to DATA_END -- the DATA_END version is F2",True,float64,64247,0.55,0.57
 pre_days_since_last_event,M3 pre-t0 browsing,< t0,all types,days from the last pre-t0 event to t0,"NEAR-DEGENERATE: median 6.8 minutes. Measures checkout speed, not recency",True,float64,8537,0.55,0.57
 pre_views_per_tenure_day,M3 pre-t0 browsing,< t0,all types,pre_n_view_ev / tenure_d (floored at 1 minute),"tenure-normalised twin, constraint 5",True,float64,79495,0.55,0.57

@@ -1,5 +1,5 @@
 check,passed,detail
-"SRM and balance were computed BEFORE any treatment effect (wall clock, not assertion)",True,"last validity check t=1789931683.181 < first effect estimate t=1789931683.229 (visit), margin 0.0s"
+"SRM and balance were computed BEFORE any treatment effect (wall clock, not assertion)",True,"last validity check at step 3 < first effect estimate at step 4 (visit), margin 1 step(s)"
 "the validity gate is live, not decorative: require_validity() raises when a flag is unset",True,"srm flag temporarily unset, require_validity() raised RuntimeError, flag restored"
 no model was fitted on anything but the train frame,True,"23 fits logged, every one guarded on `Xsrc is Xtr`"
 "the fit guard actually refuses the test frame (demonstrated, not asserted)",True,"fit_guard(Xte, ...) raised RuntimeError as designed"
@@ -32,4 +32,4 @@ sleeping-dog search ran at two resolutions on three rankings and both outcomes,T
 risk and uplift targeting genuinely select different people,True,33.7% of selections shared
 "no retention, cadence or lifecycle quantity was computed on Criteo",True,the file has no user id and no timestamp; none was attempted
 "the carry-back uses 06's PERSISTED predictions, not a re-fit, so nothing about 06 moved here",True,"27,400 test rows at 11.6533% positive, both matching 06's handoff exactly"
-06's decile-1 lift re-derives from those predictions to 3dp,True,1.882 vs 06's 1.882
+06's decile-1 lift re-derives from those predictions to 3dp,True,1.879 vs 06's 1.879

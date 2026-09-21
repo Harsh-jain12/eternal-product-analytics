@@ -1,6 +1,6 @@
 component,value_eur,basis
-margin on the incremental 2nd order,12.2657,ASSUMPTION margin 30% x DATA AOV2 EUR 40.89
+margin on the incremental 2nd order,12.2659,ASSUMPTION margin 30% x DATA AOV2 EUR 40.89
 "downstream, 1.27x residual (02 S0B)",0.491,+4.00 pp incremental 3rd-order probability
-TOTAL V per incremental 2nd order,12.7567,
-[rejected] downstream at the naive 2.00x,1.8206,"+14.84 pp -- selection, not causation"
-[rejected] TOTAL under the naive 2.00x,14.0863,
+TOTAL V per incremental 2nd order,12.757,
+[rejected] downstream at the naive 2.00x,1.8207,"+14.84 pp -- selection, not causation"
+[rejected] TOTAL under the naive 2.00x,14.0866,

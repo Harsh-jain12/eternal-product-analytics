@@ -1,7 +1,7 @@
 comparison,dAP,dAP_lo,dAP_hi,dAP_excludes_0,dROC,dROC_lo,dROC_hi,dROC_excludes_0
 logistic M4  -  prevalence only,0.0647,0.057,0.0738,True,0.128,0.1175,0.1382,True
 logistic M4  -  first-order value quintile,0.0457,0.0381,0.0545,True,0.0639,0.0521,0.0762,True
-logistic M4  -  pre_n_products alone,0.0167,0.0099,0.0237,True,0.0228,0.014,0.0315,True
+logistic M4  -  pre_n_products alone,0.0167,0.0099,0.0237,True,0.0228,0.014,0.0314,True
 logistic M4  -  PC1 activity score,0.0126,0.0066,0.0192,True,0.0135,0.0053,0.0211,True
 PC1 score    -  pre_n_products alone,0.004,0.0015,0.0065,True,0.0093,0.0062,0.0125,True
-LightGBM     -  logistic M4,0.0039,-0.0017,0.0101,False,0.0133,0.0076,0.0192,True
+LightGBM     -  logistic M4,0.0017,-0.004,0.008,False,0.0126,0.0064,0.0189,True

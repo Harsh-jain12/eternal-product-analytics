@@ -1,12 +1,12 @@
 feature,rows_differing_RAW,max_abs_diff,rows_differing_AFTER_round_sig
 mean_session_depth,0,0.0,0
-mean_intersession_gap_d,26,8.881784197001252e-16,0
+mean_intersession_gap_d,31,1.7763568394002505e-15,0
 sessions_per_active_week,0,0.0,0
 view_to_cart,0,0.0,0
 cart_to_purchase,0,0.0,0
 cart_abandonment_rate,0,0.0,0
-mean_price_pct_viewed,30669,5.551115123125783e-16,0
+mean_price_pct_viewed,29720,4.440892098500626e-16,0
 price_range_viewed,0,0.0,0
-brand_entropy,23765,3.552713678800501e-15,0
+brand_entropy,23738,4.440892098500626e-15,0
 brand_coverage,0,0.0,0
-category_entropy,27322,7.993605777301127e-15,0
+category_entropy,27193,1.0658141036401503e-14,0

@@ -1,7 +1,7 @@
 check,passed,detail
 no economic input traces to Criteo (source strings),True,8 registered inputs; sources cite 02/05/features.parquet/orders.parquet and business inputs only
 no economic input traces to Criteo (note strings),True,notes screened for the same tokens
-the MDE is reachable from the registered inputs alone,True,"break-even 0.391951 pp recomputed from the ledger, MDE 1.00 pp chosen from the sweep above it"
+the MDE is reachable from the registered inputs alone,True,"break-even 0.391942 pp recomputed from the ledger, MDE 1.00 pp chosen from the sweep above it"
 no Criteo effect size appears as a design magnitude,True,MDE 1.0000 pp differs from every Criteo ITT/TOT magnitude
 every economic input carries a DATA or ASSUMPTION tag,True,"5 DATA, 3 ASSUMPTION, none untagged, 8 registered in total"
 every economic input carries a non-empty source string,True,all 8 sourced
@@ -21,25 +21,25 @@ no stored segment label is used anywhere in the design,True,"the blocking key is
 assignment is deterministic: re-running the hash reproduces every arm,True,"74,548 ids re-hashed, 0 differences"
 assignment is a function of user_id and salt only,True,"corr(u, acquisition day) = -0.00178"
 a different salt produces an independent split,True,agreement 50.18% with a different salt -- chance
-SRM passes on the A/A,True,binomial p = 0.9795
-every block is balanced to within one user,True,"treated share 0.500000..0.500185 across 12 blocks; an odd block of size n lands at exactly 0.5 + 0.5/n, 8 of 12 blocks are odd-sized"
-A/A covariate balance clears the conventional bar,True,max |SMD| 0.00877 on tenure_d
-"A/A balance also clears the HONEST bar (07 S2B's test, not just the 0.10 rule)",True,largest deviation 0.84 SD of honest 50/50 noise -- Criteo's sat at 7-65 SD
-"blocking improves per-block balance over unblocked thresholding (shown, not assumed)",True,max per-block deviation: blocked 0.00019 vs unblocked 0.02028
-"the id-range counterexample fails, demonstrating the check has teeth",True,id-range max |SMD| 0.5000 on tenure_d vs blocked 0.0088
+SRM passes on the A/A,True,binomial p = 0.9854
+every block is balanced to within one user,True,"treated share 0.500000..0.500092 across 12 blocks; an odd block of size n lands at exactly 0.5 + 0.5/n, 6 of 12 blocks are odd-sized"
+A/A covariate balance clears the conventional bar,True,max |SMD| 0.00794 on fo_n_items
+"A/A balance also clears the HONEST bar (07 S2B's test, not just the 0.10 rule)",True,largest deviation 0.77 SD of honest 50/50 noise -- Criteo's sat at 7-65 SD
+"blocking improves per-block balance over unblocked thresholding (shown, not assumed)",True,max per-block deviation: blocked 0.00009 vs unblocked 0.02061
+"the id-range counterexample fails, demonstrating the check has teeth",True,id-range max |SMD| 0.5000 on tenure_d vs blocked 0.0079
 no outcome is compared between arms anywhere in this notebook,True,"deliberate: no treatment exists, so an outcome split would be a null simulation presented next to a design. Only pre-trigger covariates are compared."
 the sample-size formula reproduces a textbook value,True,"n_per_arm(p0=0.10, delta=0.02) = 3841 (textbook ~3,835)"
 the MDE solver inverts the sample-size formula,True,round trip on 1.00 pp
 the chosen design point is above break-even,True,"MDE 1.00 pp > break-even 0.39 pp, ratio 2.55x"
-"the shipped sample size is powered for the DECISION RULE, not for a null of zero",True,"40,721/arm (decision-powered) shipped, not 15,058/arm (detect-vs-zero)"
+"the shipped sample size is powered for the DECISION RULE, not for a null of zero",True,"40,719/arm (decision-powered) shipped, not 15,058/arm (detect-vs-zero)"
 "the re-sized design hits 80% P(ship) at the target effect, to within 0.5 pp",True,P(ship) at a true 1.00 pp effect = 80.0%
 "the detect-vs-zero design would NOT have hit it -- the defect is reproduced, not asserted",True,"P(ship) at the same true effect on design A = 39.9%, against the 80% its nominal power implied"
 "the ship threshold exceeds the MDE under design A, which is the whole defect",True,design A ships only above 1.091 pp while being sized to detect 1.00 pp
 the ship threshold sits BELOW the MDE under the shipped design,True,"design B ships above 0.817 pp, inside the 1.00 pp target"
-the decision-powered n inverts its own formula,True,"n_for_decision -> 40,720.1, shipped 40,721 (ceil)"
+the decision-powered n inverts its own formula,True,"n_for_decision -> 40,718.9, shipped 40,719 (ceil)"
 every operating-characteristic row sums to 100%,True,10 rows across both designs
 "at exactly break-even neither design can adjudicate, as a 95% CI requires",True,both designs sit at ~2.5% ship / ~2.5% kill / ~95% inconclusive at the boundary -- no sample size can settle an effect that IS break-even
-the MDE was not changed by the re-sizing; only the sample size was,True,"MDE 1.00 pp on both designs; n moved 15,058 -> 40,721 (2.70x)"
+the MDE was not changed by the re-sizing; only the sample size was,True,"MDE 1.00 pp on both designs; n moved 15,058 -> 40,719 (2.70x)"
 the decision-powered duration table is monotone and never cheaper than detect-vs-zero,True,"ratio spans 1.32x..21.41x, rising as the target approaches break-even"
 "the alternative design is kept and labelled, not deleted",True,"nb08_design_comparison.csv carries both, each with what it can and cannot answer"
 the experiment's metric carries a name distinct from 06's target,True,repeat_30d_from_trigger vs repeat_purchase_30d
@@ -47,7 +47,7 @@ the experiment's metric carries a name distinct from 06's target,True,repeat_30d
 the duration table is monotone: a smaller MDE never costs less time,True,50 weeks at 0.39 pp down to 8 weeks at 3.00 pp
 "duration = ramp + enrolment + outcome window, for every row",True,ramp 2w + enrolment + outcome 5w
 the heterogeneity readout is labelled exploratory and carries its own MDE,True,per-tercile MDE 1.05 pp vs primary 1.00 pp
-the design does not promise a CATE,True,"~8,347 events against the ~330,000 07 measured as necessary"
+the design does not promise a CATE,True,"~8,346 events against the ~330,000 07 measured as necessary"
 every inherited constraint is mapped to a section,True,"15 constraints, all mapped"
 all four of 07's binding rules for 08 are discharged,True,"5 rules recorded by 07, 7 entries carrying them"
 every threat carries a residual-risk statement,True,9 threats

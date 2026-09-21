@@ -1,3 +1,3 @@
 rule,n_orders,avg_items,median_items,avg_span_sec,p95_span_sec,max_span_sec
-A: session only,155617,8.270349640463445,6,24312.542125860284,0,13038496
-B: session + exact timestamp,159382,8.074983373279291,5,0.0,0,0
+A: session only,155617,8.27035,6.0,24312.542126,0.0,13038496
+B: session + exact timestamp,159382,8.074983,5.0,0.0,0.0,0

@@ -11,7 +11,7 @@ pre_n_view_ev,pre_p_viewed,0.9788,0.9788151413748092,both are pre-t0 volume
 pre_events_per_tenure_day,pre_products_per_tenure_day,0.978,0.9779718431732087,both are pre-t0 volume
 fo_dow,fs_start_dow,0.9754,0.9754339198410152,cross-block
 pre_n_active_days,cad_day_n_hist_gaps,0.9676,0.967613460657242,cross-block
-fo_median_price,fo_product_price_pct_prior,0.9536,0.9536241563843468,both from the same first order
+fo_median_price,fo_product_price_pct_prior,0.9536,0.9536095918888842,both from the same first order
 tenure_d,pre_sessions_per_tenure_day,-0.9535,0.9535047208747506,cross-block
 pre_n_events,pre_n_products,0.9471,0.9471314223645988,both are pre-t0 volume
 pre_n_cart_ev,pre_p_carted,0.9437,0.9437080671386663,both are pre-t0 volume

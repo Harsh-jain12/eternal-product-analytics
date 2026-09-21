@@ -51,8 +51,28 @@ def save(fig, name):
     return path
 
 
-def show_df(df, name=None, max_rows=20):
-    """Display a dataframe truncated for notebook output; optionally persist full table to CSV."""
+def show_df(df, name=None, max_rows=20, sort=None):
+    """Display a dataframe truncated for notebook output; optionally persist full table to CSV.
+
+    ROW ORDER IS PART OF THE OUTPUT. Two identical clean runs must produce byte-identical
+    CSVs, so every written table needs a row order that is a function of its data.
+
+    `sort` declares that order: a list of columns, or True for a canonical sort on every
+    column left to right. It is always a STABLE mergesort. Leave it None when the frame's
+    order is already pinned by the code that built it -- an authored `pd.DataFrame([...])`
+    literal, a loop over a fixed list, or a sort on a key that is unique.
+
+    There is deliberately NO blanket canonical sort here. Measured over the 211 tables this
+    project writes, sorting every one by all its columns would reorder 103 of them, and in
+    22 the row order IS the content (rate registers, pre-registration fields, policy
+    comparisons, self-verification checklists). The row-order bug this parameter exists for
+    is narrower and is fixed at its source instead: a sort on a NON-UNIQUE key leaves tied
+    rows in DuckDB's parallel-scan order, which is not stable between runs. Those ORDER BY
+    clauses now all carry a unique tie-break.
+    """
+    if sort is not None:
+        by = list(df.columns) if sort is True else list(sort)
+        df = df.sort_values(by, kind="mergesort").reset_index(drop=True)
     if name is not None:
         path = os.path.join(TABLES_DIR, f"{name}.csv")
         df.to_csv(path, index=False)

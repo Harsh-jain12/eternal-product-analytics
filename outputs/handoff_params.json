@@ -45,9 +45,9 @@
   "note": "Candidates only -- nb03 must still validate FP rate and recall against future behavior.",
   "superseded": {
    "median": 17.5,
-   "p75": 36.5,
+   "p75": 36.4,
    "p85": 51.5,
-   "p95": 80.3,
+   "p95": 80.4,
    "method": "pooled gaps (order-count-weighted), not bot-excluded -- from 00_data_quality.ipynb",
    "reason_superseded": "Pooling weights frequent repeat-buyers more heavily, biasing every percentile down by roughly 15-20%. Kept here only for audit trail."
   },
@@ -68,7 +68,7 @@
   "01's 4-type cart-abandonment decomposition is partial: 02 Section 0A splits the 48% residual, promoting `substitution` to a named type and leaving only `returned_browsed_only` unclassified.",
   "OUTCOME LEAKAGE: the abandonment-type ranking in 01 Section 4 and 02 Section 0A is NOT a valid effect size -- the types' definitions reference purchases that can fall in the outcome window. 02 Section 0E re-tests with disjoint windows: deferred_intent collapses from OR 10.81 to 0.78 and the ranking inverts. Only abandonment VOLUME survives. nb05 must not build features from those types -- see leakage_rules_for_05.",
   "The 'promo' cohort is a BLACK FRIDAY cohort: all detected discount-spike days fall in one week, so promo-vs-organic results are about a single trading event, not about discounting in general.",
-  "SPINE-1 FALSIFIED: behaviour (first-session depth) does NOT beat first-order value for predicting repeat purchase (D30 dead heat, value ahead at D60/D90) and both are weak (V~0.09-0.13). See spine_hypothesis_status; CLAUDE.md's spine has been revised accordingly.",
+  "SPINE-1 REVISED 2026-09-21: the DEPTH PROXY fails, the behavioural hypothesis does not. 02 tested one behavioural proxy (first-session event count) against first-order value and depth is never ahead: D30, D60 tie on a bootstrap CI for dV that spans 0, value leads at D90, all weak (V~0.09-0.13). This was labelled FALSIFIED until 2026-09-21, which over-claimed: 06 finds a BROADER behavioural block (M3 pre-purchase browsing) beats first-order information on the same outcome in every order-controlled comparison. Quote spine_hypothesis_status, including reconciliation_with_06 -- never the old FALSIFIED label.",
   "CHURN THRESHOLD CERTIFIED: 42.2 days of purchase silence (P75 of per-user-median inter-purchase gaps), validated at flag date 2020-01-04 with FP rate 10.12% and recall 53.09% (Spec B). Inherit it from handoff_params.json churn_definition; do not re-derive or round it.",
   "P95 CHURN CANDIDATE (87.3d) WAS NEVER TESTED and must not be cited as validated: it needs 2K=174.6 days of span against 152.0 available, so zero users can be scored against it.",
   "D30 CANNOT MEASURE CHURN: under the certified 42.2d rule no user is churned before day 42.2, so 06's repeat_purchase_30d target is a REPEAT-PURCHASE target and must never be labelled churn. The shortest horizon that can carry a churn label is D43.",
@@ -79,7 +79,7 @@
   "CHURN RULE RECALL IS 53%: the certified rule flags 36,495 users but the true at-risk base is 61,787. 08/09 must NOT treat flagged-population as at-risk-population -- every reach or ROI denominator built on the flagged count must be divided by recall (53.09%). All 28,986 missed churners sit BELOW the 42.2d threshold (median recency 23.7d).",
   "CHURN THRESHOLD IS NOT IDENTIFIED: 42.2d is the centre of a 30-45d region; two independent methods agree there, but the estimate is robust to neither flag-date position nor cost asymmetry. ~9 months of history would identify it. Quote certified_region_days [30, 45], not the decimal; use 42.2d as the OPERATING value so 04/05/06 stay comparable.",
   "FLOAT AGGREGATES ARE NOT REPRODUCIBLE WITHOUT ROUNDING (found in 04, applies project-wide): DuckDB's parallel avg()/sum() reduce in physical scan order, so brand_entropy, category_entropy, mean_price_pct_viewed and mean_intersession_gap_d differ across two evaluations of the same query in one session (order 20-30k rows, max |diff| ~9e-15), AND fetchdf() returns rows in an unstable parallel-scan order which changes k-means++ seeding. Harmless for a reported mean, NOT harmless for k-means: segment sizes moved by up to 45 users per run at a fixed seed. Guard is src.data.round_sig(..., sig=6), applied to every feature frame in 04 and MANDATORY for any notebook that re-derives these features. This is the concrete instance of the risk connect() flagged in the abstract.",
-  "NB00-NB03 HAVE NOT BEEN RUN END-TO-END IN ONE CONTINUOUS SESSION: nb03's Section 9 addendum was executed in a fresh kernel and spliced into the committed notebook. Every number reconciles on re-read, but a full clean re-execution of 00->03 in a single session is REQUIRED before nb09 if the README is going to claim reproducibility.",
+  "REPRODUCIBILITY ESTABLISHED 2026-09-21: the chain has been executed end-to-end, 00->08, from an empty data/processed and no .duckdb, THREE TIMES, and the runs were diffed against each other over every handoff_params.json leaf and every cell of all 211 CSVs. They agree at reported precision. Two classes of value are exempt and both are named rather than hidden: (a) the self-measurement columns of nb04_float_determinism_audit.csv and nb05_determinism_audit.csv, whose job is to measure the float wobble and which therefore move by construction; and (b) ONE named residual, recorded with its magnitude and its propagation by 05 -- see the RESIDUAL NON-DETERMINISM entry. What is identical across every run: orders.parquet, churn_flags.parquet, every cluster label, every reported figure in all 211 CSVs, and features.parquet in at least 10,534,270 of its 10,534,272 cells. Getting here took four determinism defects: approx_quantile, lazy-view row ids, non-unique ORDER BY / sort keys, and -- the one that amplifies -- a parallel float used AS a rank or bucket key (src/data.py connect() note 4, key_round()). Runtimes and the full diff are in README.md, Reproducibility.",
   "SEGMENT MEMBERSHIP IS NOT DURABLE: 04 fits clusters on Oct-Dec and scores Jan-Feb with the same centroids. The STRUCTURE reproduces (mix drift 1.53pp, independent-refit ARI 0.897) but only 56.8% of users stay in the same segment (Cohen's kappa 0.309, chance 37.5%). An equal-length window control (Nov-Dec vs Jan-Feb) reproduces this exactly, so it is behaviour, not an artefact. 08 must re-score segments at targeting time; a stored label misdirects ~2 users in 5.",
   "BEHAVIOURAL CLUSTERS ARE A PARTITION OF A CONTINUUM, NOT DISCRETE TYPES: every silhouette across k=3..8 is below 0.25 (max 0.213 at k=3). k=4 is chosen on the elbow. The segments are descriptively useful and externally validated (4x spread in repeat rate, a variable never fitted on), but nothing downstream should treat them as latent classes.",
   "RFM FREQUENCY IS DEGENERATE HERE: 77.5% of purchasers have exactly one order, so both F tercile boundaries fall on F=1 and F is scored on natural breaks (1/2/3+) instead. The RFM composite is effectively an R-and-M score, and R is near-identical to the churn flag (tercile boundary 41.11d vs threshold 42.2d). Any claim that RFM segments by loyalty at this retailer would be false.",
@@ -89,7 +89,8 @@
   "RECALL CANNOT BE APPLIED WITHIN A RECENCY-DEFINED CELL (04 Section 9A, withdrawing 4C): recall 53.09% is a base-level property of the churn rule. Cells defined by recency have ~100% flagged by construction and cells defined by tenure<=30d have 0% by construction, so scaling either by 1/recall is invalid and points the wrong way. Use the base-level identity true_at_risk = correctly_flagged/recall only, and use segmentation.cross_tab.missed_churner_redistribution for where the missed actually sit.",
   "THE CHURN RULE'S BLIND SPOT IS REPEAT BUYERS, NOT A BEHAVIOURAL SEGMENT (04 Section 9B): catch rate is flat at 51.7-55.5% across all four behavioural segments but falls to 36.9% for the high-value tercile. The driver is having a purchase cadence at all -- at-risk users with 2+ orders have a median personal gap of 14.1d, a third of the global 42.2d threshold, so the rule waits long past the point their habit broke. 05/06 should test a personalised (cadence-multiple) threshold; a different global K will not fix it.",
   "CELL B1 IS LONG TENURE, NOT ENGAGEMENT (04 Section 9C, withdrawing Section 7 item 5): matching B1 against other Broad Deliberators on tenure-since-first-event does NOT close the engagement gap -- it widens on 4 of 5 metrics (Cliff's delta -0.31 -> -0.39 on assortment breadth, -0.31 -> -0.43 on sessions), narrows only slightly on session depth (-0.14 -> -0.12), and stays negative on all five both raw and matched. Per tenure-day B1 browses at 0.43x their rate. B1 is an activation-at-first-order population reached ~109 days late, not a re-engagement population. 08 should design on cell B3 instead, where the 42.2d window is still open.",
-  "04's TWO DETERMINISM GUARDS ARE NECESSARY BUT NOT SUFFICIENT (05 Section 11): round_sig(sig=6) plus .sort_values('user_id') still left this notebook non-reproducible, and it failed its own zero-diff assertion on one cell of fo_price_vs_prior_mean out of 109,732. The parallel float wobble is ~1e-15 relative while round_sig snaps to a 1e-6 grid, so a value sitting within 1e-15 of a rounding boundary flips across it -- rounding makes the non-determinism RARE, not absent, which is a worse failure mode than an obvious one. A THIRD guard is required: SET threads=1 for the fetch itself (materialisations can stay parallel). Measured over 3 repeats per block: 48,738 differing cells sorted-only, 0 after 04's two guards, 0 with threads=1 before any rounding. Use src fetch_block().",
+  "04's TWO DETERMINISM GUARDS ARE NECESSARY BUT NOT SUFFICIENT (05 Section 11): round_sig(sig=6) plus .sort_values('user_id') still left this notebook non-reproducible, and it failed its own zero-diff assertion on one cell of fo_price_vs_prior_mean out of 109,732. The parallel float wobble is ~1e-15 relative while round_sig snaps to a 1e-6 grid, so a value sitting within 1e-15 of a rounding boundary flips across it -- rounding makes the non-determinism RARE, not absent, which is a worse failure mode than an obvious one. A THIRD guard is required: SET threads=1 for the fetch itself (materialisations can stay parallel). AFTER-GUARD RESULT, over 3 repeats per block: 0 differing cells after 04's two guards and 0 with threads=1 before any rounding, i.e. zero either way; 2 of 4 blocks are unstable sorted-only. The RAW wobble counts and magnitudes are deliberately NOT quoted here -- they are a measurement of non-determinism and move between runs, which is why they live in outputs/tables/nb05_determinism_audit.csv (L1_diff_sorted_only, L1_max_abs_diff) and not in a handoff leaf that is supposed to reproduce. Use src fetch_block().",
+  "RESIDUAL NON-DETERMINISM, NAMED AND BOUNDED (measured over three clean end-to-end runs, 2026-09-21): ONE defect survives every guard -- the round_sig boundary flip described in the limitation above, in fo_price_vs_prior_mean. It is that notebook-documented intermittency observed, not a new fault. MAGNITUDE AT SOURCE: 0, 1 and 0 differing cells across the three runs as measured by L2_diff_sorted_and_rounded (block M1), and 0 to 2 cells of features.parquet out of 10,534,272 -- at most 1.9e-07 of the table -- at a float difference of order 1e-15. WHAT IT PROPAGATES INTO: 06 refits its logistic ladder on a matrix that differs in those cells, so loglik moves in its last printed digit (order 1e-10 relative), LR_chi2 amplifies that because it is a difference of two large nearly-equal log-likelihoods (order 1e-08 relative), extreme-tail p-values amplify again because they sit at 1e-20 to 1e-226 (order 1e-06 relative), and every row of nb06_predictions_d30.parquet moves below reported precision. Those are orders of magnitude, not tolerances: the exact spread measured across runs is a CROSS-RUN quantity, which no single execution can compute, so it is recorded in README.md Reproducibility and deliberately not restated here as a number this notebook cannot verify. WHAT DOES NOT MOVE: the shipped model's test AP, ROC, Brier and decile-1 lift; the decile table; the 06 ladder chi2 at the 1 dp it is reported to; the spine measurement; churn_definition; orders.parquet; and every cluster_name in 04. WHY IT IS ACCEPTED, NOT FIXED: it measures the TWO-guard configuration this notebook already declares insufficient. The shipped frame uses all three guards via fetch_block(), and L3_diff_threads1_raw is 0 for every block in every run. ALSO BOUNDED, in gitignored intermediates only: segment_assignments.M (727-753 cells, max |diff| 2.3e-13) and cohort_assignments.first_order_value_clean (1 cell, 1.8e-15) keep the raw parallel-sum wobble; every key derived from them is key_round()ed, so no tercile, quintile or cluster label moves. Do not quote L1 or L2 as stable figures; quote L3, which is 0.",
   "FIRST-SESSION FEATURES MUST BE TRUNCATED AT t0 (05 Section 1A): 241,536 events sit in the first-order session AFTER the first order, across 11,704 users (10.7% of purchasers), including 24,625 purchase rows. 02's certified first_session_events is untruncated -- correct for 02's descriptive use, a leak as a feature. Untruncated it scores univariate AUC 0.5737 on repeat_purchase_30d against 0.5525 truncated.",
   "04's cart_abandonment_rate CANNOT BE REBUILT IN A PRE-FIRST-ORDER WINDOW (05 Section 6A): there are zero purchases before t0 by construction, so the rate is a constant 1.0 for every user who has one. 04 computed it over full history, which for a post-t0 outcome is an outcome-window aggregate. Consequence beyond the one feature: segment_model.json cannot be applied faithfully to pre-t0 data -- one of its eight fitted features is degenerate there -- so 08's re-scoring at targeting time must use a window that contains at least one purchase, not a pre-first-order one.",
   "PURCHASE CADENCE IS UNDEFINED AT A FIRST-ORDER ANCHOR (05 Section 7): 04 \u00a79B's personalised-threshold recommendation cannot be tested as stated -- every user has exactly one order at t0, so the coverage gap is 100%, not the ~77% anticipated. 05 tested pre-t0 VISIT cadence instead: defined for 27.1% of users, personal median day-gap 3.5d against the 42.2d global rule (96.3% sit below it), LR chi2(1)=20.5 p=6.0e-06 but in-sample AUC gain only +0.0031. The test that would settle 04 \u00a79B is a SECOND-ORDER anchor predicting the third order.",
@@ -193,29 +194,103 @@
   "what_survives": "Abandonment VOLUME (log1p n_removals) remains predictive: OR=1.38 [1.35, 1.41]. Type does not."
  },
  "spine_hypothesis_status": {
-  "finding_name": "SPINE-1: first-order value vs first-session depth is a dead heat, and both are weak",
-  "status": "FIRST CLAUSE FALSIFIED",
+  "finding_name": "SPINE-1: the FIRST-SESSION-DEPTH proxy does not beat first-order value",
+  "status": "REVISED 2026-09-21 -- the FALSIFIED label this key carried until today over-claimed. 02 tested ONE behavioural proxy, and one proxy failing is not the hypothesis failing: 06 tests a broader behavioural block on the same outcome and it WINS. See reconciliation_with_06, written by 06 because only 06 holds both sets of numbers. What 02 alone establishes is below, unchanged.",
   "original_claim": "Repeat purchase is driven more by user behaviour and category/journey characteristics than by simple first-order value.",
   "measurement": {
    "D30": {
     "value_V": 0.0895,
-    "depth_V": 0.0894,
-    "category_V": 0.0616
+    "depth_V": 0.0897,
+    "category_V": 0.0616,
+    "delta_V_depth_minus_value": 0.0002,
+    "delta_V_ci": [
+     -0.0078,
+     0.008
+    ],
+    "tie": true
    },
    "D60": {
     "value_V": 0.1154,
     "depth_V": 0.111,
-    "category_V": 0.0775
+    "category_V": 0.0775,
+    "delta_V_depth_minus_value": -0.0044,
+    "delta_V_ci": [
+     -0.0123,
+     0.0036
+    ],
+    "tie": true
    },
    "D90": {
     "value_V": 0.131,
-    "depth_V": 0.1196,
-    "category_V": 0.0872
+    "depth_V": 0.1194,
+    "category_V": 0.0872,
+    "delta_V_depth_minus_value": -0.0116,
+    "delta_V_ci": [
+     -0.0217,
+     -0.0023
+    ],
+    "tie": false
    }
   },
-  "verdict": "First-order VALUE matches depth at D30 and exceeds it at D60 and D90. Behaviour does not beat first-order value. Both associations are weak (Cramer's V ~ 0.09-0.13), so neither is a strong standalone predictor of repeat purchase.",
+  "what_02_tested": "ONE behavioural proxy (first-session event count) against ONE monetary proxy (first-order value), both as value-boundary quintiles, scored by Cramer's V on repeat purchase over cohort-eligible purchasers. It is a narrow test and the verdict below is only about these two summaries.",
+  "verdict": "First-session depth is NEVER ahead of first-order value at any horizon. D30, D60 are TIES -- the bootstrap CI on dV = V(depth) - V(value) spans 0, so the data does not order the two cuts there and no ordering may be quoted from it. Value is ahead by more than the CI at D90. Both associations are weak (Cramer's V ~ 0.09-0.13), so neither is a strong standalone predictor. This falsifies the DEPTH PROXY, not the behavioural hypothesis -- see reconciliation_with_06.",
+  "correction_2026_09_21": {
+   "what_changed": "The quintile cut was pd.qcut(x.rank(method='first'), 5), which breaks ties by ROW POSITION. Row position came from a DuckDB fetchdf(), i.e. parallel-scan order, which is not stable between runs. first_session_events is a heavily tied small integer, so a large share of users sat on a boundary and moved between runs, and the D30 ordering moved with them.",
+   "fix": "Cut on VALUE boundaries (pd.cut on the P20/40/60/80 edges) so equal values always share a bucket, applied identically to BOTH the value and the depth cut. Buckets are no longer equal-sized; sizes and any collapse are printed in Section 5.",
+   "why_not_sort_first": "Sorting on user_id before qcut would make the number reproducible while leaving it arbitrary: two users with identical depth would still land in different depth strata, decided by user_id. A quintile of depth must be a function of depth.",
+   "effect_on_the_finding": "The direction of the falsification is unchanged -- value is still not beaten by depth. What changed is the D30 claim: previously reported as a 'dead heat' read off a 0.0001 gap, now measured as a TIE with a bootstrap CI and excluded from the evidence base.",
+   "superseded_values": {
+    "D30": {
+     "value_V": 0.0895,
+     "depth_V": 0.0894
+    },
+    "D60": {
+     "value_V": 0.1154,
+     "depth_V": 0.1108
+    },
+    "D90": {
+     "value_V": 0.131,
+     "depth_V": 0.1197
+    }
+   },
+   "superseded_because": "measured under the non-deterministic cut; not a valid reference."
+  },
   "replacement_framing": "Repeat purchase and repeat engagement are separable problems at this retailer: by D90, 60% of purchasers return but only 27% buy again, a 33pp gap stable from D14 onward. Neither first-order value nor first-session depth predicts repeat purchase strongly, so the targeting question cannot be answered by propensity alone -- it requires estimating who would RESPOND to an intervention, which observational data cannot do (07/08).",
-  "recorded_not_deleted": "Kept as a named, dated falsification so 06/08 cannot silently re-adopt the original spine."
+  "recorded_not_deleted": "Kept as a named, dated falsification so 06/08 cannot silently re-adopt the original spine.",
+  "reconciliation_with_06": {
+   "written_by": "06_modelling.ipynb -- the only notebook holding both 02's proxy test and 06's block ladder.",
+   "date": "2026-09-21",
+   "statement": "First-session depth -- the behavioural proxy 02 tested -- does not beat first-order value: tie at the horizons 02 marks as ties, value ahead at the rest, depth never ahead. But pre-purchase browsing VOLUME (block M3) beats first-order information (block M1) in every order-controlled comparison 06 runs. So 'behaviour beats value' is NOT falsified in general: the specific proxy failed and a broader behavioural measure succeeded. Every signal involved is weak.",
+   "evidence": {
+    "standalone_test_ROC": {
+     "M3 pre-t0 browsing": 0.6192,
+     "M1 first order": 0.5852
+    },
+    "nested_ladder_entering_first": {
+     "M3 first (order_B)": {
+      "LR_chi2": 1598.1,
+      "df": 25
+     },
+     "M1 first (order_A)": {
+      "LR_chi2": 1118.8,
+      "df": 18
+     }
+    },
+    "nested_ladder_entering_last": {
+     "M1 last, after M3 (order_B)": {
+      "LR_chi2": 496.9,
+      "df": 18
+     },
+     "M3 after M1+M2 (order_A)": {
+      "LR_chi2": 926.7,
+      "df": 25
+     }
+    },
+    "reading": "M3 is ahead both ways round: it buys more entering first, and it still buys more entering after M1 than M1 buys entering after it."
+   },
+   "why_the_two_do_not_contradict": "Different measures, different populations, different outcome horizons. 02 scores a five-level quintile cut of ONE count by Cramer's V on cohort-eligible purchasers at D30/D60/D90; 06 scores a 25-df block of pre-purchase browsing features by test ROC and a likelihood-ratio test on a chronologically split D30 modelling set. Neither is wrong; they answer different questions, and only the narrow one failed.",
+   "binding": "Do not quote 'SPINE-1 FALSIFIED'. Quote: the first-session-depth proxy failed, broader pre-purchase browsing did not, and all signals are weak."
+  }
  },
  "churn_definition": {
   "certified_threshold_days": 42.2,
@@ -336,52 +411,6 @@
    "does_the_degeneracy_depend_on_it": "NO, and this was the reason for checking. The cost model prefers flagging everyone once R exceeds the MAXIMUM LOCAL RETURN ODDS (0.378), not anything derived from the aggregate base rate; observed threshold 0.472 confirms the mechanism. On 02's own anchor the D60 odds are 0.267, still far below any realistic R, and reweighting the panel to 02's D60 rate moves the threshold only 0.472 -> 0.705. Section 3's argument is ANCHOR-INDEPENDENT and would not change if the base rate were 79%."
   }
  },
- "criteo_dataset": {
-  "present": true,
-  "path": "data/raw/criteo/criteo-research-uplift-v2.1.csv.gz",
-  "source_url": "https://criteostorage.blob.core.windows.net/criteo-research-datasets/criteo-uplift-v2.1.csv.gz",
-  "source_note": "Criteo AI Lab's own Azure mirror. The canonical go.criteo.net link now 404s; a Hugging Face mirror (datasets/criteo/criteo-uplift) serves a byte-identical file (same 311,422,618-byte content-length) if this one moves.",
-  "sha256": "2716e1bf0fd157a93b5bf86924d9088419dfbac2022c6cd90030220634f616dc",
-  "bytes": 311422618,
-  "rows": 13979592,
-  "columns": [
-   "f0",
-   "f1",
-   "f2",
-   "f3",
-   "f4",
-   "f5",
-   "f6",
-   "f7",
-   "f8",
-   "f9",
-   "f10",
-   "f11",
-   "treatment",
-   "conversion",
-   "visit",
-   "exposure"
-  ],
-  "schema_note": "f0-f11 dense float features (anonymised); treatment 1/0; visit, conversion, exposure binary outcomes. No user id and no timestamp -- one row per randomised user.",
-  "randomisation": {
-   "treatment_ratio": 0.85,
-   "n_treated": 11882655,
-   "n_control": 2096937
-  },
-  "outcome_rates": {
-   "visit_rate": 0.046992,
-   "conversion_rate": 0.002917,
-   "exposure_rate": 0.030631
-  },
-  "naive_ate_unvalidated": {
-   "visit": 0.010342,
-   "conversion": 0.001152,
-   "warning": "Raw difference in means, computed here ONLY to confirm the file is usable. It is NOT a result: 07 must derive the ATE properly with SRM and covariate-balance checks, CIs, and ITT vs TOT (exposure is post-randomisation, so conditioning on it breaks randomisation)."
-  },
-  "verified_against_published_spec": true,
-  "verified_by": "scripted check outside the notebooks, after 03. 07 owns all analysis of this file.",
-  "why_it_is_here": "REES46 has no randomised experiment (principle 10). Criteo is the genuine one (principle 11) and is what lets 07 show that risk-targeting != uplift-targeting -- the argument 03's cost-model degeneracy already points at from the observational side."
- },
  "segmentation": {
   "generated_by": "04_segmentation.ipynb",
   "snapshot_date": "2020-02-29 23:59:59",
@@ -410,12 +439,12 @@
    ],
    "achieved_tercile_shares_pct": {
     "Mid": 43.7,
-    "Low": 34.39,
-    "High": 21.91
+    "Low": 34.4,
+    "High": 21.9
    },
    "recency_tercile_is_the_churn_flag": "the fresher R boundary (41.11d) sits 1.09d from the certified churn threshold (42.2d); R_score and churned_at_data_end are near-duplicates, so 'high RFM AND at risk' is a contradiction and Section 4 uses a recency-free value_score = F_score + M_score instead.",
    "value_score_definition": "F_score + M_score, terciles Low=(2), Mid=(3,4), High=(5,6)",
-   "low_tercile_mechanism_correction": "Section 4A claimed Low RFM requires R_score=1 (recency > 94.63d). FALSE: RFM_sum<=4 also admits (R=2,F=1,M=1), and 12,339 of 37,742 Low-RFM users have R_score=2. The conclusion (no Low-RFM user acquired within 30d) holds on the weaker premise that the minimum recency in the tercile is 41.12d > 30d. Corrected in Section 9D."
+   "low_tercile_mechanism_correction": "Section 4A claimed Low RFM requires R_score=1 (recency > 94.63d). FALSE: RFM_sum<=4 also admits (R=2,F=1,M=1), and 12,345 of 37,748 Low-RFM users have R_score=2. The conclusion (no Low-RFM user acquired within 30d) holds on the weaker premise that the minimum recency in the tercile is 41.12d > 30d. Corrected in Section 9D."
   },
   "clustering": {
    "algorithm": "k-means, k=4, seed 42, n_init=10, on 8 standardised features",
@@ -525,7 +554,7 @@
   },
   "cross_tab": {
    "cramers_v_rfm_x_cluster": 0.1944,
-   "cramers_v_value_x_cluster": 0.2335,
+   "cramers_v_value_x_cluster": 0.2334,
    "interpretation": "Weak-to-moderate. The two lenses are largely independent axes, which is what makes the cross-tab informative rather than a diagonal restatement of RFM.",
    "disagreement_cells": {
     "A1": {
@@ -560,12 +589,12 @@
     },
     "B1": {
      "label": "B1  Low RFM x most-engaged behaviour",
-     "n": 10982,
+     "n": 10983,
      "pct_of_purchasers": 10.01,
      "R_median_d": 109.1,
      "M_median_eur": 18.1,
      "one_order_pct": 99.5,
-     "churn_flagged": 10909,
+     "churn_flagged": 10910,
      "note": "engaged browsers written off by RFM as dead"
     },
     "B2": {
@@ -589,7 +618,7 @@
      "note": "new AND behaving like the high-repeat segments: the best activation odds"
     }
    },
-   "headline": "B1 (Low RFM x Broad Deliberators, n=10,982) is the largest disagreement cell, but Section 9C shows it is LONG TENURE rather than live engagement: matching on tenure widens its engagement gap against other Broad Deliberators on every metric, and per tenure-day it browses at 0.43x their rate. Treat it as activation-at-first-order, and prefer cell B3 (7,741 users, median tenure 15.5d) where the 42.2d window is still open.",
+   "headline": "B1 (Low RFM x Broad Deliberators, n=10,983) is the largest disagreement cell, but Section 9C shows it is LONG TENURE rather than live engagement: matching on tenure widens its engagement gap against other Broad Deliberators on every metric, and per tenure-day it browses at 0.43x their rate. Treat it as activation-at-first-order, and prefer cell B3 (7,741 users, median tenure 15.5d) where the 42.2d window is still open.",
    "disagreement_cells_recall_correction": {
     "status": "WITHDRAWN in Section 9A",
     "what_was_wrong": "Section 4C divided each cell's flagged count by recall (0.5309) to give implied_true_at_risk. Recall is a BASE-level property of the rule and cannot be applied inside a subgroup that is itself defined by recency. A2/A3 are R_score==1 cells where every member is flagged by construction, so scaling invents members the definition cannot hold; B2/B3 are tenure<=30d cells where flagged is 0 by construction, so scaling reports zero risk exactly where the missed churners live. The correction was anti-correlated with the truth and contradicted binding_constraint_from_03.structural_point.",
@@ -632,8 +661,8 @@
     "verdict": "LONG TENURE. Section 7 item 5 is withdrawn.",
     "design": "B1 vs other Broad Deliberators, direct standardisation over 9 deciles of tenure since FIRST EVENT, Cliff's delta within stratum weighted by B1's stratum sizes.",
     "tenure_median_days": {
-     "B1": 124.17364583333332,
-     "other_BD": 109.69840277777777
+     "B1": 124.16981481481481,
+     "other_BD": 109.70125
     },
     "cliffs_delta": {
      "session depth": {
@@ -650,7 +679,7 @@
      },
      "brand breadth": {
       "raw": -0.235,
-      "tenure_matched": -0.287
+      "tenure_matched": -0.288
      },
      "sessions": {
       "raw": -0.306,
@@ -745,11 +774,11 @@
    "guards": "THREE, all mandatory: SET threads=1 for the fetch, src.data.round_sig(sig=6), .sort_values('user_id'). 04 specified the last two; 05 found them insufficient.",
    "why_04s_two_are_not_enough": "the parallel float wobble is ~1e-15 relative and round_sig snaps to a 1e-6 grid, so a value whose 7th significant digit sits within 1e-15 of a rounding boundary flips ACROSS the grid. Rounding makes the non-determinism rare, not absent, which converts a reproducible failure into an intermittent one. It broke this notebook's first execution on one cell of fo_price_vs_prior_mean out of 109,732.",
    "measured": {
-    "L1_sorted_only_threads6": 48738,
-    "L1_max_abs_diff": 8.526512829121202e-14,
     "L2_sorted_and_rounded": 0,
     "L3_threads1_raw": 0,
-    "repeats_per_level": 3
+    "repeats_per_level": 3,
+    "n_blocks_unstable_raw": 2,
+    "raw_wobble_magnitudes": "outputs/tables/nb05_determinism_audit.csv (L1_diff_sorted_only, L1_max_abs_diff) -- NOT stored here: they measure non-determinism and so move between runs; every value in this dict is post-guard and stable."
    },
    "verified": "two full builds through fetch_block(), 0 differing cells across all columns",
    "row_order_unstable_blocks": 4,
@@ -866,13 +895,13 @@
     },
     {
      "rank": 6,
-     "feature": "pre_n_removals",
+     "feature": "log1p_pre_n_removals",
      "block": "M3 pre-t0 browsing",
      "auc": 0.6023
     },
     {
      "rank": 7,
-     "feature": "log1p_pre_n_removals",
+     "feature": "pre_n_removals",
      "block": "M3 pre-t0 browsing",
      "auc": 0.6023
     },
@@ -901,7 +930,7 @@
      "auc": 0.6097
     },
     "M1 first order": {
-     "feature": "fo_n_products",
+     "feature": "fo_n_items",
      "auc": 0.588
     },
     "M4 cadence": {
@@ -991,31 +1020,31 @@
     "M1 first order": {
      "LR_chi2": 1118.8,
      "df": 18,
-     "p": 2.746702175627395e-226,
+     "p": 2.8106255175591834e-226,
      "chi2_per_df": 62.2
     },
     "M2 first-order session": {
      "LR_chi2": 262.2,
      "df": 14,
-     "p": 8.56701514166026e-48,
+     "p": 8.539977947385182e-48,
      "chi2_per_df": 18.7
     },
     "M3 pre-t0 browsing": {
-     "LR_chi2": 926.8,
+     "LR_chi2": 926.7,
      "df": 25,
-     "p": 1.8672040736123162e-179,
+     "p": 1.9833399460645278e-179,
      "chi2_per_df": 37.1
     },
     "M4 cadence": {
      "LR_chi2": 121.5,
      "df": 12,
-     "p": 3.097931518525497e-20,
+     "p": 3.049040228846925e-20,
      "chi2_per_df": 10.1
     }
    },
    "order_B": {
     "M3 pre-t0 browsing": {
-     "LR_chi2": 1598.5,
+     "LR_chi2": 1598.1,
      "df": 25,
      "p": 0.0,
      "chi2_per_df": 63.9
@@ -1023,28 +1052,28 @@
     "M4 cadence": {
      "LR_chi2": 123.3,
      "df": 12,
-     "p": 1.3861092971653863e-20,
+     "p": 1.3576741550516468e-20,
      "chi2_per_df": 10.3
     },
     "M2 first-order session": {
-     "LR_chi2": 210.8,
+     "LR_chi2": 210.9,
      "df": 14,
-     "p": 3.379957637879068e-37,
+     "p": 3.2861060307018302e-37,
      "chi2_per_df": 15.1
     },
     "M1 first order": {
-     "LR_chi2": 496.8,
+     "LR_chi2": 496.9,
      "df": 18,
-     "p": 4.888950573527763e-94,
+     "p": 4.654447770376806e-94,
      "chi2_per_df": 27.6
     }
    },
    "standalone": {
     "M3 pre-t0 browsing": {
-     "LR_chi2": 1598.5,
+     "LR_chi2": 1598.1,
      "df": 25,
      "chi2_per_df": 63.9,
-     "test_ROC": 0.6191
+     "test_ROC": 0.6192
     },
     "M4 cadence": {
      "LR_chi2": 1223.3,
@@ -1053,7 +1082,7 @@
      "test_ROC": 0.5911
     },
     "M1 first order": {
-     "LR_chi2": 1128.4,
+     "LR_chi2": 1128.3,
      "df": 20,
      "chi2_per_df": 56.4,
      "test_ROC": 0.5852
@@ -1105,7 +1134,7 @@
    "test_AP_lift_vs_base": 1.5526,
    "test_ROC_AUC": 0.6278,
    "test_Brier_shipped": 0.10089,
-   "decile1_lift": 1.882,
+   "decile1_lift": 1.879,
    "top3_decile_capture_pct": 44.9,
    "univariate_ceiling_cleared": {
     "ceiling_05": 0.6097,
@@ -1114,30 +1143,30 @@
    }
   },
   "why_lightgbm_was_not_shipped": {
-   "lgbm_test_AP": 0.1849,
-   "lgbm_test_ROC": 0.6412,
+   "lgbm_test_AP": 0.1827,
+   "lgbm_test_ROC": 0.6404,
    "delta_AP_vs_logistic": [
-    -0.0017,
-    0.0039,
-    0.0101
+    -0.004,
+    0.0017,
+    0.008
    ],
    "delta_ROC_vs_logistic": [
-    0.0076,
-    0.0133,
-    0.0192
+    0.0064,
+    0.0126,
+    0.0189
    ],
    "decision": "The AP CI includes zero and AP is the primary metric (principle 7). ROC improves by +0.013 with a CI excluding zero, but ROC is secondary. Nonlinearity is not paid for; the logistic ships.",
    "hyperparameters": {
-    "num_leaves": 15,
-    "min_child_samples": 300,
+    "num_leaves": 31,
+    "min_child_samples": 100,
     "learning_rate": 0.05,
     "feature_fraction": 0.9,
     "bagging_fraction": 0.8,
     "bagging_freq": 1,
-    "lambda_l2": 10.0
+    "lambda_l2": 1.0
    },
-   "best_iteration": 127,
-   "grid_AP_spread": 0.0033
+   "best_iteration": 83,
+   "grid_AP_spread": 0.0024
   },
   "baselines": {
    "BASE  prevalence only": {
@@ -1166,9 +1195,9 @@
     "pct_of_shipped_excess_AP": 100.0
    },
    "LightGBM (81 features)": {
-    "AP": 0.1849,
-    "ROC": 0.6412,
-    "pct_of_shipped_excess_AP": 106.2
+    "AP": 0.1827,
+    "ROC": 0.6404,
+    "pct_of_shipped_excess_AP": 102.8
    }
   },
   "operating_point": {
@@ -1179,9 +1208,9 @@
    ],
    "assumption": "R = cost(false negative)/cost(false positive) = 5",
    "threshold": 0.1667,
-   "flagged_pct": 11.37,
-   "precision_pct": 21.31,
-   "precision_lift": 1.829,
+   "flagged_pct": 11.38,
+   "precision_pct": 21.3,
+   "precision_lift": 1.827,
    "recall_pct": 20.8,
    "degeneracy_note": "At R <= 3 the rule flags under 1.5% of users because the model's probabilities never get high enough; at R = 1 it flags 7 users out of 27,400. A symmetric threshold is not a neutral default at a 11.65% base rate.",
    "uplift_caveat": "This selects by PROPENSITY TO REPEAT, not by responsiveness to an intervention. 07 (Criteo) and 08 own that distinction. Nothing here licenses a targeting decision."
@@ -1255,7 +1284,7 @@
    "statement": "A handful of heavy-tailed raw features, fs_duration_min above all, act as leverage points in the standardised linear predictor and drive a small number of users to degenerate probabilities.",
    "n_test_users_below_p_0_001": 111,
    "pct_of_test": 0.405,
-   "min_predicted_probability": 5.1934237301266425e-09,
+   "min_predicted_probability": 5.1932047271996206e-09,
    "all_affected_are_true_negatives": true,
    "why_metrics_did_not_catch_it": "AP, ROC and the decile table are rank-based and the affected rows are all at the bottom of the ranking, where they belong. Only the probability LEVEL is wrong.",
    "root_cause": "00 Section 7's session-ID reuse: the longest first-order session in the train fold runs 109,587 minutes (76 days), 14x its own P99.",
@@ -1271,6 +1300,103 @@
    "The operating threshold depends on an ASSUMED cost ratio, not on anything in the data. 09 must carry R explicitly and show the sweep, exactly as 03 refused to certify a threshold on economics.",
    "The shipped probabilities have a degenerate lower tail (0.41% of test users below p = 0.001) from heavy-tailed feature leverage -- see modelling.known_defect_leverage. Use deciles, not absolute levels, at the bottom of the score."
   ]
+ },
+ "criteo_dataset": {
+  "present": true,
+  "path": "data/raw/criteo/criteo-research-uplift-v2.1.csv.gz",
+  "bytes": 311422618,
+  "sha256": "2716e1bf0fd157a93b5bf86924d9088419dfbac2022c6cd90030220634f616dc",
+  "sha256_status": "RECORDED, NOT VERIFIED -- Criteo publishes no digest for this file. It pins the bytes for later runs; it is not evidence of provenance.",
+  "rows": 13979592,
+  "columns": [
+   "f0",
+   "f1",
+   "f2",
+   "f3",
+   "f4",
+   "f5",
+   "f6",
+   "f7",
+   "f8",
+   "f9",
+   "f10",
+   "f11",
+   "treatment",
+   "conversion",
+   "visit",
+   "exposure"
+  ],
+  "schema_note": "f0-f11 dense float features (anonymised); treatment 1/0; visit, conversion, exposure binary outcomes. No user id and no timestamp -- one row per randomised user.",
+  "randomisation": {
+   "treatment_ratio": 0.85,
+   "n_treated": 11882655,
+   "n_control": 2096937
+  },
+  "outcome_rates": {
+   "visit_rate": 0.046992,
+   "conversion_rate": 0.002917,
+   "exposure_rate": 0.030631
+  },
+  "naive_ate_unvalidated": {
+   "visit": 0.010342,
+   "conversion": 0.001152,
+   "warning": "Raw difference in means, computed here ONLY to confirm the file is usable and to give Section 7's self-check something to reproduce independently. It is NOT a result: Sections 2-3 derive the ATE properly with SRM and covariate-balance checks, CIs, and ITT vs TOT (exposure is post-randomisation and one-sided)."
+  },
+  "verified_against_published_spec": true,
+  "registration_checks": [
+   {
+    "check": "file size (bytes)",
+    "published": "311,422,618",
+    "measured": "311,422,618",
+    "passed": true
+   },
+   {
+    "check": "row count",
+    "published": "13,979,592",
+    "measured": "13,979,592",
+    "passed": true
+   },
+   {
+    "check": "schema (names and order)",
+    "published": "f0-f11, treatment, conversion, visit, exposure",
+    "measured": "f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, treatment, conversion, visit, exposure",
+    "passed": true
+   },
+   {
+    "check": "treatment ratio",
+    "published": "0.85 +/- 0.001",
+    "measured": "0.850000",
+    "passed": true
+   },
+   {
+    "check": "visit rate",
+    "published": "0.047 +/- 0.001",
+    "measured": "0.046992",
+    "passed": true
+   },
+   {
+    "check": "conversion rate",
+    "published": "0.0029 +/- 0.0002",
+    "measured": "0.002917",
+    "passed": true
+   },
+   {
+    "check": "exposure rate",
+    "published": "0.0306 +/- 0.001",
+    "measured": "0.030631",
+    "passed": true
+   },
+   {
+    "check": "sha256",
+    "published": "not published by Criteo -- RECORDED, not verified",
+    "measured": "2716e1bf0fd157a9...",
+    "passed": true
+   }
+  ],
+  "verified_by": "07_criteo_experiment.ipynb Section 0, at the top of the notebook, before any read of this key. It was previously written by a script run OUTSIDE the notebook chain, which is why a clean 00->08 run failed here with KeyError.",
+  "source_url": "https://criteostorage.blob.core.windows.net/criteo-research-datasets/criteo-uplift-v2.1.csv.gz",
+  "source_note": "Criteo AI Lab's own Azure mirror. The canonical go.criteo.net link now 404s; a Hugging Face mirror (datasets/criteo/criteo-uplift) serves a byte-identical file (same 311,422,618-byte content-length).",
+  "why_it_is_here": "REES46 has no randomised experiment (principle 10). Criteo is the genuine one (principle 11) and is what lets 07 show that risk-targeting != uplift-targeting."
  },
  "criteo_experiment": {
   "generated_by": "07_criteo_experiment.ipynb",
@@ -1817,9 +1943,9 @@
    "why_blocking_the_score_is_not_targeting": "blocking needs the covariate to predict the OUTCOME, which it does (3.6x spread across terciles). Targeting needs it to predict RESPONSIVENESS, which 07 measured and found it does not.",
    "id_time_correlation_spearman": 0.4817,
    "id_range_split_is_unsafe": "REES46 user ids are time-ordered (Spearman 0.482 against first-order timestamp), so a range split on the raw id reaches |SMD| 0.500 on acquisition timing -- the covariate 06 showed the outcome moves with.",
-   "aa_max_abs_smd": 0.008769,
-   "aa_max_sd_units_of_noise": 0.8438,
-   "aa_srm_p": 0.979546
+   "aa_max_abs_smd": 0.007936,
+   "aa_max_sd_units_of_noise": 0.766,
+   "aa_srm_p": 0.985389
   },
   "estimand": {
    "primary": "ITT by randomised assignment",
@@ -1899,7 +2025,7 @@
      "source": "05 features.parquet, day-14 trigger pool (this notebook S3C)"
     },
     "aov_second_order": {
-     "value": 40.88553389006,
+     "value": 40.88647032592833,
      "tag": "DATA",
      "source": "05 orders.parquet, second orders, bulk buyers excluded"
     },
@@ -1934,18 +2060,18 @@
      "source": "design choice -- the primary arm carries NO offer"
     }
    },
-   "value_per_incremental_second_order_eur": 12.7567,
+   "value_per_incremental_second_order_eur": 12.757,
    "value_components": {
-    "margin_on_order": 12.2657,
+    "margin_on_order": 12.2659,
     "downstream_1_27x": 0.491
    },
-   "rejected_naive_value_eur": 14.0863,
+   "rejected_naive_value_eur": 14.0866,
    "naive_overstates_downstream_by": 3.71,
-   "break_even_lift_pp": 0.392,
-   "break_even_lift_rel_pct": 3.825,
+   "break_even_lift_pp": 0.3919,
+   "break_even_lift_rel_pct": 3.824,
    "mde_pp": 1.0,
    "mde_over_breakeven": 2.55,
-   "n_per_arm": 40721,
+   "n_per_arm": 40719,
    "events_per_arm": 4173,
    "power_basis": {
     "shipped": "80% probability that the 95% CI LOWER BOUND clears break-even when the true effect is 1.00 pp. Solved as SE = (delta - delta*)/(z_a + z_b), n = (p0 q0 + p1 q1)/SE^2, unpooled on both sides because the comparison is against a non-zero boundary.",
@@ -1991,35 +2117,35 @@
      "P_inconclusive_pct": 13.3
     },
     {
-     "design": "B) decision-powered, 40,721/arm",
+     "design": "B) decision-powered, 40,719/arm",
      "true_effect_pp": 0.0,
      "P_ship_pct": 0.0,
      "P_kill_pct": 45.4,
      "P_inconclusive_pct": 54.6
     },
     {
-     "design": "B) decision-powered, 40,721/arm",
+     "design": "B) decision-powered, 40,719/arm",
      "true_effect_pp": 0.392,
      "P_ship_pct": 2.5,
      "P_kill_pct": 2.5,
      "P_inconclusive_pct": 95.0
     },
     {
-     "design": "B) decision-powered, 40,721/arm",
+     "design": "B) decision-powered, 40,719/arm",
      "true_effect_pp": 0.75,
      "P_ship_pct": 38.1,
      "P_kill_pct": 0.0,
      "P_inconclusive_pct": 61.8
     },
     {
-     "design": "B) decision-powered, 40,721/arm",
+     "design": "B) decision-powered, 40,719/arm",
      "true_effect_pp": 1.0,
      "P_ship_pct": 80.0,
      "P_kill_pct": 0.0,
      "P_inconclusive_pct": 20.0
     },
     {
-     "design": "B) decision-powered, 40,721/arm",
+     "design": "B) decision-powered, 40,719/arm",
      "true_effect_pp": 1.5,
      "P_ship_pct": 99.9,
      "P_kill_pct": 0.0,
@@ -2044,7 +2170,7 @@
    "enrolment_weeks": 19,
    "weeks_to_primary_readout": 26,
    "weeks_to_g2_readout": 33,
-   "contact_spend_eur": 2036.05,
+   "contact_spend_eur": 2035.95,
    "no_offer_in_the_first_test": "a 10% discount raises the break-even from 3.8% to 52.8% relative lift, and at a 20% margin a 20% discount never breaks even, because the offer is paid to the ~90% of converters who needed no help.",
    "mde_is_not_from_criteo": "the MDE is solved from contact cost, contribution margin, AOV and the trigger base rate. S10 asserts mechanically that no registered input names Criteo. 07's magnitudes carry a transfer caveat and a +/-25% adjustment bias band and are used for STRUCTURE only.",
    "tables": [
@@ -2064,7 +2190,7 @@
    "status": "EXPLORATORY, pre-registered, two-sided with no predicted direction",
    "strata": "06 shipped-score terciles, frozen at assignment",
    "per_tercile_mde_pp": 1.054,
-   "events_available": 8347,
+   "events_available": 8346,
    "events_07_needed_for_a_reliable_uplift_ranking": 330000,
    "shortfall_x": 40,
    "sign_may_invert": "07 found uplift RISING with baseline propensity on Criteo and recorded that the retention intuition is the opposite -- persuadables plausibly sit mid-propensity. Both a monotone rise and a middle peak are admissible; neither is confirmatory.",
@@ -2162,7 +2288,7 @@
    "The pull-forward risk is unresolved and unresolvable without the experiment. A 30-day lift that does not appear in the 90-day order count is rescheduling, not incremental demand. 09 must carry this as an explicit scenario, not a footnote.",
    "Every duration in 09 must use the October-excluded inflow rate (695.4/day). Including October inflates it 4.5% because the window is left-censored.",
    "THE EXPERIMENT'S METRIC IS NOT 06's. repeat_30d_from_trigger has a 10.25% base rate on users who survived 14 days un-repeated; 06's repeat_purchase_30d has 13.73% measured from t0 on everyone. They are different quantities and must never be substituted for one another in an ROI chain.",
-   "IF 09 QUOTES A SAMPLE SIZE OR A DURATION, IT IS 40,721 PER ARM AND 26 WEEKS, the decision-powered design. The 15,058/arm figure in S6D-S6F is superseded and is retained only as the record of how it was first derived. A cost line built on it understates the spend 2.7x."
+   "IF 09 QUOTES A SAMPLE SIZE OR A DURATION, IT IS 40,719 PER ARM AND 26 WEEKS, the decision-powered design. The 15,058/arm figure in S6D-S6F is superseded and is retained only as the record of how it was first derived. A cost line built on it understates the spend 2.7x."
   ],
   "honesty_constraints_observed": [
    "No treatment effect is estimated. No outcome is split by arm, anywhere -- a null simulation printed next to a design invites being read as a result.",

@@ -1,6 +1,6 @@
 key,value,unit,tag,source,note
 base_rate,0.10248430541396147,share,DATA,"05 features.parquet, day-14 trigger pool (this notebook S3C)","74,548 historical analogues; 05/06's 13.73% is the wrong anchor for this population"
-aov_second_order,40.88553389006,EUR,DATA,"05 orders.parquet, second orders, bulk buyers excluded","n=24,668, median EUR 31.25; bulk buyers excluded from the MEAN per 01's B2B finding"
+aov_second_order,40.88647032592833,EUR,DATA,"05 orders.parquet, second orders, bulk buyers excluded","n=24,668, median EUR 31.25; bulk buyers excluded from the MEAN per 01's B2B finding"
 downstream_uplift,0.04003228346456693,share,DATA,"02 S0B compounding-vs-selection, slowest-to-second bucket (1.27x residual)","1.27x residual, NOT the naive 2.00x from the fastest bucket"
 first_buyer_inflow_per_day,695.3636363636364,users/day,DATA,"05 features.parquet, first-order timestamps, 2019-11-01 to 2020-02-29","October excluded: it is left-censored, every October purchaser looks like a first-time buyer"
 trigger_survival_share,0.9167916963868461,share,DATA,"this notebook S3C trigger sweep, row T=14","share of a cohort still un-repeated at day 14, i.e. still enrollable"

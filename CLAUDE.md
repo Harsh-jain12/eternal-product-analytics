@@ -5,35 +5,64 @@ Which user behaviors and first-purchase characteristics drive repeat purchase an
 long-term retention, which customer segments are most valuable and at risk, and who
 should actually be targeted with a retention intervention?
 
-## Spine hypothesis (REVISED in 02 — see the falsification below before using this)
+## Spine hypothesis (REVISED in 02, RECONCILED with 06 — read SPINE-1 before using this)
 Repeat purchase and repeat engagement are separable problems at this retailer: by D90,
 60% of purchasers return but only 27% buy again, a 33pp gap stable from D14 onward.
-Neither first-order value nor first-session depth predicts repeat purchase strongly, so
-the targeting question cannot be answered by propensity alone — it requires estimating
-who would RESPOND to an intervention, which observational data cannot do (nb07/nb08).
+Every signal this project has found for repeat purchase is weak, so the targeting
+question cannot be answered by propensity alone — it requires estimating who would
+RESPOND to an intervention, which observational data cannot do (nb07/nb08).
 
 The second clause of the original spine still stands and is still to be tested: the
 users most likely to churn are not necessarily the users who would respond to an
 intervention. Negative results are acceptable and must be reported honestly, not hidden.
 
-### SPINE-1 (FALSIFIED 2026-09-14, nb02 §5) — recorded, not deleted
+### SPINE-1 — the depth proxy failed, the hypothesis did not
 Original first clause: *"Repeat purchase is driven more by user behavior and
 category/journey characteristics than by simple first-order value."*
 
-Measured as Cramér's V on repeat purchase, eligible cohorts only:
+**Status: REVISED 2026-09-21. Labelled FALSIFIED on 2026-09-14; that over-claimed.**
+Both the label and the numbers under it are corrected below, and the correction is
+recorded rather than silently applied.
 
-| horizon | first-order value | first-session depth | category_id |
+**What 02 §5 tested** — one behavioural proxy (first-session event count) against one
+monetary proxy (first-order value), as value-boundary quintiles, by Cramér's V, with a
+2,000-resample bootstrap CI on ΔV = V(depth) − V(value):
+
+| horizon | value | depth | category | ΔV (depth − value) | 95% CI | verdict |
+|---|---|---|---|---|---|---|
+| D30 | 0.0895 | 0.0897 | 0.0616 | +0.0002 | [−0.0078, +0.0080] | **tie** |
+| D60 | 0.1154 | 0.1110 | 0.0775 | −0.0044 | [−0.0123, +0.0036] | **tie** |
+| D90 | 0.1310 | 0.1194 | 0.0872 | −0.0116 | [−0.0217, −0.0023] | value ahead |
+
+Depth is **never** ahead. D30 and D60 are ties — the CI spans zero, so the data does not
+order them and nothing may quote an ordering from those horizons. Only D90 separates,
+and narrowly.
+
+*Two corrections to the 2026-09-14 table, both from the same cause.* It read
+`D30 0.0895 / 0.0894`, `D60 0.1154 / 0.1108`, `D90 0.1310 / 0.1197` and called D30 a
+"dead heat" off a 0.0001 gap. The quintile cut was `pd.qcut(x.rank(method="first"), 5)`,
+which breaks ties by row position — and row position came from a DuckDB `fetchdf()`, so
+the numbers moved between runs. The cut is now on value boundaries, and "tie" is a
+bootstrap CI rather than an eyeball.
+
+**What 06 found on the same outcome** — a broader behavioural block beats first-order
+information, in both ladder orders:
+
+| | standalone test ROC | χ² entering first | χ² entering last |
 |---|---|---|---|
-| D30 | 0.0895 | 0.0894 | 0.0616 |
-| D60 | 0.1154 | 0.1108 | 0.0775 |
-| D90 | 0.1310 | 0.1197 | 0.0872 |
+| M3 pre-t0 browsing | **0.6192** | 1598.1 (df 25) | 926.7 (df 25, after M1+M2) |
+| M1 first order | 0.5852 | 1118.8 (df 18) | 496.9 (df 18, after M3) |
 
-Behaviour does **not** beat first-order value: a dead heat at D30 and value ahead at
-D60/D90. Both associations are weak, so neither is a usable standalone predictor. This
-is kept as a named, dated falsification so that 06/08 cannot silently re-adopt the
-original framing; it is not evidence that behaviour is irrelevant, only that *these two
-first-order summaries* are similarly weak. Full record in
-`handoff_params.json → spine_hypothesis_status`.
+M3 is ahead both ways round: it buys more entering first, and it still buys more
+entering after M1 than M1 buys entering after it.
+
+**The accurate statement.** First-session depth — the proxy 02 tested — does not beat
+first-order value. But pre-purchase browsing volume does. So *"behaviour beats value"* is
+**not falsified in general**: the specific proxy failed and a broader behavioural measure
+succeeded. All signals are weak (V ≈ 0.09–0.13; standalone ROC 0.57–0.62; the shipped
+model 0.6278). Do not quote "SPINE-1 FALSIFIED". Full record, including why the two
+results do not contradict each other, in `handoff_params.json → spine_hypothesis_status`
+and its `reconciliation_with_06`.
 
 ### Leakage rule arising from 02 §0E (binding on nb05)
 No feature may be derived from a cart-abandonment type whose definition references the
@@ -98,6 +127,16 @@ Plus: sql/ (versioned .sql per model), dashboard/, README.md
   00_data_quality.ipynb — keep them in src/plotting.py and import them in every later notebook
   instead of redefining.
 - Random seed fixed at 42 everywhere.
+- DETERMINISM IS A CORRECTNESS PROPERTY, not a nicety. Two clean runs must agree at reported
+  precision. Four failure modes, all documented in src/data.py connect(): (1) `row_number()`
+  through a lazy view, (2) `approx_quantile`, (3) raw parallel `sum`/`avg`, (4) any of those
+  used AS AN ORDERING OR BUCKETING KEY — the one that amplifies, turning a 1e-13 wobble into a
+  whole rank step. Rules: `quantile_cont` not `approx_quantile`; materialise anything carrying a
+  synthetic row id; every `ORDER BY`/`sort_values`/rank key must be UNIQUE (the orders key is
+  `user_id, user_session, order_ts` — never just the first two); `key_round()`/`sig_round()`
+  before a float is used as a rank, cut or digitize key; canonical row order before any
+  positional resampling. Never write a wall-clock time or a measurement-of-non-determinism into
+  a CSV or a handoff leaf — the audit tables are the one place those belong.
 - Never silently drop rows. Every cleaning rule goes in outputs/tables/data_quality_audit.csv with
   rows affected, %, reason, implication (00 already does this — extend the same pattern).
 - Read outputs/handoff_params.json at the start of every notebook after 00 — it carries the

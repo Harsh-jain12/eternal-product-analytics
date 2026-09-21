@@ -2,7 +2,7 @@ covariate,description,smd,abs_smd,sd_units_of_noise,mean_T,mean_C
 tenure_d,pre-t0 tenure (days),0.50002,0.50002,48.11747,13.1268,4.57283
 acq_day,days since 2019-10-01 (acquisition timing),-0.46669,0.46669,45.05094,43.61084,57.43074
 pre_n_active_days,pre-t0 active days,0.43483,0.43483,41.84405,2.84701,1.74634
-p_shipped,06 shipped propensity score,0.42282,0.42282,40.81591,0.11645,0.09423
+p_shipped,06 shipped propensity score,0.42281,0.42281,40.81476,0.11645,0.09423
 pre_n_categories,pre-t0 categories,0.31683,0.31683,30.48939,9.38842,6.85122
 pre_n_products,pre-t0 distinct products viewed,0.29356,0.29356,28.25011,26.56906,17.68814
 pre_n_events,pre-t0 events,0.26654,0.26654,25.64939,57.34728,36.93988

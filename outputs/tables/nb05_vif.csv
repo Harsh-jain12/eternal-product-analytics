@@ -3,15 +3,15 @@ fo_price_range,inf,EXACT LINEAR DEPENDENCY -- removed to make the matrix full ra
 fs_has_pre_purchase_events,inf,EXACT LINEAR DEPENDENCY -- removed to make the matrix full rank
 pre_n_prior_sessions,inf,EXACT LINEAR DEPENDENCY -- removed to make the matrix full rank
 has_pre_t0_history,inf,EXACT LINEAR DEPENDENCY -- removed to make the matrix full rank
-pre_n_events,119493.81,SEVERE (>=10)
-pre_n_removals,24637.24,SEVERE (>=10)
+pre_n_events,119493.83,SEVERE (>=10)
+pre_n_removals,24637.25,SEVERE (>=10)
 pre_n_view_ev,22273.3,SEVERE (>=10)
 pre_n_cart_ev,11579.66,SEVERE (>=10)
 pre_n_sessions,10987.28,SEVERE (>=10)
 cad_n_hist_gaps,9960.96,SEVERE (>=10)
-fo_n_products,8564.04,SEVERE (>=10)
+fo_n_products,8564.05,SEVERE (>=10)
 fo_n_items,8561.41,SEVERE (>=10)
-fs_n_events,1467.53,SEVERE (>=10)
+fs_n_events,1467.54,SEVERE (>=10)
 fs_n_removals,388.22,SEVERE (>=10)
 has_session_cadence,255.73,SEVERE (>=10)
 fs_n_view_ev,243.09,SEVERE (>=10)
