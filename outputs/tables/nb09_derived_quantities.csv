@@ -1,0 +1,9 @@
+key,value,unit,tag,formula,parents
+value_margin_on_order,12.265941097778498,EUR,DATA x ASSUMPTION,margin x AOV2,"contribution_margin, aov_second_order"
+value_downstream_127x,0.4910336309859501,EUR,DATA x ASSUMPTION,margin x AOV2 x downstream_uplift,"contribution_margin, aov_second_order, downstream_uplift"
+value_per_incremental_2nd_order,12.756974728764447,EUR,DATA x ASSUMPTION,V_order + V_downstream,"value_margin_on_order, value_downstream_127x"
+break_even_lift,0.003919424555044381,share,DATA x ASSUMPTION,c / V,"contact_cost, value_per_incremental_2nd_order"
+enrolments_per_day,637.5036077875442,users/day,DATA,inflow x survival,"first_buyer_inflow_per_day, trigger_survival_share"
+enrolments_per_year,232848.19274440053,users/yr,DATA,enrolments/day x 365.25,enrolments_per_day
+treated_per_year,209563.37346996047,users/yr,DATA x DESIGN,enrolments/yr x (1 - holdback),"enrolments_per_year, holdback_share"
+net_value_per_year_at_target,16255.777920811091,EUR/yr,DATA x ASSUMPTION x SCENARIO x DESIGN,treated/yr x (lift x V - c),"treated_per_year, true_lift_at_target, value_per_incremental_2nd_order, contact_cost"

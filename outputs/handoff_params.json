@@ -2332,5 +2332,539 @@
    "nb08_operating_characteristics",
    "nb08_base_rate_drift_concurrent"
   ]
+ },
+ "impact": {
+  "generated_by": "09_impact.ipynb",
+  "status": "CONDITIONAL, NOT PREDICTED. No randomised test of this intervention has run, so no lift is known. Every monetary figure here is a function of an unmeasured lift, swept across a grid that includes zero and break-even. Nothing in this notebook is a forecast.",
+  "tags": {
+   "scheme": [
+    "DATA",
+    "ASSUMPTION",
+    "SCENARIO",
+    "DESIGN"
+   ],
+   "rule": "Derived quantities carry the union of their parents' tags, computed rather than asserted.",
+   "inputs": {
+    "base_rate": "DATA",
+    "aov_second_order": "DATA",
+    "downstream_uplift": "DATA",
+    "first_buyer_inflow_per_day": "DATA",
+    "trigger_survival_share": "DATA",
+    "contact_cost": "ASSUMPTION",
+    "contribution_margin": "ASSUMPTION",
+    "discount_rate": "ASSUMPTION",
+    "holdback_share": "DESIGN",
+    "n_per_arm_design_B": "DESIGN",
+    "weeks_to_primary_readout": "DESIGN",
+    "evaluation_horizon_weeks": "DESIGN",
+    "cost_of_capital": "ASSUMPTION",
+    "true_lift_at_target": "SCENARIO",
+    "new_demand_share": "SCENARIO"
+   },
+   "derived": {
+    "value_margin_on_order": "DATA x ASSUMPTION",
+    "value_downstream_127x": "DATA x ASSUMPTION",
+    "value_per_incremental_2nd_order": "DATA x ASSUMPTION",
+    "break_even_lift": "DATA x ASSUMPTION",
+    "enrolments_per_day": "DATA",
+    "enrolments_per_year": "DATA",
+    "treated_per_year": "DATA x DESIGN",
+    "net_value_per_year_at_target": "DATA x ASSUMPTION x SCENARIO x DESIGN"
+   }
+  },
+  "reach": {
+   "basis": "TRIGGER FLOW, not the churn-flag stock",
+   "inflow_per_day": 695.3636363636364,
+   "trigger_survival_share": 0.9167916963868461,
+   "enrolments_per_day": 637.5036077875442,
+   "enrolments_per_year": 232848.19274440053,
+   "holdback_share": 0.1,
+   "contacted_per_year": 209563.37346996047,
+   "why_not_the_flag": "03's binding rule. The flagged count is 36,495 with 53.09% recall and 3,694 false positives; the true at-risk base is correctly_flagged/recall = 61,784. Neither number enters this chain, because the trigger is a clock and uses no threshold."
+  },
+  "value_per_incremental_second_order_eur": 12.756974728764447,
+  "break_even_lift_pp": 0.39194245550443807,
+  "conditional_impact": [
+   {
+    "scenario": "nothing happens",
+    "lift_pp": 0.0,
+    "lift_rel_pct": 0.0,
+    "inc_2nd_orders_per_yr": 0.0,
+    "gross_eur": 0,
+    "contact_cost_eur": 10478,
+    "net_eur": -10478,
+    "roi": -1.0,
+    "net_per_1k_contacted_eur": -50.0,
+    "holdback_forgone_eur": 0,
+    "verdict": "loses money"
+   },
+   {
+    "scenario": "break-even",
+    "lift_pp": 0.3919,
+    "lift_rel_pct": 3.82,
+    "inc_2nd_orders_per_yr": 821.4,
+    "gross_eur": 10478,
+    "contact_cost_eur": 10478,
+    "net_eur": 0,
+    "roi": 0.0,
+    "net_per_1k_contacted_eur": 0.0,
+    "holdback_forgone_eur": 1164,
+    "verdict": "break-even"
+   },
+   {
+    "scenario": "half a point",
+    "lift_pp": 0.5,
+    "lift_rel_pct": 4.88,
+    "inc_2nd_orders_per_yr": 1047.8,
+    "gross_eur": 13367,
+    "contact_cost_eur": 10478,
+    "net_eur": 2889,
+    "roi": 0.276,
+    "net_per_1k_contacted_eur": 13.78,
+    "holdback_forgone_eur": 1485,
+    "verdict": "pays"
+   },
+   {
+    "scenario": "three quarters",
+    "lift_pp": 0.75,
+    "lift_rel_pct": 7.32,
+    "inc_2nd_orders_per_yr": 1571.7,
+    "gross_eur": 20050,
+    "contact_cost_eur": 10478,
+    "net_eur": 9572,
+    "roi": 0.914,
+    "net_per_1k_contacted_eur": 45.68,
+    "holdback_forgone_eur": 2228,
+    "verdict": "pays"
+   },
+   {
+    "scenario": "08's target",
+    "lift_pp": 1.0,
+    "lift_rel_pct": 9.76,
+    "inc_2nd_orders_per_yr": 2095.6,
+    "gross_eur": 26734,
+    "contact_cost_eur": 10478,
+    "net_eur": 16256,
+    "roi": 1.551,
+    "net_per_1k_contacted_eur": 77.57,
+    "holdback_forgone_eur": 2970,
+    "verdict": "pays"
+   },
+   {
+    "scenario": "a large effect",
+    "lift_pp": 1.5,
+    "lift_rel_pct": 14.64,
+    "inc_2nd_orders_per_yr": 3143.5,
+    "gross_eur": 40101,
+    "contact_cost_eur": 10478,
+    "net_eur": 29623,
+    "roi": 2.827,
+    "net_per_1k_contacted_eur": 141.35,
+    "holdback_forgone_eur": 4456,
+    "verdict": "pays"
+   }
+  ],
+  "pull_forward": {
+   "rule": "a 30-day lift absent from the 90-day order count is rescheduling, not incremental demand",
+   "share_of_lift_that_must_be_new_demand_at_target_pct": 39.1942455504438,
+   "net_if_wholly_rescheduled_eur": -10478.168673498025,
+   "decided_by": "G2, orders in (t0+14d, t0+90d], read out at 33 weeks",
+   "table": "outputs/tables/nb09_pullforward.csv"
+  },
+  "sensitivity": {
+   "held_at_lift_pp": 1.0,
+   "base_net_eur": 16255.777920811097,
+   "rows": [
+    {
+     "input": "contact cost, EUR/contact",
+     "tag": "ASSUMPTION",
+     "low": "EUR 0.025",
+     "high": "EUR 0.15",
+     "net_at_low_eur": 21495,
+     "net_at_high_eur": -4701,
+     "swing_eur": 26195,
+     "breakeven_at_low_pp": 0.196,
+     "breakeven_at_high_pp": 1.176,
+     "flips_the_decision": true,
+     "source": "low: high-volume ESP rate; high: 08 S6C premium channel"
+    },
+    {
+     "input": "contribution margin",
+     "tag": "ASSUMPTION",
+     "low": "20%",
+     "high": "40%",
+     "net_at_low_eur": 7344,
+     "net_at_high_eur": 25167,
+     "swing_eur": 17823,
+     "breakeven_at_low_pp": 0.588,
+     "breakeven_at_high_pp": 0.294,
+     "flips_the_decision": false,
+     "source": "08 S6C grid; not observable in REES46"
+    },
+    {
+     "input": "AOV: mean vs median",
+     "tag": "DATA (specification)",
+     "low": "median EUR 31.25",
+     "high": "mean EUR 40.89",
+     "net_at_low_eur": 9955,
+     "net_at_high_eur": 16256,
+     "swing_eur": 6301,
+     "breakeven_at_low_pp": 0.513,
+     "breakeven_at_high_pp": 0.392,
+     "flips_the_decision": false,
+     "source": "a specification choice on a right-skewed distribution"
+    },
+    {
+     "input": "downstream multiplier",
+     "tag": "DATA",
+     "low": "1.00x (no credit)",
+     "high": "2.00x (02 fastest bucket)",
+     "net_at_low_eur": 15227,
+     "net_at_high_eur": 19042,
+     "swing_eur": 3815,
+     "breakeven_at_low_pp": 0.408,
+     "breakeven_at_high_pp": 0.355,
+     "flips_the_decision": false,
+     "source": "08 uses 1.27x, the slowest-bucket residual"
+    },
+    {
+     "input": "AOV: sampling error",
+     "tag": "DATA",
+     "low": "EUR 40.42",
+     "high": "EUR 41.40",
+     "net_at_low_eur": 15948,
+     "net_at_high_eur": 16589,
+     "swing_eur": 641,
+     "breakeven_at_low_pp": 0.397,
+     "breakeven_at_high_pp": 0.387,
+     "flips_the_decision": false,
+     "source": "95% bootstrap CI of the mean, n=24,668"
+    }
+   ],
+   "verdict": "Contact cost is the only input whose plausible band turns the 1.00 pp scenario unprofitable: at EUR 0.15 break-even rises to 1.176 pp, past the effect the design can act on. The two ASSUMPTION bands are wider than the three DATA bands combined, so this is an assumptions decision -- settle the margin and the channel rate with finance before launch.",
+   "critical_values": {
+    "contact_cost_eur": 0.12756974728764447,
+    "contribution_margin": 0.1175827366513314,
+    "aov_eur": 16.02514357645369,
+    "downstream_multiplier": "unreachable -- cannot fall below 1.00x"
+   }
+  },
+  "value_of_the_experiment": {
+   "horizon_weeks": 104.0,
+   "discounting": "none [ASSUMPTION]",
+   "policies": [
+    "a) roll out untested (100% treated, nothing measured)",
+    "b) do nothing",
+    "c) run design B (40,719/arm, 26 weeks) then act on the rule"
+   ],
+   "rows": [
+    {
+     "true_lift_pp": 0.0,
+     "P_ship_pct": 0.0,
+     "P_kill_pct": 45.4,
+     "P_inconclusive_pct": 54.6,
+     "a_rollout_untested_eur": -23285,
+     "b_do_nothing_eur": 0,
+     "c_run_design_B_eur": -2036,
+     "c_minus_a_eur": 21249,
+     "c_minus_b_eur": -2036,
+     "best": "b) do nothing"
+    },
+    {
+     "true_lift_pp": 0.392,
+     "P_ship_pct": 2.5,
+     "P_kill_pct": 2.5,
+     "P_inconclusive_pct": 95.0,
+     "a_rollout_untested_eur": 3,
+     "b_do_nothing_eur": 0,
+     "c_run_design_B_eur": 0,
+     "c_minus_a_eur": -3,
+     "c_minus_b_eur": 0,
+     "best": "a) roll out untested"
+    },
+    {
+     "true_lift_pp": 0.75,
+     "P_ship_pct": 38.1,
+     "P_kill_pct": 0.0,
+     "P_inconclusive_pct": 61.8,
+     "a_rollout_untested_eur": 21272,
+     "b_do_nothing_eur": 0,
+     "c_run_design_B_eur": 7330,
+     "c_minus_a_eur": -13941,
+     "c_minus_b_eur": 7330,
+     "best": "a) roll out untested"
+    },
+    {
+     "true_lift_pp": 1.0,
+     "P_ship_pct": 80.0,
+     "P_kill_pct": 0.0,
+     "P_inconclusive_pct": 20.0,
+     "a_rollout_untested_eur": 36124,
+     "b_do_nothing_eur": 0,
+     "c_run_design_B_eur": 22665,
+     "c_minus_a_eur": -13458,
+     "c_minus_b_eur": 22665,
+     "best": "a) roll out untested"
+    },
+    {
+     "true_lift_pp": 1.5,
+     "P_ship_pct": 99.9,
+     "P_kill_pct": 0.0,
+     "P_inconclusive_pct": 0.1,
+     "a_rollout_untested_eur": 65828,
+     "b_do_nothing_eur": 0,
+     "c_run_design_B_eur": 50146,
+     "c_minus_a_eur": -15683,
+     "c_minus_b_eur": 50146,
+     "best": "a) roll out untested"
+    }
+   ],
+   "error_prices": [
+    {
+     "alternative_true_lift_pp": 0.392,
+     "cost_of_a_wrong_ship_eur": 23285,
+     "cost_of_a_wrong_ship_with_holdback_eur": 20956,
+     "cost_of_a_wrong_kill_eur": 2,
+     "test_gains_if_worthless_eur": 21249,
+     "test_loses_if_it_works_eur": 3,
+     "breakeven_prior_P_worthless_pct": 0.0
+    },
+    {
+     "alternative_true_lift_pp": 0.75,
+     "cost_of_a_wrong_ship_eur": 23285,
+     "cost_of_a_wrong_ship_with_holdback_eur": 20956,
+     "cost_of_a_wrong_kill_eur": 14358,
+     "test_gains_if_worthless_eur": 21249,
+     "test_loses_if_it_works_eur": 13942,
+     "breakeven_prior_P_worthless_pct": 39.6
+    },
+    {
+     "alternative_true_lift_pp": 1.0,
+     "cost_of_a_wrong_ship_eur": 23285,
+     "cost_of_a_wrong_ship_with_holdback_eur": 20956,
+     "cost_of_a_wrong_kill_eur": 24384,
+     "test_gains_if_worthless_eur": 21249,
+     "test_loses_if_it_works_eur": 13459,
+     "breakeven_prior_P_worthless_pct": 38.8
+    },
+    {
+     "alternative_true_lift_pp": 1.5,
+     "cost_of_a_wrong_ship_eur": 23285,
+     "cost_of_a_wrong_ship_with_holdback_eur": 20956,
+     "cost_of_a_wrong_kill_eur": 44434,
+     "test_gains_if_worthless_eur": 21249,
+     "test_loses_if_it_works_eur": 15682,
+     "breakeven_prior_P_worthless_pct": 42.5
+    }
+   ],
+   "breakeven_prior_at_target_pct": 38.8,
+   "inconclusive": {
+    "probability_at_target_pct": 20.0,
+    "probability_at_zero_pct": 54.6,
+    "recommended_branch": "Default: do not ship and do not re-run the same test. n is not the binding constraint -- a 0.50 pp target needs 10.8 years of inflow (08 S6I). The next test changes the TREATMENT, not the sample size. Two named escape hatches: ship into the permanent holdback as an explicit risk decision, or re-power on a stronger treatment (1.50 pp needs 12,509/arm against 40,719).",
+    "must_be_pre_registered_before_launch": true
+   }
+  },
+  "recommendations": [
+   {
+    "tier": "DO NOW",
+    "id": "N1",
+    "what": "Stop treating the 36,495 churn-flagged users as the at-risk population. The at-risk base is correctly_flagged / recall = 32,801 / 0.5309 = 61,784.",
+    "why": "The certified 42.2d rule has 53.09% recall, so it misses 28,986 genuinely at-risk users, and 3,694 of the users it does flag are false positives. Dividing the FLAGGED count by recall gives 68,742 and double-counts those false positives -- 04 applied that version inside cells and had to withdraw it.",
+    "evidence": "03 S3 (recall, FP rate), 03 addressable_population, 04 S9A (the withdrawn cell-level correction)",
+    "expected_impact": "A sizing correction, not a revenue claim: any list built from the flag is 41% short of the at-risk base and wastes ~3,700 contacts.",
+    "cost": "None. A definition change in how the flag is reported.",
+    "risk": "Recall was measured at ONE flag date and 03 S9D showed the J-optimal threshold drifts 43.5d -> 29.4d as that date moves. Treat 53.09% as a factor of roughly two, not a precise divisor.",
+    "how_it_is_tested": "Re-measure recall at three or more flag dates once ~9 months of history exists (03 S9D). Until then the correction is directional."
+   },
+   {
+    "tier": "DO NOW",
+    "id": "N2",
+    "what": "Size activation campaigns on the FLOW (638 enrolments/day, 232,848/year), never on a stock count of flagged users.",
+    "why": "The trigger is a rate and the flag is a snapshot. 03's base-rate reconciliation is the same error in reverse: a stock churn rate (84.84%) read against a flow retention rate (21.08% at D60) looks like a contradiction and is a composition difference.",
+    "evidence": "08 S6E (inflow and enrolment rate), 03 base_rate_reconciliation, 09 S3A",
+    "expected_impact": "Gives the day-14 nudge a real addressable population of 232,848/yr and makes duration, not list size, the binding constraint.",
+    "cost": "None.",
+    "risk": "The inflow rate is a four-month average (Nov-Feb) that includes Black Friday, and October is excluded because it is left-censored. It is a measurement of the past, not a forecast.",
+    "how_it_is_tested": "Directly observable -- recompute monthly from first-order timestamps."
+   },
+   {
+    "tier": "DO NOW",
+    "id": "N3",
+    "what": "Stop quoting session-scoped funnel conversion as the conversion rate. Report the user-scoped rate beside it, and label both as lower bounds.",
+    "why": "01 measured 3.81% of viewing SESSIONS ending in a purchase against 6.87% of viewing USERS -- the same funnel, 1.81x apart, because a user who browses five times and buys once converts in one session out of five. Under cookie-scoped identity both are lower bounds on the customer-level rate.",
+    "evidence": "01 S2 (raw vs dedup, session vs user), 00 known_limitations (cookie-scoped user_id)",
+    "expected_impact": "A target set on the session denominator is wrong by 1.81x. No campaign changes; the number every campaign is measured against does.",
+    "cost": "None.",
+    "risk": "Neither rate is customer-level, so the correction removes one bias and leaves another in place. Say so whenever either is quoted.",
+    "how_it_is_tested": "Account-level identity resolution would settle it; partial coverage is enough to estimate the factor."
+   },
+   {
+    "tier": "DO NOW",
+    "id": "N4",
+    "what": "Re-score behavioural segments at the moment of targeting. Never target from a stored segment label.",
+    "why": "04's stability test: the cluster STRUCTURE reproduces across time (ARI 0.891, centroids within 0.21 z) but MEMBERSHIP does not -- 56.9% of users stay in the same segment over two months, Cohen's kappa 0.309 against a 37.6% chance rate, and an equal-window control rules out a window-length artefact.",
+    "evidence": "04 stability, 04 binding_rule_for_08_09, segment_model.json",
+    "expected_impact": "A campaign built on a two-month-old segment list misdirects roughly two users in five.",
+    "cost": "A scoring job at send time using segment_model.json. No new data.",
+    "risk": "Drift is directional -- users migrate toward the broad/deep segment as history accumulates, and none of the eight features is tenure-normalised, so part of what the clustering calls behaviour is tenure.",
+    "how_it_is_tested": "Re-run 04's fit-then-score stability check each quarter; kappa is the metric to watch."
+   },
+   {
+    "tier": "TEST NEXT",
+    "id": "T1",
+    "what": "Run 08's day-14 no-offer activation nudge as design B: 40,719 users per arm, 81,438 total, 19 weeks of enrolment, 26 weeks to the primary readout, 33 to the G2 pull-forward readout.",
+    "why": "Every signal this project found for repeat purchase is weak -- the shipped model reaches ROC 0.628 and AP 0.181 against a 0.117 base rate -- and 07 showed on genuinely randomised data that ranking users by who repeats unaided is not ranking them by who would respond. Only randomisation answers the targeting question, and a time trigger sidesteps the two unresolved problems in the churn threshold entirely.",
+    "evidence": "08 (the full design and pre-registration), 07 S7 (risk vs uplift), 06 (model strength), 03 S9D (threshold not identified)",
+    "expected_impact": "CONDITIONAL, and that is the point: EUR 0 at a true zero, EUR 0 at break-even (0.39 pp), EUR 16,256/yr at 08's 1.00 pp target, EUR 29,623/yr at 1.50 pp. No point estimate is available and none is offered.",
+    "cost": "EUR 2,036 of contact spend at the assumed EUR 0.05, plus 26 weeks of calendar and the CRM build. The test consumes 35% of a year's enrolments.",
+    "risk": "Inconclusive 20% of the time at a true 1.00 pp effect and 55% at a true zero; the pull-forward question stays open until the day-90 G2 readout; cookie-scoped identity attenuates the measured ITT toward the null. T1-T9 in 08 S8 carry the rest, two of them marked unhandled.",
+    "how_it_is_tested": "It is the test. ITT by randomised assignment, three-way decision against the 0.39 pp break-even line, SRM and harm guardrails monitored continuously, fixed horizon with no peeking."
+   },
+   {
+    "tier": "TEST NEXT",
+    "id": "T2",
+    "what": "Before launch, add the inconclusive branch and the permanent 10% holdback to the pre-registration.",
+    "why": "08 pre-registered the SHAPE of the three-way rule but not the action on its most likely branch. A decision rule with an unwritten branch gets written at readout, by whoever wants the answer most.",
+    "evidence": "08 decision_rule, 08 T5 (novelty/decay), 08 T6 (peeking), 09 S5C",
+    "expected_impact": "Converts an unbounded wrong-ship error into a bounded one (about EUR 21,000 over two years) and removes the temptation to read a positive point estimate as a result.",
+    "cost": "None beyond the holdback's forgone value, which is about EUR 3,000/yr at a true 1.00 pp effect and zero if the campaign does not work.",
+    "risk": "A holdback is only free if the campaign works; if it does, 10% of the value is deliberately forgone to keep measuring. That is the trade and it should be stated to the business as one.",
+    "how_it_is_tested": "The holdback IS the ongoing test: it re-estimates the ITT in steady state, which is the only way to catch novelty decay after ship."
+   },
+   {
+    "tier": "STOP / DON'T START",
+    "id": "S1",
+    "what": "Do not target this or any retention campaign on 06's risk score, or on any propensity-to-churn ranking. Use the score for blocking and for reporting only.",
+    "why": "07 evaluated exactly this policy on a real randomised test: targeting the bottom 50% of baseline propensity -- what pointing 06's model at its churn tail means -- captured 1.0% of the achievable incremental effect, against random targeting's 49.8% and response-propensity targeting's 97.4%, with a CI excluding zero by a wide margin.",
+    "evidence": "07 S7 policy comparison, 07 carry_back_to_rees46, 06 operating_point uplift_caveat",
+    "expected_impact": "Avoids spending a campaign budget on the half of the population least likely to respond. On Criteo's structure that is a 50x difference in incremental effect at the same cost.",
+    "cost": "None -- it is a decision not to do something.",
+    "risk": "The MAGNITUDE does not transfer: Criteo is display advertising and carries a +/-25% adjustment bias band. The DIRECTION and the mechanism do. And the sign of the propensity/uplift relationship at REES46 is genuinely unknown -- 07 found uplift RISING with propensity, the retention intuition is the opposite.",
+    "how_it_is_tested": "08's pre-registered exploratory tercile readout, which is underpowered by ~40x (8,346 events against the ~330,000 07 measured as necessary) and will not settle it. It is a readout, not a finding."
+   },
+   {
+    "tier": "STOP / DON'T START",
+    "id": "S2",
+    "what": "Do not run discount-led activation as the first test. The first test carries no offer.",
+    "why": "A discount is a transfer paid to every converter, including the ones who needed no help. At a 30% margin a 10% discount raises the bar from a 3.8% relative lift to 52.8%; at a 20% margin a 20% discount never breaks even at any lift. At 08's target, 91% of the treated arm's converters would have converted anyway.",
+    "evidence": "08 S6C break-even sensitivity, 09 S2 (the ledger), 02 S0B (the 1.27x residual)",
+    "expected_impact": "Prevents a test that cannot pay for itself from consuming the 26 weeks the no-offer test needs.",
+    "cost": "None.",
+    "risk": "The no-offer reminder may simply have no effect, in which case the discount was never the problem. That is what the test is for -- but the order matters, because a discount arm cannot separate the reminder's effect from the discount's.",
+    "how_it_is_tested": "Only after a plain reminder has cleared break-even. Then a discount arm is a second experiment with its own break-even, not a bigger version of this one."
+   },
+   {
+    "tier": "STOP / DON'T START",
+    "id": "S3",
+    "what": "Do not repeat Black-Friday-style acquisition at scale until the cohort gap is understood.",
+    "why": "02 measured the Black Friday cohort retaining 5.39 pp worse at D30 than organic acquisition, widening to 7.42 pp by D90, and 03 confirmed the sign and CI in every measurable cell. The gap WIDENS, which is not what a one-off timing artefact does.",
+    "evidence": "02 black_friday_cohort, 03 sensitivity_of_01_02_headlines, 08 S8A (35.5% of November's enrollees)",
+    "expected_impact": "Unquantified deliberately: this is associational, about a single trading week, and confounded with calendar position, merchandising and deal-seeking intent.",
+    "cost": "None to investigate. Stopping the acquisition outright has a real cost this project cannot price.",
+    "risk": "The recommendation is to UNDERSTAND it, not to stop discounting. 02's own interpretation limit says it cannot justify a discounting decision on its own, and 07 is in this project precisely because observational cohort gaps are not incrementality.",
+    "how_it_is_tested": "A randomised discount-depth test on acquisition, or a holdout on next year's event. Until then the cohort flag belongs in the blocking structure of every test (08 S4C), which is where 08 put it."
+   },
+   {
+    "tier": "STOP / DON'T START",
+    "id": "S4",
+    "what": "Do not commission an uplift/CATE model on REES46 data as it stands, and do not promise segment-level response estimates from this experiment.",
+    "why": "07 measured the sample an uplift ranking needs by running the learning curve rather than guessing: the baseline-response ranking is flat at ~0.69 Qini from 10k events upward, while the uplift learners climb monotonically and only overtake it at ~330,000 events. Design B buys about 8,346 repeat events in total.",
+    "evidence": "07 S6E (learning curve), 07 binding_rules_for_08, 08 S7 heterogeneity power",
+    "expected_impact": "Avoids buying a heterogeneity analysis that is ~40x short of the events it needs, and avoids promising a personalisation roadmap the data cannot support.",
+    "cost": "None.",
+    "risk": "This is a statement about THIS dataset at THIS scale, not about uplift modelling. With 330k events the learners won on Criteo, decisively.",
+    "how_it_is_tested": "Re-check the event count, not the method: the constraint is events, and it is arithmetic."
+   }
+  ],
+  "cannot_answer": [
+   {
+    "limit": "Cookie-scoped identity",
+    "what_it_blocks": "Every repeat-purchase and retention figure is a LOWER BOUND on customer-level behaviour. A returning customer on a new device is a new user, so the funnel, the retention curves, the churn flag and the experiment's ITT are all attenuated.",
+    "established_by": "00 known_limitations, 03, 08 T2",
+    "what_would_resolve_it": "An account or CRM key joined to the event stream. Even partial login coverage gives a correction factor for the rest."
+   },
+   {
+    "limit": "151 days of history",
+    "what_it_blocks": "No seasonality baseline, no CLV horizon, and the churn threshold cannot be identified: the J-optimal cut drifts 43.5d -> 29.4d as the flag date moves 21 days, tracking the shrinking lookback cap rather than behaviour.",
+    "established_by": "00 data_date_range, 03 S9D identification_status",
+    "what_would_resolve_it": "~9 months to identify the threshold (03's own estimate); ~24 months before any seasonal claim is defensible."
+   },
+   {
+    "limit": "The churn threshold is an operating value, not a measurement",
+    "what_it_blocks": "42.2d is the centre of a 30-45d region and is robust to neither of its procedure's free choices. Any absolute count of 'churned customers' is therefore a choice. It is why 08's trigger is a clock instead.",
+    "established_by": "03 S9D, 03 certified_region_days",
+    "what_would_resolve_it": "The same ~9 months of history, validated at a dozen flag dates each with a >150d lookback."
+   },
+   {
+    "limit": "No randomisation anywhere in REES46",
+    "what_it_blocks": "No causal effect of any intervention can be estimated. Every euro in Section 3 is conditional on a lift that does not exist yet, and the Black Friday cohort gap, the segment differences and the model's deciles are all associational.",
+    "established_by": "principle 10; 07 exists because of it",
+    "what_would_resolve_it": "Running the test in 08. There is no analytical substitute -- that is the finding, not a limitation of effort."
+   },
+   {
+    "limit": "First-time buyers only, and purchasers only",
+    "what_it_blocks": "The project says nothing about first conversion -- ~1.53M non-purchasers are out of scope throughout -- and nothing about win-back of established multi-order customers. Purchase cadence is undefined at a first-order anchor for 100% of users.",
+    "established_by": "04 population, 05 purchase_cadence_undefined_at_t0",
+    "what_would_resolve_it": "Separate analyses with their own anchors. The second-order anchor already exists in 06 and is where cadence becomes measurable."
+   },
+   {
+    "limit": "No cost data of any kind",
+    "what_it_blocks": "Contribution margin and contact cost are assumptions, and Section 4 shows the decision hangs on one of them: at EUR 0.15 a contact, break-even rises past the effect the experiment is powered to act on.",
+    "established_by": "09 S4, 08 economics ledger",
+    "what_would_resolve_it": "Finance's contribution margin and the ESP contract rate. Both exist inside the business today and neither is in this dataset."
+   },
+   {
+    "limit": "No email, consent or support data",
+    "what_it_blocks": "Two of the four guardrails -- opt-out rate and support contacts -- have no baseline, so harm can be monitored against a threshold but not against history. An unsubscribe cannot be priced.",
+    "established_by": "08 guardrails_without_a_baseline (G3, G4)",
+    "what_would_resolve_it": "A CRM export of sends, opens, unsubscribes and support tickets keyed to the same user id."
+   },
+   {
+    "limit": "Category and brand coverage",
+    "what_it_blocks": "category_code is null for ~98% of events and brand for ~42%, so category-level targeting or merchandising conclusions are not supportable; category_id groups without naming.",
+    "established_by": "00 known_limitations",
+    "what_would_resolve_it": "A product master join. This is a pipeline fix, not a data-collection problem."
+   }
+  ],
+  "corrections": [
+   {
+    "item": "design B sample size quoted in 08's markdown",
+    "stale_value": "40,721 per arm / 81,442 total",
+    "correct_value": "40,719 per arm / 81,438 total",
+    "source_of_truth": "handoff_params.json -> experiment_design.economics.n_per_arm, nb08_design_comparison.csv",
+    "cause": "05a483d fixed the orders sort key; aov_second_order moved 40.88553389006 -> 40.88647032592833, break-even 0.391951 -> 0.391942 pp, n 40,721 -> 40,719. Executed cells and the handoff re-ran; four markdown cells in 08 did not.",
+    "material_consequence": "EUR 0.10 of contact spend; no figure, table or decision in 08 or 09 changes",
+    "action": "09 quotes 40,719 / 26 weeks throughout, per 08's own binding rule"
+   }
+  ],
+  "honesty_constraints_observed": [
+   "No lift is asserted. The grid starts at zero and the zero row is stated in words, not only in a table cell: at a true zero the campaign costs EUR 10,478/yr and nothing in this project rules it out.",
+   "The pull-forward risk is a line on the headline figure, not a footnote -- a wholly rescheduling campaign loses the entire contact budget at every lift on the axis.",
+   "The two inputs that decide the answer are the two REES46 does not contain, and the tornado says so rather than burying them in a grid.",
+   "The experiment is never the best policy in hindsight; that is stated rather than hidden behind an expected-value average, and the break-even prior is given so the reader can apply their own belief.",
+   "08's markdown quoted a stale 40,721 per arm. The discrepancy is recorded with its cause and its EUR 0.10 consequence rather than silently absorbed.",
+   "Every figure in Section 6's STOP tier is a recommendation NOT to spend, which is where most of this project's measurable value sits."
+  ],
+  "tables": [
+   "outputs/tables/nb09_inherited_constraints.csv",
+   "outputs/tables/nb09_corrections.csv",
+   "outputs/tables/nb09_economic_inputs.csv",
+   "outputs/tables/nb09_derived_quantities.csv",
+   "outputs/tables/nb09_conditional_impact.csv",
+   "outputs/tables/nb09_pullforward.csv",
+   "outputs/tables/nb09_tornado.csv",
+   "outputs/tables/nb09_value_of_experiment.csv",
+   "outputs/tables/nb09_error_prices.csv",
+   "outputs/tables/nb09_recommendations.csv",
+   "outputs/tables/nb09_cannot_answer.csv",
+   "outputs/tables/nb09_self_verification.csv"
+  ],
+  "figures": [
+   "nb09_economic_inputs",
+   "nb09_conditional_impact",
+   "nb09_tornado",
+   "nb09_value_of_experiment"
+  ]
  }
 }

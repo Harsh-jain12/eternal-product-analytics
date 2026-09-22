@@ -1,0 +1,6 @@
+input,tag,low,high,net_at_low_eur,net_at_high_eur,swing_eur,breakeven_at_low_pp,breakeven_at_high_pp,flips_the_decision,source
+"contact cost, EUR/contact",ASSUMPTION,EUR 0.025,EUR 0.15,21495,-4701,26195,0.196,1.176,True,low: high-volume ESP rate; high: 08 S6C premium channel
+contribution margin,ASSUMPTION,20%,40%,7344,25167,17823,0.588,0.294,False,08 S6C grid; not observable in REES46
+AOV: mean vs median,DATA (specification),median EUR 31.25,mean EUR 40.89,9955,16256,6301,0.513,0.392,False,a specification choice on a right-skewed distribution
+downstream multiplier,DATA,1.00x (no credit),2.00x (02 fastest bucket),15227,19042,3815,0.408,0.355,False,"08 uses 1.27x, the slowest-bucket residual"
+AOV: sampling error,DATA,EUR 40.42,EUR 41.40,15948,16589,641,0.397,0.387,False,"95% bootstrap CI of the mean, n=24,668"

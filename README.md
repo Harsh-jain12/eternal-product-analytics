@@ -100,7 +100,7 @@ made them necessary, are in [Reproducibility](#reproducibility).
 ```
 notebooks/   00 data quality · 01 funnel · 02 cohorts + retention · 03 churn definition
              04 segmentation · 05 features · 06 modelling · 07 Criteo experiment
-             08 experiment design                              (09 not yet built)
+             08 experiment design · 09 business impact + recommendations
 src/         data.py    DuckDB layer, certified order rule, determinism guards
              plotting.py frame / add_title / add_takeaway / save / show_df
 outputs/     handoff_params.json   the contract between notebooks — read it first

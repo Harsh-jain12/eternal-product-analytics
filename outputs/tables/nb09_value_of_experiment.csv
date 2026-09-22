@@ -1,0 +1,6 @@
+true_lift_pp,P_ship_pct,P_kill_pct,P_inconclusive_pct,a_rollout_untested_eur,b_do_nothing_eur,c_run_design_B_eur,c_minus_a_eur,c_minus_b_eur,best
+0.0,0.0,45.4,54.6,-23285,0,-2036,21249,-2036,b) do nothing
+0.392,2.5,2.5,95.0,3,0,0,-3,0,a) roll out untested
+0.75,38.1,0.0,61.8,21272,0,7330,-13941,7330,a) roll out untested
+1.0,80.0,0.0,20.0,36124,0,22665,-13458,22665,a) roll out untested
+1.5,99.9,0.0,0.1,65828,0,50146,-15683,50146,a) roll out untested

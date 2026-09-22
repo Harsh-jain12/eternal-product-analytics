@@ -1,0 +1,36 @@
+check,passed,detail
+every economic input carries exactly one of DATA / ASSUMPTION / SCENARIO / DESIGN,True,DATA 5; ASSUMPTION 4; SCENARIO 2; DESIGN 4; 15 inputs in total
+every economic input carries a non-empty source string,True,all 15 sourced
+every DERIVED quantity's tag is exactly the union of its parents' tags,True,"8 derived quantities; V is [DATA x ASSUMPTION], break-even is [DATA x ASSUMPTION]"
+"the annual net value carries all four tags, computed from its parents",True,"net_value_per_year_at_target = EUR 16,256 [DATA x ASSUMPTION x SCENARIO x DESIGN] -- enrolments [DATA] x holdback [DESIGN] x lift [SCENARIO] x V [DATA x ASSUMPTION] - cost [ASSUMPTION]"
+"the eight inputs shared with 08 match nb08_economics_ledger.csv exactly, value and tag",True,"8 inputs compared at 1e-12; 09 adds 7 of its own, all DESIGN/ASSUMPTION"
+V per incremental second order matches 08's handoff,True,"EUR 12.7570 = 12.2659 order + 0.4910 downstream, against 08's 12.7570"
+"the downstream term uses 02's 1.27x residual, NOT the naive 2.00x",True,"+4.00 pp (1.27x, slowest bucket); the rejected 2.00x version would give EUR 14.0866 and understate the bar 3.7x on that component"
+break-even recomputed from the ledger matches 08's handoff at its recorded precision,True,c/V = 0.391942 pp against the 4-dp 0.3919 pp the handoff stores
+the second-order AOV recomputed from orders.parquet reconciles with 08's ledger,True,EUR 40.886470326 recomputed on the certified orders key against EUR 40.886470326 in the ledger
+"the chain runs on repeat_30d_from_trigger's base rate, not 06's repeat_purchase_30d",True,"10.2484% (trigger population, survived 14 days un-repeated) vs 06's 13.73% (all first-time buyers from t0) -- 3.48 pp apart, never substituted"
+06's base rate appears in no registered or derived quantity,True,scanned all 15 inputs and all 8 derived values for 0.1373
+the lift grid includes zero and break-even and reaches at least 1 pp,True,"[0.0, 0.3919, 0.5, 0.75, 1.0, 1.5] pp"
+the chain crosses zero exactly at break-even,True,"net(break-even) = EUR 0.000000; net(0) = -contact spend = EUR -10,478"
+"the pull-forward scenario is carried as a scenario, with its own threshold",True,"at 1.00 pp, 39.2% of the measured lift must be new demand; at f=0 every scenario loses the full contact budget"
+"no Criteo magnitude equals any input, derived quantity or scenario lift in this notebook",True,"50 Criteo magnitudes (ITT, TOT, naive, Qini, policy, adjusted) screened against 29 quantities at 1e-9"
+no economic input's provenance names Criteo,True,"all sources cite 02/03/05/08 tables, orders.parquet, features.parquet or a business input"
+"07 is used for STRUCTURE only, and where it is cited the transfer caveat travels with it",True,S1 cites 07's 1.0%-vs-49.8% contrast as a direction and states the +/-25% adjustment bias band
+design B's figures match 08's handoff and design table exactly,True,"40,719/arm, 81,438 total, 26 weeks to readout, EUR 2,035.95 contact spend"
+"the operating characteristics used are design B's, all five rows",True,"P(ship)=80.0% at a true 1.00 pp, P(kill)=45.4% at a true zero -- 08 S6H, not the superseded design"
+"the superseded 15,058 and the stale 40,721 are the value of no cell in any table",True,"10 tables screened cell by cell; both figures survive only as prose -- 40,721 in nb09_corrections.csv, where recording it is the point"
+"reach is the trigger flow, not a stock of flagged users",True,"695.36/day x 91.68% x 365.25 = 232,848 enrolments/yr"
+the inflow rate is the October-excluded one 08 made binding,True,"695.3636/day; including October would read 726.7/day, 4.5% high on a left-censored window"
+"the churn flag's 36,495 users are the value of no cell in any table",True,the stock arithmetic is printed in S3A as the thing NOT used and named in the inherited-rule and recommendation tables as the thing to stop using; it is the value of nothing
+"where the at-risk base is quoted it uses correctly_flagged / recall, per 03 and 04 S9A",True,"32,801 / 0.5309 = 61,784 against 03's 61,787; the flagged/recall version would give 68,742"
+the tornado's base case reproduces the conditional impact table at the same lift,True,"EUR 16,256 at 1.00 pp, both from TREATED_YEAR x (delta x V - c)"
+exactly one input band flips the decision at the target lift,True,"contact cost: net EUR 21,495 -> -4,701; break-even 0.196 -> 1.176 pp"
+the two ASSUMPTION bands are wider than the three DATA bands combined,True,"EUR 44,018 against EUR 10,757"
+every recommendation answers all six questions and names its evidence,True,DO NOW: 4; TEST NEXT: 2; STOP / DON'T START: 4
+every stated limit carries the data that would resolve it,True,8 limits
+no recommendation in the DO NOW tier requires the experiment,True,"all four are definition or process corrections, costed at zero"
+the AOV bootstrap reproduces exactly on a re-run at the same seed,True,"2,000 resamples, seed 42, canonical (user_id, order_ts, user_session) row order before resampling"
+the impact chain is a pure function of the ledger and reproduces on recomputation,True,6 scenarios recomputed from the registered inputs
+every table written here has a row order that is a function of its data,True,"authored literals (ledger, recommendations, limits, corrections, value-of-experiment) keep their declared order; the tornado is sorted on (swing_eur, input), a unique key"
+no table written here contains a wall-clock time or today's date,True,audit tables are the only place a measurement of the clock belongs (CLAUDE.md)
+every figure this notebook writes exists on disk and carries a takeaway,True,"4 figures: nb09_economic_inputs, nb09_conditional_impact, nb09_tornado, nb09_value_of_experiment"

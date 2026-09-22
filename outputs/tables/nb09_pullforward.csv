@@ -1,0 +1,7 @@
+scenario,lift_pp,f_required_pct,net_at_f_100_eur,net_at_f_075_eur,net_at_f_050_eur,net_at_f_025_eur,net_at_f_000_eur
+nothing happens,0.0,,-10478,-10478,-10478,-10478,-10478
+break-even,0.3919,100.0,0,-2620,-5239,-7859,-10478
+half a point,0.5,78.39,2889,-453,-3795,-7136,-10478
+three quarters,0.75,52.26,9572,4560,-453,-5466,-10478
+08's target,1.0,39.19,16256,9572,2889,-3795,-10478
+a large effect,1.5,26.13,29623,19598,9572,-453,-10478

@@ -1,0 +1,7 @@
+scenario,lift_pp,lift_rel_pct,inc_2nd_orders_per_yr,gross_eur,contact_cost_eur,net_eur,roi,net_per_1k_contacted_eur,holdback_forgone_eur,verdict
+nothing happens,0.0,0.0,0.0,0,10478,-10478,-1.0,-50.0,0,loses money
+break-even,0.3919,3.82,821.4,10478,10478,0,0.0,0.0,1164,break-even
+half a point,0.5,4.88,1047.8,13367,10478,2889,0.276,13.78,1485,pays
+three quarters,0.75,7.32,1571.7,20050,10478,9572,0.914,45.68,2228,pays
+08's target,1.0,9.76,2095.6,26734,10478,16256,1.551,77.57,2970,pays
+a large effect,1.5,14.64,3143.5,40101,10478,29623,2.827,141.35,4456,pays

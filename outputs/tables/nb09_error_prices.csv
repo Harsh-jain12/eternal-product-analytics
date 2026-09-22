@@ -1,0 +1,5 @@
+alternative_true_lift_pp,cost_of_a_wrong_ship_eur,cost_of_a_wrong_ship_with_holdback_eur,cost_of_a_wrong_kill_eur,test_gains_if_worthless_eur,test_loses_if_it_works_eur,breakeven_prior_P_worthless_pct
+0.392,23285,20956,2,21249,3,0.0
+0.75,23285,20956,14358,21249,13942,39.6
+1.0,23285,20956,24384,21249,13459,38.8
+1.5,23285,20956,44434,21249,15682,42.5
