@@ -2758,7 +2758,7 @@
     "tier": "STOP / DON'T START",
     "id": "S3",
     "what": "Do not repeat Black-Friday-style acquisition at scale until the cohort gap is understood.",
-    "why": "02 measured the Black Friday cohort retaining 5.39 pp worse at D30 than organic acquisition, widening to 7.42 pp by D90, and 03 confirmed the sign and CI in every measurable cell. The gap WIDENS, which is not what a one-off timing artefact does.",
+    "why": "02 measured the Black Friday cohort retaining 5.39 pp worse at D30 than organic acquisition; the gap widens to 7.83 pp at D60 and then plateaus at 7.42 pp by D90, and 03 confirmed the sign and CI in every measurable cell. It widens and then holds rather than closing, which is not what a one-off timing artefact does.",
     "evidence": "02 black_friday_cohort, 03 sensitivity_of_01_02_headlines, 08 S8A (35.5% of November's enrollees)",
     "expected_impact": "Unquantified deliberately: this is associational, about a single trading week, and confounded with calendar position, merchandising and deal-seeking intent.",
     "cost": "None to investigate. Stopping the acquisition outright has a real cost this project cannot price.",
