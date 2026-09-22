@@ -1,0 +1,22 @@
+# Local profile, checked in on purpose: this layer has no credentials and no remote
+# warehouse. Run with DBT_PROFILES_DIR=. from inside sql/, or `dbt build --profiles-dir .`
+eternal:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "../data/eternal.duckdb"
+      # dbt-level concurrency. 1, not for speed but because DuckDB's own thread count
+      # below is 1 -- running models concurrently would just contend for one thread.
+      threads: 1
+      settings:
+        # DETERMINISM IS A CORRECTNESS PROPERTY (CLAUDE.md). src/data.py connect() note 3:
+        # a parallel float sum/avg reduces in physical scan order, so its last ~7
+        # significant figures move between runs; note 4: the same wobble used as an
+        # ORDER BY / bucketing key amplifies into a whole rank step. nb05 measured that
+        # rounding alone makes this rare rather than absent, and settled on threads=1
+        # for the fetch. Every model here is that fetch, so threads=1 is the setting.
+        # Measured cost on this dataset: a full `dbt build` in well under five minutes.
+        threads: 1
+        memory_limit: "5GB"
+        enable_progress_bar: false

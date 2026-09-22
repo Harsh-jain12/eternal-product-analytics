@@ -1,0 +1,258 @@
+version: 2
+
+models:
+  # ----------------------------------------------------------------------------------
+  - name: dim_users
+    description: >
+      User dimension. One row per bot-excluded user with at least one session-valid
+      event, purchaser or not. user_id is COOKIE-SCOPED, not account-scoped -- one person
+      on two devices is two rows -- so every repeat and retention figure built on this
+      table is a LOWER BOUND and must be reported as one.
+    columns:
+      - name: user_id
+        description: Primary key. Cookie-scoped.
+        tests: [unique, not_null]
+      - name: first_event_ts
+        description: First session-valid event. Defined for every row.
+        tests: [not_null]
+      - name: first_order_ts
+        description: t0. Chosen on the FULL certified orders key (order_ts, user_session). NULL for a non-purchaser.
+      - name: first_order_session
+        description: The session t0 was placed in. The retention definition excludes returns inside it.
+      - name: acquisition_cohort_month
+        description: Month of first_event_ts. Defined for everyone.
+        tests: [not_null]
+      - name: first_order_cohort_month
+        description: >
+          Month of t0. This is the cohort 02's retention curves and 05's feature table
+          use. NULL for a non-purchaser -- not zero-filled into a cohort they are not in.
+      - name: is_black_friday_cohort
+        description: >
+          t0 falls on a day the 02 discount detector flagged. Renamed from is_promo:
+          every detected spike day falls inside one trading week, so this is the Black
+          Friday cohort, not promotional acquisition generally.
+        tests: [not_null]
+      - name: is_bulk_buyer
+        description: >
+          Has ever placed an order at or above the certified P99.9 order size.
+          FULL-HISTORY and therefore LEAKY as a model feature -- 05 found 33 of the 143
+          are flagged on an order placed after t0. A population flag for reporting and
+          for keeping bulk buyers out of mean-based monetary metrics; the leakage-safe
+          twin is mart_user_features.first_order_is_bulk.
+        tests: [not_null]
+      - name: is_purchaser
+        tests: [not_null]
+      - name: n_orders
+        tests: [not_null]
+
+  # ----------------------------------------------------------------------------------
+  - name: fct_sessions
+    description: >
+      Session grain. The composite key is the point: user_session is not unique on its
+      own in this data (00's audit records session-ID reuse, 2.16% of sessions spanning
+      more than 24h, max span the whole five-month window). Carries the funnel at two
+      grains -- raw event counts and distinct-product counts -- which is 01's raw vs
+      deduplicated comparison.
+    columns:
+      - name: user_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_users')
+                field: user_id
+      - name: user_session
+        tests: [not_null]
+      - name: session_start
+        tests: [not_null]
+      - name: session_seq
+        description: Ordered by (session_start, user_session) -- a total order, so it cannot move between runs.
+        tests: [not_null]
+      - name: stage_code
+        description: Furthest stage reached. 0 view, 1 remove_from_cart, 2 cart, 3 purchase.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1, 2, 3]
+                quote: false
+      - name: converted
+        tests: [not_null]
+      - name: is_over_24h
+        description: 00's session-ID-reuse flag, carried rather than filtered.
+        tests: [not_null]
+    tests:
+      - unique_combination:
+          arguments:
+            combination_of_columns: [user_id, user_session]
+
+  # ----------------------------------------------------------------------------------
+  - name: fct_orders
+    description: >
+      Reconstructed orders under THE CERTIFIED RULE -- GROUP BY (user_id, user_session,
+      event_time) on purchase rows. REES46 has no order_id. Certified because 98.1% of
+      multi-purchase-row sessions share one identical purchase timestamp; the rejected
+      alternative (one order per session) produces implausible order spans because
+      session ids are reused.
+    columns:
+      - name: user_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_users')
+                field: user_id
+      - name: user_session
+        tests: [not_null]
+      - name: order_ts
+        tests: [not_null]
+      - name: n_items
+        description: count(*), not count(DISTINCT product_id) -- REES46 logs one row per unit, so a repeated line is quantity.
+        tests: [not_null]
+      - name: order_value
+        description: round(sum(price), 6). sum() is a parallel float reduction; 10 of 158,399 orders moved in the last bit between two clean runs.
+        tests: [not_null]
+      - name: order_seq
+        description: Ordered on the full certified key, never on order_ts alone -- 5 user+timestamp pairs carry two orders in different sessions.
+        tests: [not_null]
+    tests:
+      - unique_combination:
+          arguments:
+            combination_of_columns: [user_id, user_session, order_ts]
+      - unique_combination:
+          arguments:
+            combination_of_columns: [user_id, order_seq]
+
+  # ----------------------------------------------------------------------------------
+  - name: mart_cohort_retention
+    description: >
+      02's retention curves at cohort grain. Purchase retention is the PRIMARY metric
+      (CLAUDE.md non-negotiable 1); activity retention is reported alongside as a
+      superset. A cohort contributes to a bucket only if its LAST joiner has that many
+      trailing days -- an ineligible cell produces NO ROW and is never zero-filled.
+      Additive: pool as sum(returners)/sum(eligible_n), never as a mean of cohort rates.
+    columns:
+      - name: cohort_month
+        description: Month of t0. Purchase cohort, not activity cohort.
+        tests: [not_null]
+      - name: bucket_day
+        description: Read from handoff -> retention_measured.buckets, not hardcoded.
+        tests: [not_null]
+      - name: eligible_n
+        description: Denominator. Falls with the horizon because ineligible cohorts drop out entirely.
+        tests: [not_null]
+      - name: purchase_retention_pct
+        tests:
+          - not_zero_filled:
+              arguments:
+                denominator_column: eligible_n
+      - name: activity_retention_pct
+        tests:
+          - not_zero_filled:
+              arguments:
+                denominator_column: eligible_n
+    tests:
+      - unique_combination:
+          arguments:
+            combination_of_columns: [cohort_month, bucket_day]
+
+  # ----------------------------------------------------------------------------------
+  - name: mart_user_features
+    description: >
+      05's leakage-safe modelling table, model-eligible columns only. One row per
+      bot-excluded purchaser, with per-horizon eligibility flags rather than a single
+      pre-filtered horizon. Features read event_time < t0 plus the first order's own
+      lines at t0; the outcome reads orders after t0 in a different session. Eligibility
+      is in EXACT ELAPSED SECONDS and a censored user is excluded, never zero-filled.
+      Nothing is imputed: every NULL has a named indicator.
+    columns:
+      - name: user_id
+        tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_users')
+                field: user_id
+      - name: first_ts
+        description: t0.
+        tests: [not_null]
+      - name: eligible_30d
+        description: trailing_seconds >= 30*86400. date_diff('day') would promote users whose window has not closed.
+        tests: [not_null]
+      - name: repeat_purchase_30d
+        description: The target. NEVER describe it as churn -- D30 cannot carry a churn label under the certified 42.2d rule.
+        tests: [not_null]
+      - name: eligible_60d
+        tests: [not_null]
+      - name: eligible_90d
+        tests: [not_null]
+      - name: first_order_is_bulk
+        description: The leakage-safe bulk flag, from the first order only.
+        tests: [not_null]
+      - name: fo_primary_brand
+        description: HIGH-CARDINALITY. Encode inside the training fold; a full-table encoding is an F3 violation.
+      - name: has_day_cadence
+        description: Missingness indicator. The value it indicates on stays NULL.
+        tests: [not_null]
+      - name: has_session_cadence
+        tests: [not_null]
+      - name: has_pre_t0_history
+        tests: [not_null]
+      - name: fs_has_pre_purchase_events
+        tests: [not_null]
+
+  # ----------------------------------------------------------------------------------
+  - name: mart_daily_kpis
+    description: >
+      Daily monitoring surface. Conversion is reported at two LABELLED scopes because
+      they are different quantities; AOV is a median and a winsorised mean, never a raw
+      mean, because 143 bulk buyers take 1.4% of revenue on 0.19% of orders. The day-14
+      trigger-pool columns count 08's activation population on the day the rule fires,
+      and the observable column is NULL -- never 0 -- once its outcome window runs past
+      the end of the data.
+    columns:
+      - name: activity_date
+        tests: [unique, not_null]
+      - name: n_sessions
+        tests: [not_null]
+      - name: conversion_rate_session_scope_pct
+        description: Sessions containing a purchase / all sessions. NOT comparable to the user-scope rate.
+      - name: conversion_rate_user_scope_pct
+        description: Users who purchased / users active. NOT comparable to the session-scope rate.
+      - name: aov_median_eur
+        description: The headline AOV. Bulk-buyer safe.
+      - name: aov_mean_winsorised_eur
+        description: Mean of order_value capped at the global P99.
+      - name: day14_trigger_pool_n
+        description: Operational count -- everyone the rule would enrol that day.
+        tests: [not_null]
+      - name: day14_trigger_pool_observable_n
+        description: >
+          Of those, the ones whose 30-day outcome window closes inside the data. The only
+          column a base rate may be computed on. NULL once the window is open.
+      - name: trigger_outcome_window_closed
+        tests: [not_null]
+
+  # ----------------------------------------------------------------------------------
+  - name: mart_reconciliation
+    description: >
+      One row per certified number, computed from the models above and compared to the
+      value the notebooks published in outputs/handoff_params.json. No target is
+      hardcoded -- every expected value is read through stg_handoff_params, and
+      handoff_json_path carries the key that was read, so a failure names the notebook
+      figure it disagrees with. Any passed = false is a FAILING TEST.
+    columns:
+      - name: check_name
+        tests: [unique, not_null]
+      - name: handoff_json_path
+        description: The handoff key this check read.
+        tests: [not_null]
+      - name: model_value
+        description: What this SQL layer computes.
+      - name: handoff_value
+        description: What the notebooks certified.
+      - name: tolerance
+        description: Half the last digit the handoff itself publishes. A count reconciles exactly.
+      - name: passed
+        tests: [not_null]

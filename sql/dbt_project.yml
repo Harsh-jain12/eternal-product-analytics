@@ -1,0 +1,31 @@
+name: eternal_metrics
+version: "1.0.0"
+config-version: 2
+profile: eternal
+
+model-paths:  ["models"]
+macro-paths:  ["macros"]
+test-paths:   ["tests"]
+target-path:  "target"
+clean-targets: ["target", "dbt_packages"]
+
+vars:
+  # Both paths are relative to this directory (dbt runs with cwd = the project dir).
+  # The raw CSVs and the handoff file are the ONLY two inputs to this layer.
+  raw_events_glob: "../data/raw/*.csv"
+  handoff_path:    "../outputs/handoff_params.json"
+
+  # Determinism (CLAUDE.md working conventions). 6 significant figures for a reported
+  # float, 6 decimal places for a float that is used as an ordering / bucketing key.
+  sig_figures: 6
+  key_decimals: 6
+
+models:
+  eternal_metrics:
+    +materialized: table
+    staging:
+      +schema: staging
+    intermediate:
+      +schema: intermediate
+    marts:
+      +schema: marts

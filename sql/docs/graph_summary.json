@@ -1,0 +1,621 @@
+{
+ "linked": {
+  "0": {
+   "name": "model.eternal_metrics.stg_discount_spike_days",
+   "succ": [
+    4,
+    6,
+    36,
+    37,
+    38,
+    39
+   ],
+   "type": "model"
+  },
+  "1": {
+   "name": "model.eternal_metrics.stg_events",
+   "succ": [
+    0,
+    4,
+    8,
+    6,
+    7,
+    5,
+    15,
+    9,
+    10,
+    13,
+    11,
+    12,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35
+   ],
+   "type": "model"
+  },
+  "10": {
+   "name": "model.eternal_metrics.int_first_order_lines",
+   "succ": [
+    8,
+    21,
+    102,
+    103
+   ],
+   "type": "model"
+  },
+  "100": {
+   "name": "test.eternal_metrics.not_null_int_category_day_price_ref_d.e35434eb19",
+   "type": "test"
+  },
+  "101": {
+   "name": "test.eternal_metrics.unique_combination_int_category_day_price_ref_category_id__d.a5ebe7dfc9",
+   "type": "test"
+  },
+  "102": {
+   "name": "test.eternal_metrics.not_null_int_first_order_lines_user_id.c6374f212a",
+   "type": "test"
+  },
+  "103": {
+   "name": "test.eternal_metrics.relationships_int_first_order_lines_user_id__user_id__ref_dim_users_.7aa305c50b",
+   "type": "test"
+  },
+  "104": {
+   "name": "test.eternal_metrics.not_null_int_pre_t0_events_user_id.2efa29f167",
+   "type": "test"
+  },
+  "105": {
+   "name": "test.eternal_metrics.relationships_int_pre_t0_events_user_id__user_id__ref_dim_users_.5d79eaa833",
+   "type": "test"
+  },
+  "106": {
+   "name": "test.eternal_metrics.not_null_int_pre_t0_events_event_time.49949135c7",
+   "type": "test"
+  },
+  "107": {
+   "name": "test.eternal_metrics.not_null_int_pre_t0_sessions_user_id.ae92a4b767",
+   "type": "test"
+  },
+  "108": {
+   "name": "test.eternal_metrics.not_null_int_pre_t0_sessions_s_start.39c41738f3",
+   "type": "test"
+  },
+  "109": {
+   "name": "test.eternal_metrics.unique_combination_int_pre_t0_sessions_user_id__user_session.6926b6086e",
+   "type": "test"
+  },
+  "11": {
+   "name": "model.eternal_metrics.int_product_day_price_ref",
+   "succ": [
+    8,
+    95,
+    96,
+    97,
+    98
+   ],
+   "type": "model"
+  },
+  "12": {
+   "name": "model.eternal_metrics.int_category_day_price_ref",
+   "succ": [
+    8,
+    99,
+    100,
+    101
+   ],
+   "type": "model"
+  },
+  "13": {
+   "name": "model.eternal_metrics.int_pre_t0_events",
+   "succ": [
+    8,
+    14,
+    21,
+    104,
+    105,
+    106
+   ],
+   "type": "model"
+  },
+  "14": {
+   "name": "model.eternal_metrics.int_pre_t0_sessions",
+   "succ": [
+    8,
+    107,
+    108,
+    109
+   ],
+   "type": "model"
+  },
+  "15": {
+   "name": "model.eternal_metrics.fct_sessions",
+   "succ": [
+    9,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57
+   ],
+   "type": "model"
+  },
+  "16": {
+   "name": "test.eternal_metrics.assert_reconciliation_covers_every_required_key",
+   "type": "test"
+  },
+  "17": {
+   "name": "test.eternal_metrics.assert_reconciles_with_handoff",
+   "type": "test"
+  },
+  "18": {
+   "name": "test.eternal_metrics.assert_no_forbidden_feature_columns",
+   "type": "test"
+  },
+  "19": {
+   "name": "test.eternal_metrics.assert_retention_is_a_subset_of_activity",
+   "type": "test"
+  },
+  "2": {
+   "name": "model.eternal_metrics.stg_handoff_params",
+   "succ": [
+    3,
+    4,
+    8,
+    6,
+    9,
+    22,
+    23,
+    24
+   ],
+   "type": "model"
+  },
+  "20": {
+   "name": "test.eternal_metrics.assert_censored_users_are_never_zero_filled",
+   "type": "test"
+  },
+  "21": {
+   "name": "test.eternal_metrics.assert_feature_and_outcome_windows_are_disjoint",
+   "type": "test"
+  },
+  "22": {
+   "name": "test.eternal_metrics.unique_stg_handoff_params_json_path.5e9bb4471f",
+   "type": "test"
+  },
+  "23": {
+   "name": "test.eternal_metrics.not_null_stg_handoff_params_json_path.feb959d663",
+   "type": "test"
+  },
+  "24": {
+   "name": "test.eternal_metrics.not_null_stg_handoff_params_param_text.8803ee29f3",
+   "type": "test"
+  },
+  "25": {
+   "name": "test.eternal_metrics.unique_stg_bot_users_user_id.d27eb37547",
+   "type": "test"
+  },
+  "26": {
+   "name": "test.eternal_metrics.not_null_stg_bot_users_user_id.85b4c95ee3",
+   "type": "test"
+  },
+  "27": {
+   "name": "test.eternal_metrics.not_null_stg_bot_users_sess_per_active_day.723681a493",
+   "type": "test"
+  },
+  "28": {
+   "name": "test.eternal_metrics.not_null_stg_bot_users_n_events.caba183974",
+   "type": "test"
+  },
+  "29": {
+   "name": "test.eternal_metrics.not_null_stg_bot_users_n_orders.cbe364e455",
+   "type": "test"
+  },
+  "3": {
+   "name": "model.eternal_metrics.stg_bot_users",
+   "succ": [
+    1,
+    4,
+    25,
+    26,
+    27,
+    28,
+    29
+   ],
+   "type": "model"
+  },
+  "30": {
+   "name": "test.eternal_metrics.not_null_stg_events_user_id.63ec98fbc4",
+   "type": "test"
+  },
+  "31": {
+   "name": "test.eternal_metrics.not_null_stg_events_user_session.d45a407593",
+   "type": "test"
+  },
+  "32": {
+   "name": "test.eternal_metrics.not_null_stg_events_event_time.8dc5735367",
+   "type": "test"
+  },
+  "33": {
+   "name": "test.eternal_metrics.not_null_stg_events_event_type.ca8d147ba2",
+   "type": "test"
+  },
+  "34": {
+   "name": "test.eternal_metrics.accepted_values_stg_events_event_type__view__cart__remove_from_cart__purchase.12b636b5d9",
+   "type": "test"
+  },
+  "35": {
+   "name": "test.eternal_metrics.not_null_stg_events_event_date.f160b8d054",
+   "type": "test"
+  },
+  "36": {
+   "name": "test.eternal_metrics.unique_stg_discount_spike_days_spike_date.207d804c64",
+   "type": "test"
+  },
+  "37": {
+   "name": "test.eternal_metrics.not_null_stg_discount_spike_days_spike_date.4549a1e90d",
+   "type": "test"
+  },
+  "38": {
+   "name": "test.eternal_metrics.not_null_stg_discount_spike_days_intensity.0d02f7aa45",
+   "type": "test"
+  },
+  "39": {
+   "name": "test.eternal_metrics.not_null_stg_discount_spike_days_is_spike.70be57cd91",
+   "type": "test"
+  },
+  "4": {
+   "name": "model.eternal_metrics.mart_reconciliation",
+   "succ": [
+    16,
+    17,
+    91,
+    92,
+    93,
+    94
+   ],
+   "type": "model"
+  },
+  "40": {
+   "name": "test.eternal_metrics.unique_dim_users_user_id.bcdc17b9f9",
+   "type": "test"
+  },
+  "41": {
+   "name": "test.eternal_metrics.not_null_dim_users_user_id.e754bb5812",
+   "type": "test"
+  },
+  "42": {
+   "name": "test.eternal_metrics.not_null_dim_users_first_event_ts.cf94c869d2",
+   "type": "test"
+  },
+  "43": {
+   "name": "test.eternal_metrics.not_null_dim_users_acquisition_cohort_month.38ae8886a7",
+   "type": "test"
+  },
+  "44": {
+   "name": "test.eternal_metrics.not_null_dim_users_is_black_friday_cohort.bbf7abdee3",
+   "type": "test"
+  },
+  "45": {
+   "name": "test.eternal_metrics.not_null_dim_users_is_bulk_buyer.878c5f3278",
+   "type": "test"
+  },
+  "46": {
+   "name": "test.eternal_metrics.not_null_dim_users_is_purchaser.3f6535da72",
+   "type": "test"
+  },
+  "47": {
+   "name": "test.eternal_metrics.not_null_dim_users_n_orders.8083d8723e",
+   "type": "test"
+  },
+  "48": {
+   "name": "test.eternal_metrics.not_null_fct_sessions_user_id.e0ef055768",
+   "type": "test"
+  },
+  "49": {
+   "name": "test.eternal_metrics.relationships_fct_sessions_user_id__user_id__ref_dim_users_.261e7714a8",
+   "type": "test"
+  },
+  "5": {
+   "name": "model.eternal_metrics.fct_orders",
+   "succ": [
+    4,
+    8,
+    6,
+    7,
+    9,
+    21,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66
+   ],
+   "type": "model"
+  },
+  "50": {
+   "name": "test.eternal_metrics.not_null_fct_sessions_user_session.e47b199b7c",
+   "type": "test"
+  },
+  "51": {
+   "name": "test.eternal_metrics.not_null_fct_sessions_session_start.8eafaf6ecf",
+   "type": "test"
+  },
+  "52": {
+   "name": "test.eternal_metrics.not_null_fct_sessions_session_seq.d87e214f23",
+   "type": "test"
+  },
+  "53": {
+   "name": "test.eternal_metrics.not_null_fct_sessions_stage_code.632675efb3",
+   "type": "test"
+  },
+  "54": {
+   "name": "test.eternal_metrics.accepted_values_fct_sessions_stage_code__False__0__1__2__3.aee67d2bdf",
+   "type": "test"
+  },
+  "55": {
+   "name": "test.eternal_metrics.not_null_fct_sessions_converted.8852cea0ca",
+   "type": "test"
+  },
+  "56": {
+   "name": "test.eternal_metrics.not_null_fct_sessions_is_over_24h.1a6a3d03c8",
+   "type": "test"
+  },
+  "57": {
+   "name": "test.eternal_metrics.unique_combination_fct_sessions_user_id__user_session.04d0864929",
+   "type": "test"
+  },
+  "58": {
+   "name": "test.eternal_metrics.not_null_fct_orders_user_id.14852ec2f7",
+   "type": "test"
+  },
+  "59": {
+   "name": "test.eternal_metrics.relationships_fct_orders_user_id__user_id__ref_dim_users_.dd44ed847b",
+   "type": "test"
+  },
+  "6": {
+   "name": "model.eternal_metrics.dim_users",
+   "succ": [
+    4,
+    8,
+    7,
+    9,
+    10,
+    13,
+    21,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    49,
+    59,
+    75,
+    103,
+    105
+   ],
+   "type": "model"
+  },
+  "60": {
+   "name": "test.eternal_metrics.not_null_fct_orders_user_session.0d59a0b516",
+   "type": "test"
+  },
+  "61": {
+   "name": "test.eternal_metrics.not_null_fct_orders_order_ts.2b94998cf4",
+   "type": "test"
+  },
+  "62": {
+   "name": "test.eternal_metrics.not_null_fct_orders_n_items.8c7e00a2a8",
+   "type": "test"
+  },
+  "63": {
+   "name": "test.eternal_metrics.not_null_fct_orders_order_value.eebcc52971",
+   "type": "test"
+  },
+  "64": {
+   "name": "test.eternal_metrics.not_null_fct_orders_order_seq.66a6c99fa2",
+   "type": "test"
+  },
+  "65": {
+   "name": "test.eternal_metrics.unique_combination_fct_orders_user_id__user_session__order_ts.fae6c66acb",
+   "type": "test"
+  },
+  "66": {
+   "name": "test.eternal_metrics.unique_combination_fct_orders_user_id__order_seq.d95303b203",
+   "type": "test"
+  },
+  "67": {
+   "name": "test.eternal_metrics.not_null_mart_cohort_retention_cohort_month.b518f61dad",
+   "type": "test"
+  },
+  "68": {
+   "name": "test.eternal_metrics.not_null_mart_cohort_retention_bucket_day.561d0ca926",
+   "type": "test"
+  },
+  "69": {
+   "name": "test.eternal_metrics.not_null_mart_cohort_retention_eligible_n.8c1f141692",
+   "type": "test"
+  },
+  "7": {
+   "name": "model.eternal_metrics.mart_cohort_retention",
+   "succ": [
+    4,
+    19,
+    67,
+    68,
+    69,
+    70,
+    71,
+    72
+   ],
+   "type": "model"
+  },
+  "70": {
+   "name": "test.eternal_metrics.not_zero_filled_mart_cohort_retention_purchase_retention_pct__eligible_n.caa3b84baa",
+   "type": "test"
+  },
+  "71": {
+   "name": "test.eternal_metrics.not_zero_filled_mart_cohort_retention_activity_retention_pct__eligible_n.e035f0715f",
+   "type": "test"
+  },
+  "72": {
+   "name": "test.eternal_metrics.unique_combination_mart_cohort_retention_cohort_month__bucket_day.059fa9368c",
+   "type": "test"
+  },
+  "73": {
+   "name": "test.eternal_metrics.unique_mart_user_features_user_id.27840467ed",
+   "type": "test"
+  },
+  "74": {
+   "name": "test.eternal_metrics.not_null_mart_user_features_user_id.7fae00a583",
+   "type": "test"
+  },
+  "75": {
+   "name": "test.eternal_metrics.relationships_mart_user_features_user_id__user_id__ref_dim_users_.0d95a62b97",
+   "type": "test"
+  },
+  "76": {
+   "name": "test.eternal_metrics.not_null_mart_user_features_first_ts.843ed80f1b",
+   "type": "test"
+  },
+  "77": {
+   "name": "test.eternal_metrics.not_null_mart_user_features_eligible_30d.32ef112114",
+   "type": "test"
+  },
+  "78": {
+   "name": "test.eternal_metrics.not_null_mart_user_features_repeat_purchase_30d.89827dd3bc",
+   "type": "test"
+  },
+  "79": {
+   "name": "test.eternal_metrics.not_null_mart_user_features_eligible_60d.072ffa987e",
+   "type": "test"
+  },
+  "8": {
+   "name": "model.eternal_metrics.mart_user_features",
+   "succ": [
+    4,
+    9,
+    20,
+    21,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    80,
+    81,
+    82,
+    83,
+    84,
+    85
+   ],
+   "type": "model"
+  },
+  "80": {
+   "name": "test.eternal_metrics.not_null_mart_user_features_eligible_90d.dfafc01d4e",
+   "type": "test"
+  },
+  "81": {
+   "name": "test.eternal_metrics.not_null_mart_user_features_first_order_is_bulk.501d29592b",
+   "type": "test"
+  },
+  "82": {
+   "name": "test.eternal_metrics.not_null_mart_user_features_has_day_cadence.6bbfa4b10e",
+   "type": "test"
+  },
+  "83": {
+   "name": "test.eternal_metrics.not_null_mart_user_features_has_session_cadence.239cb4d9aa",
+   "type": "test"
+  },
+  "84": {
+   "name": "test.eternal_metrics.not_null_mart_user_features_has_pre_t0_history.405f1d825d",
+   "type": "test"
+  },
+  "85": {
+   "name": "test.eternal_metrics.not_null_mart_user_features_fs_has_pre_purchase_events.4d07686d73",
+   "type": "test"
+  },
+  "86": {
+   "name": "test.eternal_metrics.unique_mart_daily_kpis_activity_date.54c0a23a34",
+   "type": "test"
+  },
+  "87": {
+   "name": "test.eternal_metrics.not_null_mart_daily_kpis_activity_date.67ba8d1a90",
+   "type": "test"
+  },
+  "88": {
+   "name": "test.eternal_metrics.not_null_mart_daily_kpis_n_sessions.026b4a2a2b",
+   "type": "test"
+  },
+  "89": {
+   "name": "test.eternal_metrics.not_null_mart_daily_kpis_day14_trigger_pool_n.140e141241",
+   "type": "test"
+  },
+  "9": {
+   "name": "model.eternal_metrics.mart_daily_kpis",
+   "succ": [
+    4,
+    86,
+    87,
+    88,
+    89,
+    90
+   ],
+   "type": "model"
+  },
+  "90": {
+   "name": "test.eternal_metrics.not_null_mart_daily_kpis_trigger_outcome_window_closed.54f74b2a72",
+   "type": "test"
+  },
+  "91": {
+   "name": "test.eternal_metrics.unique_mart_reconciliation_check_name.acea02032e",
+   "type": "test"
+  },
+  "92": {
+   "name": "test.eternal_metrics.not_null_mart_reconciliation_check_name.a718546066",
+   "type": "test"
+  },
+  "93": {
+   "name": "test.eternal_metrics.not_null_mart_reconciliation_handoff_json_path.bc194eabb6",
+   "type": "test"
+  },
+  "94": {
+   "name": "test.eternal_metrics.not_null_mart_reconciliation_passed.43147b45c9",
+   "type": "test"
+  },
+  "95": {
+   "name": "test.eternal_metrics.not_null_int_product_day_price_ref_product_id.587718c1a1",
+   "type": "test"
+  },
+  "96": {
+   "name": "test.eternal_metrics.not_null_int_product_day_price_ref_d.b7c358f740",
+   "type": "test"
+  },
+  "97": {
+   "name": "test.eternal_metrics.not_null_int_product_day_price_ref_prior_price_pct.5dae06c576",
+   "type": "test"
+  },
+  "98": {
+   "name": "test.eternal_metrics.unique_combination_int_product_day_price_ref_product_id__d.25b6089df9",
+   "type": "test"
+  },
+  "99": {
+   "name": "test.eternal_metrics.not_null_int_category_day_price_ref_category_id.6b14010103",
+   "type": "test"
+  }
+ }
+}

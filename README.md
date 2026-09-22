@@ -106,6 +106,9 @@ src/         data.py    DuckDB layer, certified order rule, determinism guards
 outputs/     handoff_params.json   the contract between notebooks — read it first
              tables/   one CSV per reported figure
              figures/  every figure, each with a stated takeaway
+sql/         dbt-duckdb metrics layer — the scheduled, production-shaped version of the
+             analysis. 16 models, 94 tests, 50 of them reconciling this layer's numbers
+             against handoff_params.json. See sql/README.md
 data/        raw/ (REES46 CSVs + criteo/)   processed/ (parquet artefacts)
 ```
 

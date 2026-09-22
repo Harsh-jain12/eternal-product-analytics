@@ -1,0 +1,78 @@
+version: 2
+
+models:
+  - name: stg_handoff_params
+    description: >
+      Every certified constant this layer inherits, read from outputs/handoff_params.json
+      at build time. Nothing downstream hardcodes a threshold, a horizon or a target:
+      they all read a row here, and `json_path` is the audit trail that says which
+      notebook figure was read.
+    columns:
+      - name: json_path
+        description: The handoff key, e.g. `$.bot_exclusion.threshold`. Primary key.
+        tests: [unique, not_null]
+      - name: purpose
+        description: One line on what the constant is for.
+      - name: param_value
+        description: The value cast to DOUBLE. NULL for a string-valued key.
+      - name: param_text
+        description: The raw value as text.
+        tests: [not_null]
+
+  - name: stg_bot_users
+    description: >
+      The 1,605 users the project-wide bot rule removes -- sessions per ACTIVE DAY above
+      the exact 99.9th percentile of the real distribution (01). A generic Tukey fence on
+      raw session count was tested and rejected for over-flagging ordinary repeat
+      shoppers. Carries what the rule removes, not only who, so the pre-exclusion totals
+      can be reconstructed in mart_reconciliation.
+    columns:
+      - name: user_id
+        tests: [unique, not_null]
+      - name: sess_per_active_day
+        description: The exclusion metric, key_round()ed before it is compared to the threshold.
+        tests: [not_null]
+      - name: n_events
+        tests: [not_null]
+      - name: n_orders
+        description: Orders under the certified rule, for this excluded user.
+        tests: [not_null]
+
+  - name: stg_events
+    description: >
+      The typed, cleaned event table every other model reads -- equivalent to the `ev`
+      relation 01-05 build. Null-session rows dropped, bot users excluded, nothing else
+      filtered. Exact-duplicate rows are KEPT, per 00's audit: they are real repeated
+      actions logged at 1-second resolution, and repeated purchase lines are quantity.
+      Deduplication in this project is a grain (fct_sessions), not a cleaning step.
+      No primary key: the grain is one row per logged event and duplicates are expected.
+    columns:
+      - name: user_id
+        description: COOKIE-SCOPED, not account-scoped. Every retention figure built on it is a lower bound.
+        tests: [not_null]
+      - name: user_session
+        tests: [not_null]
+      - name: event_time
+        tests: [not_null]
+      - name: event_type
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['view', 'cart', 'remove_from_cart', 'purchase']
+      - name: event_date
+        tests: [not_null]
+
+  - name: stg_discount_spike_days
+    description: >
+      02's discount-spike detector. Given no calendar input -- only per-product price
+      dispersion -- it independently isolates Black Friday week, which is why 02 renamed
+      the downstream flag from is_promo to is_black_friday_cohort.
+    columns:
+      - name: spike_date
+        tests: [unique, not_null]
+      - name: intensity
+        description: Mean shortfall of a purchased line against that product's own median price.
+        tests: [not_null]
+      - name: is_spike
+        tests: [not_null]

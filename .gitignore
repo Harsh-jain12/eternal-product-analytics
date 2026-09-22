@@ -9,3 +9,9 @@ __pycache__/
 .venv/
 .DS_Store
 .tmp/
+
+# dbt build artefacts (sql/docs/ holds the published docs site instead)
+sql/target/
+sql/logs/
+sql/dbt_packages/
+sql/.user.yml

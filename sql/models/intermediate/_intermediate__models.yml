@@ -1,0 +1,79 @@
+version: 2
+
+models:
+  - name: int_product_day_price_ref
+    description: >
+      Leakage-safe product price reference: for each product-day, statistics over
+      STRICTLY EARLIER days only. The SQL form of .shift().expanding() required by
+      CLAUDE.md principle 9. This is also where RC-1 was measured -- an unrounded
+      percent_rank key moved 597,236 of 3,113,627 ranks between two processes.
+    columns:
+      - name: product_id
+        tests: [not_null]
+      - name: d
+        tests: [not_null]
+      - name: prior_price_pct
+        tests: [not_null]
+    tests:
+      - unique_combination:
+          arguments:
+            combination_of_columns: [product_id, d]
+
+  - name: int_category_day_price_ref
+    description: >
+      Leakage-safe category price reference, prior days only. Admits a category-day only
+      with >= 50 prior priced observations AND prior sd(log price) >= 0.05; thin or
+      single-price categories are NULLed rather than clipped, because they produce a
+      divide-by-almost-zero z-score.
+    columns:
+      - name: category_id
+        tests: [not_null]
+      - name: d
+        tests: [not_null]
+    tests:
+      - unique_combination:
+          arguments:
+            combination_of_columns: [category_id, d]
+
+  - name: int_first_order_lines
+    description: >
+      The purchase lines making up each purchaser's first order -- the whole of the M1
+      feature window. Keyed on session AND timestamp, so the 41 rows logged at exactly t0
+      in a different session are excluded rather than folded in.
+    columns:
+      - name: user_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_users')
+                field: user_id
+
+  - name: int_pre_t0_events
+    description: >
+      Every purchaser event strictly before t0 -- the whole of the M2 and M3 feature
+      window. Exists so the M2 block is TRUNCATED at t0: 02's certified
+      first_session_events is untruncated and reads post-t0 events, including purchase
+      rows, for 10.67% of purchasers.
+    columns:
+      - name: user_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_users')
+                field: user_id
+      - name: event_time
+        tests: [not_null]
+
+  - name: int_pre_t0_sessions
+    description: Session roll-up of the pre-t0 window; the basis for M4's visit cadence.
+    columns:
+      - name: user_id
+        tests: [not_null]
+      - name: s_start
+        tests: [not_null]
+    tests:
+      - unique_combination:
+          arguments:
+            combination_of_columns: [user_id, user_session]
