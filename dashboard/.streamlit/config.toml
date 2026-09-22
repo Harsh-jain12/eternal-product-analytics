@@ -1,0 +1,15 @@
+# Light base, fixed. The matplotlib figures on every page are drawn on a white canvas
+# with the notebooks' palette; a dark UI theme would put them in a box that does not
+# match them.
+[theme]
+base = "light"
+primaryColor = "#4C72B0"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F6F7F9"
+textColor = "#333333"
+
+[server]
+headless = true
+
+[browser]
+gatherUsageStats = false

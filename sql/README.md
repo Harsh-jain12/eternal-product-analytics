@@ -10,7 +10,7 @@ bar, the retention buckets, the primary horizon, the day-14 trigger — is **rea
 back to it. There is no hardcoded target anywhere in the project.
 
 ```
-dbt build     # 16 models + 94 tests, from the raw CSVs, in about 4 minutes
+dbt build     # 17 models + 103 tests, from the raw CSVs, in about 4 minutes
 ```
 
 ---
@@ -79,32 +79,35 @@ Grain is what the table is one row of. PK is what is tested `unique`.
 | `mart_cohort_retention` | `(cohort_month, bucket_day)` | Purchase **and** activity retention, `eligible_n` per cell, ineligible cells absent rather than zero. |
 | `mart_user_features` | `user_id` | 05's leakage-safe M1–M4 table, the 81 model-eligible columns plus keys, targets and eligibility flags. |
 | `mart_daily_kpis` | `activity_date` | Sessions, conversion at two labelled scopes, orders, AOV (median + winsorised mean), new first-time buyers, day-14 trigger pool. |
+| `mart_kpi_anomalies` | `(kpi, activity_date)` | Daily KPIs against a **trailing, exclusive** 28-day rolling median ± 3·1.4826·MAD — the same rule family as `stg_discount_spike_days`, made causal so it could run in production. A day that cannot be scored carries `is_anomaly = NULL` and a reason, never `false`. |
 | `mart_reconciliation` | `check_name` | One row per certified number: what the handoff says, what this layer computes, the tolerance, pass/fail. |
 
-Nine models beyond the seven the brief names. `stg_handoff_params` and `stg_bot_users`
+Ten models beyond the seven the brief names. `stg_handoff_params` and `stg_bot_users`
 exist so nothing is hardcoded and so the pre-exclusion totals stay reconstructable;
 `stg_discount_spike_days` and the five `int_*` models are the notebooks' own
 materialisations (`prod_ref`, `cat_ref`, `fo_lines`, `pre_ev`, `pre_sess`), kept as
 models so the lineage graph shows where each feature block's window comes from;
-`mart_reconciliation` is the test surface.
+`mart_reconciliation` is the test surface; `mart_kpi_anomalies` is what `dashboard/`
+reads for its Monitoring page, and the only model here that exists for a consumer rather
+than for a notebook figure.
 
 ---
 
-## Tests — 94, all `error` severity
+## Tests — 103, all `error` severity
 
 ```
 dbt test
 ```
 
-**Structural (88 generic).** 65 `not_null`, 7 `unique`, 7 `unique_combination` for the
+**Structural (96 generic).** 71 `not_null`, 7 `unique`, 8 `unique_combination` for the
 composite PKs (a local test, so there is no `dbt_utils` dependency and `dbt build` needs
 no network), 5 `relationships` from `fct_orders`, `fct_sessions`, `mart_user_features`,
-`int_first_order_lines` and `int_pre_t0_events` back to `dim_users`, 2
-`accepted_values` on `event_type` and `stage_code`, and 2 `not_zero_filled` — a local
-test on both retention columns, asserting no cell exists without a real denominator
-behind it.
+`int_first_order_lines` and `int_pre_t0_events` back to `dim_users`, 3
+`accepted_values` on `event_type`, `stage_code` and `kpi_unit`, and 2 `not_zero_filled` —
+a local test on both retention columns, asserting no cell exists without a real
+denominator behind it.
 
-**Reconciliation (6 singular tests, 50 checks).** All targets read from
+**Behavioural (7 singular tests, 50 reconciliation checks).** All targets read from
 `handoff_params.json` at build time.
 
 | test | what fails it |
@@ -115,6 +118,7 @@ behind it.
 | `assert_feature_and_outcome_windows_are_disjoint` | a feature reads at or after `t0`, or a repeat order is counted inside the first-order session |
 | `assert_censored_users_are_never_zero_filled` | a user is eligible without the elapsed seconds, or a repeat flag contradicts `days_to_next_order` |
 | `assert_retention_is_a_subset_of_activity` | purchase returners exceed activity returners in any cohort × bucket cell |
+| `assert_kpi_anomalies_flag_black_friday` | the monitoring rule flags no day in 2019-11-21..2019-11-30 — independent validation against a detector that uses different inputs |
 
 ### The handoff keys the reconciliation reads
 

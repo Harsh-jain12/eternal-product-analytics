@@ -256,3 +256,57 @@ models:
         description: Half the last digit the handoff itself publishes. A count reconciles exactly.
       - name: passed
         tests: [not_null]
+
+  # ----------------------------------------------------------------------------------
+  - name: mart_kpi_anomalies
+    description: >
+      Daily KPI monitoring. One row per (kpi, activity_date), long format. A day is
+      flagged when its value sits more than 3 * 1.4826 * MAD from the median of a
+      TRAILING, EXCLUSIVE 28-day window -- the same rule family as 02's discount-spike
+      detector, made causal so it could run in production: a day never contributes to
+      its own baseline. A day that cannot be scored (fewer than 14 prior days, or a
+      zero-MAD window) carries is_anomaly = NULL and a stated reason, never false.
+    tests:
+      - unique_combination:
+          arguments:
+            combination_of_columns: [kpi, activity_date]
+    columns:
+      - name: kpi
+        description: Column name of the series in mart_daily_kpis.
+        tests: [not_null]
+      - name: kpi_label
+        description: Display label. Travels with the row so the consumer needs no lookup.
+        tests: [not_null]
+      - name: kpi_unit
+        description: One of count / percent / eur.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['count', 'percent', 'eur']
+      - name: kpi_source_model
+        description: The mart the series ultimately comes from, for the dashboard's provenance line.
+        tests: [not_null]
+      - name: activity_date
+        tests: [not_null]
+      - name: kpi_value
+        description: The day's value, straight from mart_daily_kpis.
+      - name: baseline_n_days
+        description: Prior days actually available in the trailing window. Below min_baseline_days the row is not evaluable.
+        tests: [not_null]
+      - name: baseline_median
+        description: quantile_cont(prior values, 0.5) over the trailing window. Never approx_quantile.
+      - name: baseline_mad
+        description: Median absolute deviation from baseline_median, same window.
+      - name: robust_z
+        description: >
+          (value - baseline_median) / (1.4826 * MAD). key_round()ed BEFORE it is compared
+          against the cut, because a bucketing key is connect() failure mode 4.
+      - name: is_anomaly
+        description: >
+          NULL when the day is not evaluable -- an unmonitored day is not a clean one.
+          True/false otherwise.
+      - name: anomaly_direction
+        description: high / low. NULL when not flagged or not evaluable.
+      - name: not_evaluable_reason
+        description: NULL when the day was scored. Otherwise why it was not.

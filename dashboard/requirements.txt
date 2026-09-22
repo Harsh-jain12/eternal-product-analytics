@@ -1,0 +1,15 @@
+# The DEPLOYED app's dependencies, and nothing else.
+#
+# This file is what Streamlit Community Cloud installs. It deliberately does NOT contain
+# duckdb, dbt-duckdb, scikit-learn, lightgbm or jupyter: the app reads committed parquet
+# extracts and a json file, so none of the analysis stack is needed at serve time. The
+# extract BUILDER (dashboard/build_extracts.py) does need duckdb -- it is a local,
+# pre-deploy step, and duckdb is already pinned in the repo-root requirements.txt.
+#
+# Pinned to the versions the app was built and run against.
+
+streamlit==1.64.0
+pandas==2.3.3
+pyarrow==25.0.1
+matplotlib==3.11.2
+numpy==2.5.3
