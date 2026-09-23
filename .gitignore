@@ -1,16 +1,23 @@
-data/raw/*.csv
-data/raw/criteo/
-data/processed/*.parquet
-data/processed/*.joblib
+# --- Source data: not ours to redistribute (see data/raw/README.md) ---
+data/raw/*
+!data/raw/README.md
+
+# --- Regenerable intermediates ---
+data/processed/*
+# ...except the fitted segmentation model, which nb05/08/09 consume as an input.
+!data/processed/segment_model.json
 *.duckdb
-outputs/figures/*.png
-.ipynb_checkpoints/
-__pycache__/
+
+# --- Environments / caches / scratch ---
 .venv/
+.venv-1/
+__pycache__/
+.ipynb_checkpoints/
 .DS_Store
 .tmp/
+scratchpad/
 
-# dbt build artefacts (sql/docs/ holds the published docs site instead)
+# --- dbt build artefacts (sql/docs/ holds the published docs site instead) ---
 sql/target/
 sql/logs/
 sql/dbt_packages/
