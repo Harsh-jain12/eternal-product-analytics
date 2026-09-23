@@ -6,6 +6,8 @@ data/raw/*
 data/processed/*
 # ...except the fitted segmentation model, which nb05/08/09 consume as an input.
 !data/processed/segment_model.json
+# ...and the shipped nb06 model, 140 KB, referenced by nb06/08/09.
+!data/processed/nb06_model_m4_logistic.joblib
 *.duckdb
 
 # --- Environments / caches / scratch ---
