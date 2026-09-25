@@ -15,9 +15,11 @@ from lib.style import (BLUE, GREEN, GREY, ORANGE, PURPLE, RED, TAKEAWAY_FACE,
 
 page_header(
     "Experiment & impact",
-    "REES46 contains no randomised experiment, so nothing on this page is a measured treatment effect. "
-    "What is here: a design that could measure one, the Criteo experiment that justifies its targeting "
-    "choice, and a break-even calculator whose assumption inputs are the only ones you can move.",
+    "Nobody ran an experiment on this shop, so <strong>no number on this page is a measured effect and "
+    "none of it is a forecast</strong>. What is here: a test worth running, the real randomised experiment "
+    "from Criteo that settles who it should target, and a calculator showing what the test would have to "
+    "achieve to pay for itself. The inputs you can move are the ones the business decides, not the ones "
+    "this data measured.",
     "07_criteo_experiment, 08_experiment_design and 09_impact, via handoff",
 )
 
@@ -27,49 +29,55 @@ st.warning(
 )
 
 # ==================================================================================
-st.header("Design B, in one screen")
+st.header("The test, on one screen")
+
+st.markdown(
+    "**Two versions of the same test appear on this page.** Design B is the one recommended: big enough to "
+    "tell a lift that pays from one that does not. Design A is the cheaper version, kept here to show what "
+    "buying fewer users costs you in certainty. Everything below is design B unless it says otherwise."
+)
 
 d1, d2, d3, d4 = st.columns(4)
-d1.metric("Trigger", f"day {H('experiment_design.trigger.days_since_first_order'):.0f}",
+d1.metric("Contact them on", f"day {H('experiment_design.trigger.days_since_first_order'):.0f}",
           help=H("experiment_design.trigger.why_day_14"))
-d2.metric("n per arm", f"{int(H('experiment_design.economics.n_per_arm')):,}",
+d2.metric("Users per arm", f"{int(H('experiment_design.economics.n_per_arm')):,}",
           help=H("experiment_design.economics.power_basis.shipped"))
-d3.metric("Enrolment", f"{H('experiment_design.economics.enrolment_weeks')} weeks",
-          delta=f"{H('experiment_design.economics.weeks_to_primary_readout')} weeks to readout",
+d3.metric("Time to fill it", f"{H('experiment_design.economics.enrolment_weeks')} weeks",
+          delta=f"{H('experiment_design.economics.weeks_to_primary_readout')} weeks until you can read it",
           delta_color="off")
-d4.metric("Contact spend", f"EUR {H('experiment_design.economics.contact_spend_eur'):,.0f}",
-          help="At the assumed cost per contact. It is the cheapest thing on this page; the expensive "
-               "input is time.")
+d4.metric("Cost of the messages", f"EUR {H('experiment_design.economics.contact_spend_eur'):,.0f}",
+          help="At the assumed cost per contact. It is the cheapest part of this; the expensive input is "
+               "the time it takes to run.")
 
 a, b = st.columns(2)
 with a:
     st.markdown(
-        f"**Population.** {H('experiment_design.population.rule')} &mdash; "
+        f"**Who is in it.** {H('experiment_design.population.rule')} &mdash; "
         f"{int(H('experiment_design.population.n_historical_analogue')):,} users in the historical "
         f"analogue, repeating at {H('experiment_design.population.base_rate_pct'):.2f}%.\n\n"
-        f"**Framing.** {H('experiment_design.population.framing')}\n\n"
-        f"**Assignment.** {H('experiment_design.assignment.allocation')} at the "
+        f"**How to describe it.** {H('experiment_design.population.framing')}\n\n"
+        f"**How users are split.** {H('experiment_design.assignment.allocation')} at the "
         f"{H('experiment_design.assignment.unit')} level, "
         f"`{H('experiment_design.assignment.mechanism')}`, blocked on "
         f"{H('experiment_design.assignment.blocks')}.\n\n"
-        f"**Why not a range split on the id.** "
+        f"**Why not just split on the user id.** "
         f"{H('experiment_design.assignment.id_range_split_is_unsafe')}"
     )
 with b:
     st.markdown(
-        f"**Primary estimand.** {H('experiment_design.estimand.primary')}. "
-        f"Forbidden: {H('experiment_design.estimand.forbidden')}.\n\n"
-        f"**Primary metric.** `{H('experiment_design.metrics.primary')}`, measured over "
+        f"**What it measures.** {H('experiment_design.estimand.primary')}. "
+        f"What it must not be read as: {H('experiment_design.estimand.forbidden')}.\n\n"
+        f"**The metric.** `{H('experiment_design.metrics.primary')}`, measured over "
         f"{H('experiment_design.metrics.naming_rule.experiment_window')}, with the clock starting at "
         f"{H('experiment_design.metrics.clock_starts_at')}.\n\n"
-        f"**Why the trigger is time and not the churn flag.** "
+        f"**Why day 14 and not the churn flag.** "
         f"{H('experiment_design.trigger.why_time_not_churn_flag')}"
     )
 
 st.error(
-    f"**Two base rates that must never be swapped.** The experiment's population repeats at "
+    f"**Two base rates that get mixed up, and must not be.** The experiment's population buys again at "
     f"**{H('experiment_design.metrics.naming_rule.experiment_base_rate_pct')}%** over "
-    f"{H('experiment_design.metrics.naming_rule.experiment_window')}; the model's population repeats at "
+    f"{H('experiment_design.metrics.naming_rule.experiment_window')}; the model's population buys again at "
     f"**{H('experiment_design.metrics.naming_rule.nb06_base_rate_pct')}%** over "
     f"{H('experiment_design.metrics.naming_rule.nb06_window')}. "
     f"{H('experiment_design.metrics.naming_rule.rule')}",
@@ -77,13 +85,14 @@ st.error(
 )
 
 # ==================================================================================
-st.header("Why the target is not the churn model's top scores")
+st.header("Why the target is not the people most likely to leave")
 
 st.markdown(
-    "This is the one question in the project that observational data cannot answer, and the one place a "
-    "genuine randomised experiment is available. Criteo ran a real incrementality test over "
-    f"{H('criteo_experiment.data.rows'):,} users. Six targeting policies were scored on a held-out half "
-    "that no model was fitted on:"
+    "Knowing who is about to leave is not the same as knowing who would come back if you contacted them. "
+    "Telling those apart takes an experiment, and this project has none of its own &mdash; so it borrows "
+    "one. Criteo withheld ads from a random group and showed them to everyone else, across "
+    f"{H('criteo_experiment.data.rows'):,} users. Six ways of choosing whom to target were then scored on "
+    "a held-out half that no model was fitted on:"
 )
 
 pol = pd.DataFrame(H("criteo_experiment.policy_comparison.policies"))
@@ -122,22 +131,23 @@ for i, r in enumerate(pol.itertuples()):
 ax.set_yticks(y)
 ax.set_yticklabels(pol.policy, fontsize=9)
 ax.set_xlim(0, 152)
-ax.set_xlabel("% of the total available incremental effect captured")
+ax.set_xlabel("% of the available extra conversions captured")
 ax.grid(axis="x", lw=0.6)
 chart(
     fig,
     title="Targeting the most at-risk half captured 1% of the effect",
-    subtitle="Criteo uplift dataset, held-out half. Every policy except 'treat everyone' spends half the "
-             "budget, so these are directly comparable at equal cost.",
-    takeaway=f"{H('criteo_experiment.policy_comparison.headline')} Risk targeting is not merely no better "
-             f"than random here &mdash; it is far worse, and the contrast against random excludes zero.",
+    subtitle="Criteo's experiment, held-out half. Every rule except 'treat everyone' spends the same half "
+             "of the budget, so they compare directly.",
+    takeaway=f"{H('criteo_experiment.policy_comparison.headline')} Targeting the most at-risk users is not "
+             f"merely no better than picking at random here. It is much worse, and the interval on that "
+             f"difference does not include zero.",
     source="handoff criteo_experiment.policy_comparison.policies",
 )
 
 c1, c2 = st.columns([0.55, 0.45])
 with c1:
     st.markdown(
-        f"**The result the brief did not expect.** "
+        f"**The result nobody was expecting.** "
         f"{H('criteo_experiment.policy_comparison.the_expected_result_that_did_not_hold')}"
     )
     st.markdown(
@@ -153,11 +163,12 @@ with c2:
                  hide_index=True, width="stretch",
                  column_config={c: st.column_config.NumberColumn(format="%.3f")
                                 for c in ["Qini ratio", "CI lo", "CI hi"]})
-    st.caption("Qini ratio on `conversion`, held-out half. The reversed baseline-response ranking -- "
-               "\"most at risk first\" -- is the row that matters for this project.")
+    st.caption("Qini ratio on conversions, held-out half. It scores how fast a ranking picks up the "
+               "available effect: 1.0 is as fast as a perfect ranking, 0 is no better than random. The "
+               "\"most at risk first\" row is the one that matters here.")
 
 st.info(
-    "**What transfers back to REES46, and what does not.** "
+    "**What carries over to this shop, and what does not.** "
     + " ".join(H("criteo_experiment.carry_back_to_rees46.what_transfers"))
     + " &nbsp;**Does not transfer:** "
     + " ".join(H("criteo_experiment.carry_back_to_rees46.what_does_not_transfer")),
@@ -165,7 +176,7 @@ st.info(
 )
 
 # ==================================================================================
-st.header("Break-even calculator")
+st.header("What the test would have to achieve")
 
 ledger = extract("impact_ledger")
 
@@ -192,43 +203,53 @@ DAYS_PER_YEAR = float(H("impact.reach.enrolments_per_year")) / float(H("impact.r
 Z975 = 1.959963984540054
 
 st.markdown(
-    f"{tag('DATA')} measured in this dataset. &nbsp; {tag('ASSUMPTION')} a business input nothing here "
-    f"observes. &nbsp; {tag('SCENARIO')} a lift no experiment has run to measure. "
-    f"&nbsp; {tag('DESIGN')} a choice made in 08. &nbsp;**Only the ASSUMPTION and SCENARIO inputs have "
-    f"sliders.** The DATA inputs are fixed and shown with the file they come from.",
+    "**Break-even lift is the smallest increase in the repeat rate that pays for the messages.** Below it "
+    "the campaign costs more than it brings in; above it, it makes money. Everything below is arithmetic "
+    "over labelled inputs. It is not a forecast and it does not predict what the campaign would do."
+)
+st.markdown(
+    f"{tag('DATA')} measured in this dataset. &nbsp; {tag('ASSUMPTION')} a number the business sets, which "
+    f"nothing here measures. &nbsp; {tag('SCENARIO')} a lift no experiment has run to measure. "
+    f"&nbsp; {tag('DESIGN')} a choice made when the test was designed. &nbsp;**Only the ASSUMPTION and "
+    f"SCENARIO inputs move.** The DATA inputs are fixed and shown with the file they came from.",
     unsafe_allow_html=True,
 )
 
 inputs, outputs = st.columns([0.40, 0.60])
 
 with inputs:
-    st.subheader("Inputs you can move")
-    st.markdown(f"{tag('ASSUMPTION')} **Cost per contact**", unsafe_allow_html=True)
+    st.subheader("Inputs the business sets")
+    st.markdown(f"{tag('ASSUMPTION')} **Cost per contact** &mdash; you set this", unsafe_allow_html=True)
     contact_cost = st.slider("Cost per contact (EUR)", 0.01, 0.30, float(COST_DEFAULT), 0.005,
                              format="EUR %.3f", label_visibility="collapsed")
-    st.caption(f"08 assumes EUR {COST_DEFAULT:.2f}. "
+    st.caption(f"Nothing in this data observes it. The design assumes EUR {COST_DEFAULT:.2f}. "
                f"{ledger.loc[ledger.input == 'contact_cost', 'source'].iloc[0]}")
 
-    st.markdown(f"{tag('ASSUMPTION')} **Contribution margin**", unsafe_allow_html=True)
+    st.markdown(f"{tag('ASSUMPTION')} **Contribution margin** &mdash; you set this",
+                unsafe_allow_html=True)
     margin = st.slider("Contribution margin", 0.10, 0.50, float(MARGIN_DEFAULT), 0.01,
                        format="%.2f", label_visibility="collapsed")
-    st.caption(f"08 assumes {MARGIN_DEFAULT:.0%}. "
+    st.caption(f"What the business keeps on a sale after the cost of the goods. The design assumes "
+               f"{MARGIN_DEFAULT:.0%}. "
                f"{ledger.loc[ledger.input == 'contribution_margin', 'source'].iloc[0]}")
 
-    st.markdown(f"{tag('SCENARIO')} **True lift the campaign produces**", unsafe_allow_html=True)
+    st.markdown(f"{tag('SCENARIO')} **The lift the campaign actually produces** &mdash; nobody knows this",
+                unsafe_allow_html=True)
     lift_pp = st.slider("True lift (pp)", 0.0, 3.0, float(H("experiment_design.economics.mde_pp")), 0.05,
                         format="%.2f pp", label_visibility="collapsed")
-    st.caption("No experiment has run, so this is a scenario, not an estimate. 08's target is "
+    st.caption("No experiment has run. Move this to ask \"what if the lift were X\" -- it is not an "
+               f"estimate of anything. The design is sized for "
                f"{H('experiment_design.economics.mde_pp'):.2f} pp.")
 
     st.divider()
-    st.subheader("Inputs that are fixed")
+    st.subheader("Inputs that are measured, and fixed")
     fixed = ledger[ledger.tag == "DATA"][["label", "value", "source"]].copy()
-    fixed.columns = ["Input", "Value", "Where it comes from"]
+    fixed.columns = ["Input", "Value", "Where it came from"]
     st.dataframe(fixed, hide_index=True, width="stretch",
                  column_config={"Value": st.column_config.NumberColumn(format="%.4f")})
     st.caption(
-        f"Plus two DESIGN choices: a {HOLDBACK:.0%} holdback and {int(N_PER_ARM_B):,} users per arm."
+        f"Plus two choices made when the test was designed: {HOLDBACK:.0%} of users are held back and "
+        f"never contacted, and each arm gets {int(N_PER_ARM_B):,} users."
     )
 
 # --- the arithmetic. Every term above is a labelled ledger row. ---
@@ -282,28 +303,29 @@ for _ in range(3):
     mde_B = break_even_pp + (Z975 + Z80) * se_pp(mde_B, N_PER_ARM_B)
 
 with outputs:
-    st.subheader("What that implies")
+    st.subheader("What that adds up to")
     o1, o2, o3 = st.columns(3)
-    o1.metric("Value per incremental 2nd order", f"EUR {value_per_order:.2f}",
-              help=f"AOV {AOV:.2f} x margin {margin:.0%} = EUR {value_margin:.2f}, plus "
-                   f"EUR {value_downstream:.2f} of downstream credit at the "
-                   f"{1 + DOWNSTREAM:.2f}x residual multiplier.")
-    o2.metric("Break-even lift", f"{break_even_pp:.3f} pp",
+    o1.metric("What one extra 2nd order is worth", f"EUR {value_per_order:.2f}",
+              help=f"An average second order of {AOV:.2f} x {margin:.0%} margin = EUR {value_margin:.2f}, "
+                   f"plus EUR {value_downstream:.2f} for the orders that tend to follow a second one "
+                   f"({1 + DOWNSTREAM:.2f}x).")
+    o2.metric("Lift needed to break even", f"{break_even_pp:.3f} pp",
               delta=f"{break_even_rel:.2f}% relative", delta_color="off")
-    o3.metric(f"Net per year at {lift_pp:.2f} pp",
+    o3.metric(f"Net per year IF the lift is {lift_pp:.2f} pp",
               f"EUR {net:,.0f}",
-              delta="profitable" if net > 0 else "loses money",
+              delta="pays for itself" if net > 0 else "loses money",
               delta_color="normal" if net > 0 else "inverse")
 
     p1, p2, p3 = st.columns(3)
-    p1.metric("Design B can adjudicate it?",
+    p1.metric("Could the test settle it?",
               "yes" if ship_B >= 0.80 else ("marginal" if ship_B >= 0.5 else "no"),
-              help="'Yes' means: if the true lift really is the scenario value, design B has at least an "
-                   "80% chance of returning a 95% interval whose LOWER bound clears break-even.")
-    p2.metric("P(ship) at this lift", f"{100 * ship_B:.0f}%",
-              help="Probability the 95% CI lower bound clears break-even.")
-    p3.metric("P(kill) if nothing happens", f"{100 * kill_B0:.0f}%",
-              help="Probability the 95% CI upper bound falls below break-even when the true effect is zero.")
+              help="Yes means: if the lift really were this big, design B would have at least an 80% "
+                   "chance of coming back with a 95% interval sitting entirely above break-even.")
+    p2.metric("Chance of a clear ship", f"{100 * ship_B:.0f}%",
+              help="How often the whole 95% confidence interval lands above break-even at this lift.")
+    p3.metric("Chance of a clear kill if it does nothing", f"{100 * kill_B0:.0f}%",
+              help="How often the whole 95% confidence interval lands below break-even when the campaign "
+                   "truly has no effect.")
 
     fig, ax = frame(figsize=(7.6, 3.9))
     grid = np.linspace(0, 3.0, 241)
@@ -317,7 +339,7 @@ with outputs:
     if mde_B > break_even_pp:
         ax.axvspan(break_even_pp, min(mde_B, 3.0), color=TAKEAWAY_FACE, alpha=0.85, zorder=0)
         ax.text((break_even_pp + min(mde_B, 3.0)) / 2, nets.max() * 0.06,
-                "profitable,\nundetectable", ha="center", fontsize=8, color="#8a6d3b")
+                "makes money,\ncannot be proven", ha="center", fontsize=8, color="#8a6d3b")
     ax.scatter([lift_pp], [net], s=60, color=ORANGE, zorder=6)
     ax.annotate(f"scenario {lift_pp:.2f} pp\nEUR {net:,.0f}", xy=(lift_pp, net),
                 xytext=(12, -28), textcoords="offset points",
@@ -326,70 +348,71 @@ with outputs:
     ax.annotate(f"break-even\n{break_even_pp:.3f} pp", xy=(break_even_pp, 0),
                 xytext=(break_even_pp + 0.08, nets.max() * 0.45), fontsize=8.5, color="#2F6B45")
     ax.yaxis.set_major_formatter(FuncFormatter(lambda v, _: f"{v/1000:,.0f}k"))
-    ax.set_xlabel("True lift in the 30-day repeat rate (pp)")
+    ax.set_xlabel("Lift in the 30-day repeat rate, if the campaign produced it (pp)")
     ax.set_ylabel("Net EUR per year")
     ax.grid(axis="y", lw=0.6)
     chart(
         fig,
-        title="Net annual value as a function of a lift nobody has measured",
-        subtitle=f"At EUR {contact_cost:.3f} per contact, {margin:.0%} margin, and "
-                 f"{contacted_per_year:,.0f} contacts a year after a {HOLDBACK:.0%} holdback. "
-                 f"The x axis is a SCENARIO.",
+        title="What the campaign would be worth at any lift",
+        subtitle=f"At EUR {contact_cost:.3f} per contact, {margin:.0%} margin and "
+                 f"{contacted_per_year:,.0f} contacts a year after holding {HOLDBACK:.0%} back. The x axis "
+                 f"is a question, not a prediction -- no lift here has been measured.",
         takeaway=(
-            f"The campaign pays above {break_even_pp:.3f} pp ({break_even_rel:.2f}% relative). Design B "
-            f"can reliably detect {mde_B:.2f} pp -- {mde_B / break_even_pp:.1f}x that -- so every lift "
-            f"between {break_even_pp:.3f} pp and {mde_B:.2f} pp is profitable and undetectable at once "
-            f"(the amber band). That is why the decision rule is three-way against break-even rather "
-            f"than a significance test against zero."
+            f"The campaign starts paying above {break_even_pp:.3f} pp ({break_even_rel:.2f}% relative), and "
+            f"design B can only reliably see {mde_B:.2f} pp -- {mde_B / break_even_pp:.1f}x that. So every "
+            f"lift in the amber band would make money and still come back unproven. That is why the "
+            f"read-out is a three-way call against break-even instead of a significance test against zero."
         ),
         source="impact_ledger.parquet (marts + handoff experiment_design.economics.ledger); the arithmetic "
                "is this page's, the inputs are not",
     )
 
-st.markdown("##### The line-by-line chain")
+st.markdown("##### The same thing, line by line")
 chain = pd.DataFrame([
-    {"Step": "AOV of a second order", "Tag": "DATA", "Value": f"EUR {AOV:.2f}",
+    {"Step": "Average value of a second order", "Tag": "DATA", "Value": f"EUR {AOV:.2f}",
      "Source": ledger.loc[ledger.input == "aov_second_order", "source"].iloc[0]},
     {"Step": "x contribution margin", "Tag": "ASSUMPTION", "Value": f"{margin:.0%}",
-     "Source": "slider -- 08's default is 30%"},
-    {"Step": "= margin on the order", "Tag": "DATA x ASSUMPTION", "Value": f"EUR {value_margin:.4f}",
-     "Source": "computed"},
-    {"Step": f"+ downstream credit at {1 + DOWNSTREAM:.2f}x", "Tag": "DATA",
+     "Source": "slider -- the design's default is 30%"},
+    {"Step": "= what the shop keeps on it", "Tag": "DATA x ASSUMPTION",
+     "Value": f"EUR {value_margin:.4f}", "Source": "computed"},
+    {"Step": f"+ credit for the orders that follow it ({1 + DOWNSTREAM:.2f}x)", "Tag": "DATA",
      "Value": f"EUR {value_downstream:.4f}",
      "Source": ledger.loc[ledger.input == "downstream_uplift", "source"].iloc[0]},
-    {"Step": "= value per incremental 2nd order", "Tag": "DATA x ASSUMPTION",
+    {"Step": "= value of one extra second order", "Tag": "DATA x ASSUMPTION",
      "Value": f"EUR {value_per_order:.4f}", "Source": "computed"},
     {"Step": "Cost per contact", "Tag": "ASSUMPTION", "Value": f"EUR {contact_cost:.4f}",
-     "Source": "slider -- 08's default is EUR 0.05"},
-    {"Step": "= BREAK-EVEN LIFT", "Tag": "DATA x ASSUMPTION", "Value": f"{break_even_pp:.4f} pp",
+     "Source": "slider -- the design's default is EUR 0.05"},
+    {"Step": "= LIFT NEEDED TO BREAK EVEN", "Tag": "DATA x ASSUMPTION", "Value": f"{break_even_pp:.4f} pp",
      "Source": "cost / value"},
-    {"Step": "First-time buyers per day", "Tag": "DATA", "Value": f"{INFLOW:,.1f}",
+    {"Step": "New first-time buyers per day", "Tag": "DATA", "Value": f"{INFLOW:,.1f}",
      "Source": ledger.loc[ledger.input == "first_buyer_inflow_per_day", "source"].iloc[0]},
-    {"Step": "x share still enrollable at day 14", "Tag": "DATA", "Value": f"{SURVIVAL:.4f}",
+    {"Step": "x share still eligible on day 14", "Tag": "DATA", "Value": f"{SURVIVAL:.4f}",
      "Source": ledger.loc[ledger.input == "trigger_survival_share", "source"].iloc[0]},
-    {"Step": "= enrolments per year", "Tag": "DATA", "Value": f"{enrol_per_year:,.0f}", "Source": "computed"},
-    {"Step": f"x (1 - {HOLDBACK:.0%} holdback)", "Tag": "DESIGN", "Value": f"{contacted_per_year:,.0f}",
+    {"Step": "= people entering per year", "Tag": "DATA", "Value": f"{enrol_per_year:,.0f}",
+     "Source": "computed"},
+    {"Step": f"x (1 - {HOLDBACK:.0%} held back)", "Tag": "DESIGN", "Value": f"{contacted_per_year:,.0f}",
      "Source": "09 holdback_share"},
-    {"Step": "x scenario lift", "Tag": "SCENARIO", "Value": f"{lift_pp:.2f} pp", "Source": "slider"},
-    {"Step": "= incremental 2nd orders per year", "Tag": "DATA x SCENARIO x DESIGN",
+    {"Step": "x the lift, if it happens", "Tag": "SCENARIO", "Value": f"{lift_pp:.2f} pp",
+     "Source": "slider"},
+    {"Step": "= extra second orders per year", "Tag": "DATA x SCENARIO x DESIGN",
      "Value": f"{inc_orders:,.0f}", "Source": "computed"},
     {"Step": "= NET PER YEAR", "Tag": "DATA x ASSUMPTION x SCENARIO x DESIGN",
-     "Value": f"EUR {net:,.0f}", "Source": "gross - spend"},
+     "Value": f"EUR {net:,.0f}", "Source": "money in - money out"},
 ])
 st.dataframe(chain, hide_index=True, width="stretch")
 
 if abs(contact_cost - COST_DEFAULT) < 1e-9 and abs(margin - MARGIN_DEFAULT) < 1e-9 \
         and abs(lift_pp - float(H("experiment_design.economics.mde_pp"))) < 1e-9:
     st.success(
-        f"At the defaults this reproduces 09 exactly: break-even "
-        f"{H('experiment_design.economics.break_even_lift_pp'):.4f} pp, value per incremental second order "
-        f"EUR {H('impact.value_per_incremental_second_order_eur'):.3f}, net "
-        f"EUR {H('impact.sensitivity.base_net_eur'):,.0f} per year at the 1.00 pp scenario.",
+        f"At the default settings this reproduces notebook 09 exactly: break-even "
+        f"{H('experiment_design.economics.break_even_lift_pp'):.4f} pp, EUR "
+        f"{H('impact.value_per_incremental_second_order_eur'):.3f} per extra second order, and EUR "
+        f"{H('impact.sensitivity.base_net_eur'):,.0f} net a year at the 1.00 pp scenario.",
         icon=":material/check_circle:",
     )
 
 # ----------------------------------------------------------------------------------
-st.subheader("Can the experiment tell you which side of break-even you are on?")
+st.subheader("Could the test actually tell you which side of break-even you are on?")
 
 ad1, ad2 = st.columns([0.55, 0.45])
 with ad1:
@@ -402,27 +425,27 @@ with ad1:
     ax.axhline(80, color=GREEN, ls=":", lw=1.2)
     ax.axvline(break_even_pp, color=GREEN, ls="--", lw=1.2)
     ax.axvline(lift_pp, color=ORANGE, lw=1.6)
-    ax.set_xlabel("True lift (pp)")
-    ax.set_ylabel("P(ship), %")
+    ax.set_xlabel("Lift, if the campaign produced it (pp)")
+    ax.set_ylabel("Chance of a clear ship, %")
     ax.set_ylim(0, 100)
     ax.grid(axis="y", lw=0.6)
     ax.legend(loc="lower right", fontsize=8.5)
     chart(
         fig,
-        title="Power against break-even, not against zero",
-        subtitle="P(ship) is the chance the 95% interval's LOWER bound clears break-even. Design B is "
-                 "sized so this reaches 80% at 08's 1.00 pp target; design A is the cheaper alternative.",
-        takeaway=f"At the scenario lift of {lift_pp:.2f} pp, design B returns an interval clearing "
-                 f"break-even {100 * ship_B:.0f}% of the time and design A "
-                 f"{100 * p_ship(max(lift_pp, 0.01), N_PER_ARM_A):.0f}%. Near break-even both collapse, "
-                 f"because n scales as 1/(delta - break-even)^2 and not 1/delta^2 -- targets near the "
-                 f"break-even line diverge.",
+        title="Sized against break-even, not against zero",
+        subtitle="A clear ship means the whole 95% interval lands above break-even. Design B is sized so "
+                 "that happens 80% of the time at a 1.00 pp lift; design A is the cheaper alternative.",
+        takeaway=f"If the lift were {lift_pp:.2f} pp, design B would come back with a clear answer "
+                 f"{100 * ship_B:.0f}% of the time and design A "
+                 f"{100 * p_ship(max(lift_pp, 0.01), N_PER_ARM_A):.0f}%. Both collapse near break-even, "
+                 f"because the users you need scale with the distance from break-even rather than from "
+                 f"zero -- aim at a target sitting on the line and no sample size is enough.",
         source="handoff experiment_design.economics (n per arm, base rate); the power curve is computed "
                "here from those inputs",
     )
 with ad2:
     st.markdown(
-        f"**The decision rule.** {H('experiment_design.decision_rule.shape')}\n\n"
+        f"**How the result gets read.** {H('experiment_design.decision_rule.shape')}\n\n"
         f"- **Ship** if {H('experiment_design.decision_rule.ship')}\n"
         f"- **Kill** if {H('experiment_design.decision_rule.kill')}\n"
         f"- **Inconclusive** if {H('experiment_design.decision_rule.inconclusive')}\n\n"
@@ -434,11 +457,11 @@ with ad2:
         f"true effect is zero, {H('impact.value_of_the_experiment.inconclusive.probability_at_target_pct')}% "
         f"at the target. {H('impact.value_of_the_experiment.inconclusive.recommended_branch')}"
     )
-    st.caption(f"Pre-registered before launch: "
+    st.caption(f"Written down before launch, not after the result: "
                f"{H('impact.value_of_the_experiment.inconclusive.must_be_pre_registered_before_launch')}")
 
 # ----------------------------------------------------------------------------------
-st.subheader("What would flip the decision")
+st.subheader("What would change the answer")
 
 sens = extract("impact_sensitivity").sort_values("swing_eur", ascending=True)
 _lo = min(sens.net_at_low_eur.min(), sens.net_at_high_eur.min())
@@ -456,30 +479,30 @@ ax.set_yticks(y)
 ax.set_yticklabels([f"{r.input}  [{r.tag}]" for r in sens.itertuples()], fontsize=8.5)
 ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _: f"{v/1000:,.0f}k"))
 ax.set_xlim(_lo - 3000, _hi + (_hi - _lo) * 0.95)
-ax.set_xlabel("Net EUR per year at a 1.00 pp lift")
+ax.set_xlabel("Net EUR per year, if the lift were 1.00 pp")
 ax.grid(axis="x", lw=0.6)
 chart(
     fig,
-    title="Only one input's plausible range crosses zero",
-    subtitle="One-at-a-time, holding the 1.00 pp scenario fixed. Red = the range crosses zero and the "
-             "decision changes inside it.",
+    title="Only one input can turn a profit into a loss",
+    subtitle="Each input moved on its own across its plausible range, holding the lift at 1.00 pp. Red = "
+             "the range crosses zero, so the answer changes somewhere inside it.",
     takeaway=f"{H('impact.sensitivity.verdict')}",
     source="impact_sensitivity.parquet, from handoff impact.sensitivity.rows",
 )
 
 st.markdown(
-    f"**Pull-forward is the threat this design cannot rule out with the primary metric alone.** "
-    f"{H('impact.pull_forward.rule')} At the scenario lift, "
-    f"**{100 * break_even_pp / lift_pp if lift_pp > 0 else float('nan'):.1f}%** of the lift has to be "
-    f"genuinely new demand rather than rescheduled demand for the campaign to break even. If the whole "
-    f"lift is rescheduling, the campaign loses "
-    f"EUR {abs(H('impact.pull_forward.net_if_wholly_rescheduled_eur')):,.0f} a year. "
-    f"That is what the {H('experiment_design.economics.weeks_to_g2_readout')}-week secondary readout "
-    f"({H('impact.pull_forward.decided_by')}) exists to decide."
+    f"**The risk this test cannot rule out on its own: people buying sooner, not buying more.** "
+    f"{H('impact.pull_forward.rule')} At the lift on the slider, "
+    f"**{100 * break_even_pp / lift_pp if lift_pp > 0 else float('nan'):.1f}%** of it has to be genuinely "
+    f"new demand rather than an order that was coming anyway, or the campaign does not pay. If every extra "
+    f"order is just an earlier one, it loses "
+    f"EUR {abs(H('impact.pull_forward.net_if_wholly_rescheduled_eur')):,.0f} a year. That is what the "
+    f"second read-out at {H('experiment_design.economics.weeks_to_g2_readout')} weeks "
+    f"({H('impact.pull_forward.decided_by')}) is there to decide."
 )
 
 # ==================================================================================
-st.header("What to do about it")
+st.header("What to actually do")
 
 recs = pd.DataFrame(H("impact.recommendations"))
 TIER_ICON = {"DO NOW": ":material/bolt:", "TEST NEXT": ":material/science:",
@@ -491,21 +514,21 @@ for tier in ["DO NOW", "TEST NEXT", "STOP / DON'T START"]:
         with st.expander(f"**{r.id}** — {r.what}"):
             st.markdown(
                 f"**Why.** {r.why}\n\n"
-                f"**Expected impact.** {r.expected_impact}\n\n"
-                f"**Cost.** {r.cost}\n\n"
-                f"**Risk.** {r.risk}\n\n"
-                f"**How it is tested.** {r.how_it_is_tested}"
+                f"**What it should be worth.** {r.expected_impact}\n\n"
+                f"**What it costs.** {r.cost}\n\n"
+                f"**What could go wrong.** {r.risk}\n\n"
+                f"**How you would know it worked.** {r.how_it_is_tested}"
             )
             st.caption(f"Evidence: {r.evidence}")
 
 # ==================================================================================
-st.header("What none of this can answer")
+st.header("Questions this data cannot answer")
 
 limits = pd.DataFrame(H("impact.cannot_answer"))
-limits.columns = ["Limit", "What it blocks", "Established by", "What would resolve it"]
+limits.columns = ["Limit", "What it stops you doing", "Where it was established",
+                  "What would settle it"]
 st.dataframe(limits, hide_index=True, width="stretch", height=330)
 st.caption(
-    "Kept as a named list rather than folded into caveats, because the honest answer to several "
-    "reasonable questions about this business is that five months of cookie-scoped event data cannot "
-    "produce one."
+    "This is a list rather than a footnote because the honest answer to several reasonable questions about "
+    "this business is that five months of cookie-scoped clickstream cannot produce one."
 )

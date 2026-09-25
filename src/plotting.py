@@ -1,4 +1,4 @@
-"""Shared plotting/reporting helpers for the Eternal Product Analytics notebooks.
+"""Shared plotting/reporting helpers for the cosmetics-retention notebooks.
 
 Defined once here (per CLAUDE.md convention) and imported by every notebook
 after 00_data_quality.ipynb instead of being redefined.

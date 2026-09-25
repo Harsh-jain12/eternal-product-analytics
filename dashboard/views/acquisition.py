@@ -12,9 +12,9 @@ from lib.style import BLUE, GREY, ORANGE, RED, chart, frame, page_header
 
 page_header(
     "Acquisition & cohorts",
-    "Purchase cohorts by month of first order. The rule that governs this whole page: a cohort appears at "
-    "a bucket only if its <em>last</em> joiner has that many trailing days of observation. An ineligible "
-    "cell is blank, never zero.",
+    "Everyone who bought for the first time, grouped by the month they did it. One rule governs the whole "
+    "page: a month only shows a number at day 30, 60 or 90 if its <em>last</em> joiner has been watched "
+    "that long. Where nobody has been, the cell stays blank &mdash; never a zero.",
     "02_cohorts_retention, via marts.mart_cohort_retention",
 )
 
@@ -22,11 +22,11 @@ tri = extract("cohort_retention")
 pooled = extract("retention_pooled")
 
 metric_choice = st.radio(
-    "Retention definition",
-    ["Purchase retention (primary)", "Activity retention (superset)"],
+    "What counts as coming back",
+    ["Bought again (the primary metric)", "Came back at all"],
     horizontal=True, label_visibility="collapsed",
 )
-is_purchase = metric_choice.startswith("Purchase")
+is_purchase = metric_choice.startswith("Bought")
 col = "purchase_retention_pct" if is_purchase else "activity_retention_pct"
 ret_col = "purchase_returners" if is_purchase else "activity_returners"
 hue = BLUE if is_purchase else ORANGE
@@ -59,18 +59,19 @@ ax.set_xticks(range(wide.shape[1]))
 ax.set_xticklabels([f"D{int(b)}" for b in wide.columns])
 ax.set_yticks(range(wide.shape[0]))
 ax.set_yticklabels([f"{m[:7]}  (n={int(cohort_n[m]):,})" for m in wide.index])
-ax.set_xlabel("Days since the cohort's first order")
+ax.set_xlabel("Days since the first order")
 ax.tick_params(length=0)
 for s in ax.spines.values():
     s.set_visible(False)
 chart(
     fig,
-    title=f"{'Purchase' if is_purchase else 'Activity'} retention by acquisition cohort",
-    subtitle="Cohort = month of first order. Grey cells are not zero -- the cohort's last joiner has not "
-             "been observed that long, so the rate is not yet measurable.",
-    takeaway=f"Later cohorts retain worse at every bucket that all of them reach: at D14, "
-             f"{wide.iloc[0][14]:.1f}% for the October cohort against {wide.iloc[-1][14]:.1f}% for January. "
-             f"The February cohort is absent entirely -- it has no trailing window at all.",
+    title=f"{'Bought again' if is_purchase else 'Came back at all'}, by the month people first bought",
+    subtitle="One row per month of first order. Grey cells are not zeroes -- that month's last joiner has "
+             "not been watched long enough yet, so there is nothing to measure.",
+    takeaway=f"Each month's intake does worse than the one before it, at every point all of them reach. At "
+             f"day 14 the October cohort is at {wide.iloc[0][14]:.1f}% and January at "
+             f"{wide.iloc[-1][14]:.1f}%. February is missing entirely -- the data ends before anyone in it "
+             f"has had 14 days.",
     source="cohort_retention.parquet, from marts.mart_cohort_retention",
 )
 
@@ -78,80 +79,80 @@ left, right = st.columns([0.55, 0.45])
 with left:
     st.subheader("Why cells go missing")
     st.markdown(
-        "The alternative &mdash; filling an unobserved cell with 0, or with a partial denominator "
-        "&mdash; would make the most recent cohorts look like the worst ones. This project "
-        "excludes them instead, which is why `eligible_n` **falls** as the horizon lengthens:"
+        "Filling an unwatched cell with a zero, or with a partial count, would make the newest cohorts "
+        "look like the worst ones when all that is wrong with them is that they only just arrived. They "
+        "are left out instead, which is why the number of people measured **falls** as the horizon gets "
+        "longer:"
     )
     elig = pooled[["bucket_day", "n_cohorts", "eligible_n"]].copy()
-    elig.columns = ["Bucket (days)", "Cohorts contributing", "Users in the denominator"]
+    elig.columns = ["Days since first order", "Months contributing", "People measured"]
     st.dataframe(elig, hide_index=True, width="stretch")
 with right:
-    st.subheader("Cohort windows")
+    st.subheader("How long each month has been watched")
     cw = pd.DataFrame({
-        "Cohort": [m[:7] for m in cohort_n.index],
+        "Month": [m[:7] for m in cohort_n.index],
         "First-time buyers": cohort_n.values,
-        "Trailing days for the last joiner": trailing.values,
+        "Days watched, for the last person to join": trailing.values,
     })
     st.dataframe(cw, hide_index=True, width="stretch")
     st.caption(
-        "The trailing window is measured on the LAST joiner, not on the average user. That is what "
-        "makes a cohort's rate at a bucket measurable or not."
+        "The clock is set by the LAST person to join the month, not the average one. That is what decides "
+        "whether a month gets a number at day 30, 60 or 90."
     )
 
 # ----------------------------------------------------------------------------------
-st.header("Black Friday week against everyone else")
+st.header("Black Friday buyers against everyone else")
 
 bf = extract("black_friday_retention")
 d60 = bf.loc[bf.bucket_day == 60].iloc[0]
 d7 = bf.loc[bf.bucket_day == 7].iloc[0]
 
 m1, m2, m3, m4 = st.columns(4)
-m1.metric("Acquired in the spike week", f"{int(d60.bf_n):,}",
-          help="First order on one of the 7 days the discount detector flagged.")
-m2.metric("Everyone else, same cohorts", f"{int(d60.rest_n):,}")
-m3.metric("D60 gap", f"{d60.gap_pp:+.2f} pp",
+m1.metric("First bought in the discount week", f"{int(d60.bf_n):,}",
+          help="Their first order fell on one of the 7 days the price detector flagged.")
+m2.metric("First bought any other week", f"{int(d60.rest_n):,}")
+m3.metric("Gap at day 60", f"{d60.gap_pp:+.2f} pp",
           delta=f"{d60.bf_pct:.1f}% vs {d60.rest_pct:.1f}%", delta_color="off")
-m4.metric("Detected without a calendar", f"{int(H('black_friday_cohort.n_spike_days'))} days",
-          help="The detector compares each purchased line's price to that product's own median. "
-               "It was given no calendar input and isolated the week on price dispersion alone.")
+m4.metric("Found without a calendar", f"{int(H('black_friday_cohort.n_spike_days'))} days",
+          help="The detector compares what each item sold for against that item's own usual price. It was "
+               "never told the date and found the week from prices alone.")
 
 fig, ax = frame(figsize=(10, 4.4))
-ax.plot(bf.bucket_day, bf.rest_pct, marker="o", color=BLUE, lw=2, label="Rest of the window")
+ax.plot(bf.bucket_day, bf.rest_pct, marker="o", color=BLUE, lw=2, label="Every other week")
 ax.plot(bf.bucket_day, bf.bf_pct, marker="o", color=RED, lw=2, label="Black Friday week")
 ax.fill_between(bf.bucket_day, bf.bf_pct, bf.rest_pct, color=RED, alpha=0.09)
 ax.set_xticks(list(bf.bucket_day))
 ax.set_xlabel("Days since first order")
-ax.set_ylabel("% placing a further order")
+ax.set_ylabel("% who bought again")
 ax.grid(axis="y", lw=0.6)
 ax.legend(loc="upper left")
 chart(
     fig,
-    title="The discount week bought worse customers, and the gap widened",
-    subtitle="One fixed population -- the cohorts eligible at D90 -- held constant across every bucket, so "
-             "the trajectory is behaviour rather than a change in who is being measured.",
-    takeaway=f"The Black Friday cohort starts {abs(d7.gap_pp):.1f} pp behind at D7 and is "
-             f"{abs(d60.gap_pp):.1f} pp behind by D60. The gap widens rather than closing, which is the "
-             f"opposite of what a \"they just need time\" reading would predict. Associational, and about "
-             f"one trading week.",
+    title="The discount week bought worse customers, and the gap got wider",
+    subtitle="The same group of people at every point -- the cohorts measurable at day 90 -- so the shape "
+             "is these customers behaving, not the measured population changing underneath.",
+    takeaway=f"Black Friday buyers start {abs(d7.gap_pp):.1f} pp behind at day 7 and are "
+             f"{abs(d60.gap_pp):.1f} pp behind by day 60. The gap widens, which is the opposite of what "
+             f"\"they just need more time\" would predict. One trading week, and a correlation.",
     source="black_friday_retention.parquet, from marts.dim_users x marts.fct_orders; "
            "gap reconciled against handoff black_friday_cohort.gap_pp",
 )
 
 show = bf.copy()
-show.columns = ["Bucket (days)", "BF n", "BF returners", "BF %", "Rest n", "Rest returners",
-                "Rest %", "Gap (pp)", "Gap 95% lo", "Gap 95% hi"]
+show.columns = ["Days since first order", "BF buyers", "BF bought again", "BF %", "Other buyers",
+                "Other bought again", "Other %", "Gap (pp)", "Gap 95% lo", "Gap 95% hi"]
 st.dataframe(
     show, hide_index=True, width="stretch",
     column_config={c: st.column_config.NumberColumn(format="%.2f")
-                   for c in ["BF %", "Rest %", "Gap (pp)", "Gap 95% lo", "Gap 95% hi"]},
+                   for c in ["BF %", "Other %", "Gap (pp)", "Gap 95% lo", "Gap 95% hi"]},
 )
 st.caption(
-    "The gap reconciles to the certified `black_friday_cohort.gap_pp` at every bucket 02 published. "
-    "The interval is Newcombe's, computed in the extract; it is the one number on this page the "
-    "notebooks did not themselves publish."
+    "The gap matches the certified `black_friday_cohort.gap_pp` at every point notebook 02 published. The "
+    "confidence interval is the one number here the notebooks did not publish themselves -- it is computed "
+    "in the extract, by Newcombe's method."
 )
 
 st.info(
-    f"**What this is not.** {H('black_friday_cohort.interpretation_limit')}",
+    f"**What this does not show.** {H('black_friday_cohort.interpretation_limit')}",
     icon=":material/info:",
 )

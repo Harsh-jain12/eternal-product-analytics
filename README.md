@@ -1,4 +1,4 @@
-# Eternal Product Analytics
+# Cosmetics E-commerce Retention & Growth Analytics
 
 Product-analytics portfolio on the REES46 cosmetics e-commerce event log and the Criteo
 uplift dataset: retention, churn definition, segmentation, repeat-purchase modelling, and

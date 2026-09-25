@@ -1,4 +1,7 @@
-# Eternal Product Analyst Portfolio — REES46 Cosmetics + Criteo
+# Cosmetics E-commerce Retention & Growth Analytics — REES46 + Criteo
+
+Built as interview preparation for Product Analyst roles, Eternal among them. The data is
+public REES46 and Criteo — none of it is Eternal's, and nothing here is an Eternal product.
 
 ## Central business question
 Which user behaviors and first-purchase characteristics drive repeat purchase and

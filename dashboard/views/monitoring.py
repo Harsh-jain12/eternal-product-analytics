@@ -15,10 +15,10 @@ from lib.style import (BLUE, GREEN, GREY, ORANGE, RED, chart, frame,
 
 page_header(
     "Monitoring",
-    "Daily KPIs with a rolling robust baseline. The rule is the same family as the discount detector in "
-    "02 &mdash; median plus or minus 3 &times; 1.4826 &times; MAD &mdash; but made causal: the window is "
-    "trailing and excludes the day it is scoring, so the flag is something that could actually run "
-    "the morning after.",
+    "Eight daily numbers, each compared against what the preceding four weeks would have led you to expect. "
+    "The comparison uses the median and a spread measure that a single wild day cannot drag around, so one "
+    "Black Friday does not set the bar for the rest of the month. The window stops the day before the one "
+    "it is judging, which means this rule could actually run each morning on yesterday's data.",
     "mart_kpi_anomalies, built on mart_daily_kpis",
 )
 
@@ -34,32 +34,33 @@ bf_days = an[(an.is_anomaly == True)  # noqa: E712
              & (an.activity_date >= "2019-11-21") & (an.activity_date <= "2019-11-30")]
 
 k1, k2, k3, k4 = st.columns(4)
-k1.metric("KPIs monitored", f"{an.kpi.nunique()}")
-k2.metric("Days with at least one flag", f"{flagged_days}",
+k1.metric("Numbers watched", f"{an.kpi.nunique()}")
+k2.metric("Days something looked wrong", f"{flagged_days}",
           delta=f"of {an.activity_date.nunique()} days", delta_color="off")
-k3.metric("Flags in Black Friday week", f"{bf_days.activity_date.nunique()} days",
-          help="2019-11-21 to 2019-11-30. This span is the dbt layer's independent validation of the rule: "
-               "handoff's discount detector found it from PRICE dispersion with no calendar input; this "
-               "one finds it from volume and value series and knows nothing about price.")
-k4.metric("Rule", f"median +/- {mult:.0f} x 1.4826 x MAD",
-          help=f"Trailing {win}-day window, exclusive of the day itself, requiring at least {minb} "
-               f"prior days.")
+k3.metric("Of those, in Black Friday week", f"{bf_days.activity_date.nunique()} days",
+          help="2019-11-21 to 2019-11-30. This is the check on the rule: the price detector found that week "
+               "from prices alone with no calendar, and this rule finds it again from volumes and values "
+               "while knowing nothing about price.")
+k4.metric("The rule", f"median +/- {mult:.0f} x 1.4826 x MAD",
+          help=f"Median of the previous {win} days, plus or minus {mult:.0f} times a spread measure that "
+               f"outliers cannot inflate. The day being judged is never in its own window, and at least "
+               f"{minb} earlier days are required before anything is scored.")
 
 st.success(
-    f"**Independent validation.** `mart_kpi_anomalies` flags "
-    f"**{bf_days.activity_date.nunique()} of the 10 days** in the "
-    f"{H('black_friday_cohort.spike_day_span.0')} to {H('black_friday_cohort.spike_day_span.1')} span that "
-    f"02's price-dispersion detector independently identified as the discount week &mdash; using different "
-    f"inputs, a different statistic and no calendar. A dbt test asserts this and fails the build if the "
-    f"monitor stops seeing the largest trading event in the window.",
+    f"**Two rules, no shared inputs, same week.** This monitor flags "
+    f"**{bf_days.activity_date.nunique()} of the 10 days** between "
+    f"{H('black_friday_cohort.spike_day_span.0')} and {H('black_friday_cohort.spike_day_span.1')} &mdash; "
+    f"the week notebook 02 identified as the discount week from price movements alone. Different inputs, "
+    f"different statistic, no calendar, same answer. A test in the dbt layer asserts this and fails the "
+    f"build if the monitor ever stops seeing the biggest trading week in the data.",
     icon=":material/verified:",
 )
 
 # ----------------------------------------------------------------------------------
-st.header("One series at a time")
+st.header("One number at a time")
 
 labels = (an[["kpi", "kpi_label"]].drop_duplicates().sort_values("kpi_label"))
-choice = st.selectbox("KPI", labels.kpi_label.tolist(),
+choice = st.selectbox("Which number", labels.kpi_label.tolist(),
                       index=labels.kpi_label.tolist().index("Orders"))
 s = an[an.kpi_label == choice].sort_values("activity_date").reset_index(drop=True)
 unit = s.kpi_unit.iloc[0]
@@ -71,19 +72,19 @@ hits = scored[scored.is_anomaly == True]  # noqa: E712
 
 fig, ax = frame(figsize=(11, 4.6))
 ax.fill_between(scored.activity_date, scored.baseline_lower, scored.baseline_upper,
-                color=BLUE, alpha=0.10, label=f"Baseline +/- {mult:.0f} scaled MAD")
+                color=BLUE, alpha=0.10, label="Where the rule expects the day to land")
 ax.plot(scored.activity_date, scored.baseline_median, color=BLUE, lw=1.2, ls="--",
-        label=f"Trailing {win}-day median")
+        label=f"Median of the previous {win} days")
 ax.plot(s.activity_date, s.kpi_value, color="#444444", lw=1.3, label=choice)
 if len(unscored):
     ax.axvspan(unscored.activity_date.min(), unscored.activity_date.max(),
                color=GREY, alpha=0.16, zorder=0)
-    ax.text(unscored.activity_date.min(), ax.get_ylim()[1] * 0.97, " not evaluable",
+    ax.text(unscored.activity_date.min(), ax.get_ylim()[1] * 0.97, " nothing to compare against yet",
             fontsize=8, color="#5a5a5a", va="top")
 hi = hits[hits.anomaly_direction == "high"]
 lo = hits[hits.anomaly_direction == "low"]
-ax.scatter(hi.activity_date, hi.kpi_value, s=48, color=RED, zorder=6, label="Flagged high")
-ax.scatter(lo.activity_date, lo.kpi_value, s=48, color=ORANGE, zorder=6, label="Flagged low")
+ax.scatter(hi.activity_date, hi.kpi_value, s=48, color=RED, zorder=6, label="Unusually high")
+ax.scatter(lo.activity_date, lo.kpi_value, s=48, color=ORANGE, zorder=6, label="Unusually low")
 ax.axvspan(pd.Timestamp("2019-11-21"), pd.Timestamp("2019-11-30"), color=GREEN, alpha=0.07, zorder=0)
 ax.text(pd.Timestamp("2019-11-21"), ax.get_ylim()[0], " Black Friday week", fontsize=8,
         color="#2F6B45", va="bottom")
@@ -96,24 +97,25 @@ fig.autofmt_xdate(rotation=0, ha="center")
 
 n_hits = len(hits)
 first_gap = "" if len(unscored) == 0 else (
-    f" The first {len(unscored)} day(s) are grey because the rule has no baseline to test them against "
-    f"-- an unmonitored day is not a clean one, so it carries no flag rather than a passing one.")
+    f" The first {len(unscored)} day(s) are grey because there is no history yet to compare them against. "
+    f"An unchecked day is not a clean day, so it gets no verdict rather than a pass.")
 chart(
     fig,
-    title=f"{choice}: {n_hits} flagged day{'s' if n_hits != 1 else ''} in "
-          f"{s.activity_date.nunique()} days",
-    subtitle=f"Trailing {win}-day window ending the day BEFORE each point, so no day contributes to its "
-             f"own baseline. Requires at least {minb} prior days.",
-    takeaway=(f"{choice} is flagged on {n_hits} day(s), "
+    title=f"{choice}: {n_hits} unusual day{'s' if n_hits != 1 else ''} in "
+          f"{s.activity_date.nunique()}",
+    subtitle=f"Each day is compared against the {win} days before it and never against itself. At least "
+             f"{minb} earlier days are needed before a day can be scored at all.",
+    takeaway=(f"{choice} looks wrong on {n_hits} day(s), "
               f"{len(hits[(hits.activity_date >= '2019-11-21') & (hits.activity_date <= '2019-11-30')])} "
-              f"of them inside Black Friday week." + first_gap)
+              f"of them in Black Friday week." + first_gap)
     if n_hits else
-    f"{choice} never leaves the band. A KPI with no flags is a result, not an empty chart.{first_gap}",
+    f"{choice} never leaves the expected band. A number that never trips is a finding, not an empty "
+    f"chart.{first_gap}",
     source=f"kpi_anomalies.parquet, from marts.mart_kpi_anomalies (series originates in marts.{src})",
 )
 
 # ----------------------------------------------------------------------------------
-st.header("Every KPI at once")
+st.header("All eight at once")
 
 grid = an[an.not_evaluable_reason.isna()].pivot_table(
     index="kpi_label", columns="activity_date", values="robust_z", aggfunc="first")
@@ -131,11 +133,11 @@ _wide_days = _by_day[_by_day >= _WIDE]
 _wide_in_bf = int(((_wide_days.index >= pd.Timestamp("2019-11-21"))
                    & (_wide_days.index <= pd.Timestamp("2019-11-30"))).sum())
 _top_line = (
-    f"{len(_wide_days)} days move {_WIDE} or more of the {_n_kpi} series at once and "
-    f"{_wide_in_bf} of them fall inside Black Friday week. The widest are "
+    f"On {len(_wide_days)} days, {_WIDE} or more of the {_n_kpi} numbers move at once, and "
+    f"{_wide_in_bf} of those days are in Black Friday week. The biggest are "
     + ", ".join(f"{d.date()} ({n} of {_n_kpi})" for d, n in _by_day.head(4).items())
-    + ". The isolated single-series runs in December, January and February are the day-14 trigger pool "
-      "echoing an acquisition spike fourteen days later, which is the pool doing what its definition says."
+    + ". The lone single-row streaks in December, January and February are the day-14 pool echoing an "
+      "earlier spike in new buyers exactly fourteen days later, which is the pool behaving as defined."
 )
 
 fig, ax = frame(figsize=(11, 4.2))
@@ -153,7 +155,7 @@ ax.tick_params(length=0)
 for sp in ax.spines.values():
     sp.set_visible(False)
 cb = fig.colorbar(m, ax=ax, pad=0.012, fraction=0.022)
-cb.set_label("robust z (deviation / scaled MAD)", fontsize=8)
+cb.set_label("How far off the day was, in spread units", fontsize=8)
 cb.ax.tick_params(labelsize=7.5)
 for i in range(len(grid.index)):
     for j, d in enumerate(dates):
@@ -162,15 +164,15 @@ for i in range(len(grid.index)):
             ax.scatter(j, i, s=5, color="black", zorder=4)
 chart(
     fig,
-    title="Where the whole business moved at once",
-    subtitle="Robust z for every monitored series. Black dots are flags. White columns are days with no "
-             "baseline yet, or a zero-MAD window -- not days that passed.",
+    title="The days the whole business moved at once",
+    subtitle="How far off expectation each number landed, every day. Black dots are the ones the rule "
+             "flagged. White columns are days it could not judge -- not days that passed.",
     takeaway=f"{_top_line}",
     source="kpi_anomalies.parquet, from marts.mart_kpi_anomalies",
 )
 
 # ----------------------------------------------------------------------------------
-st.header("The flagged days")
+st.header("Every day the rule flagged")
 
 tbl = (an[an.is_anomaly == True]  # noqa: E712
        .groupby("activity_date")
@@ -179,26 +181,26 @@ tbl = (an[an.is_anomaly == True]  # noqa: E712
             max_abs_z=("robust_z", lambda x: max(abs(x))))
        .reset_index().sort_values("activity_date"))
 tbl["in_black_friday_span"] = ((tbl.activity_date >= "2019-11-21") & (tbl.activity_date <= "2019-11-30"))
-tbl.columns = ["Date", "KPIs flagged", "Which", "Largest |z|", "In the Black Friday span"]
+tbl.columns = ["Date", "How many flagged", "Which ones", "Furthest off", "In Black Friday week"]
 st.dataframe(tbl, hide_index=True, width="stretch", height=330,
-             column_config={"Largest |z|": st.column_config.NumberColumn(format="%.1f")})
+             column_config={"Furthest off": st.column_config.NumberColumn(format="%.1f")})
 
-with st.expander("Days the rule declines to score, and why"):
+with st.expander("The days the rule refuses to score, and why"):
     ne = (an[an.not_evaluable_reason.notna()]
           .groupby(["kpi_label", "not_evaluable_reason"])
           .agg(days=("activity_date", "count"), first=("activity_date", "min"),
                last=("activity_date", "max")).reset_index())
-    ne.columns = ["KPI", "Reason", "Days", "From", "To"]
+    ne.columns = ["Number", "Reason", "Days", "From", "To"]
     st.dataframe(ne, hide_index=True, width="stretch")
     st.markdown(
-        f"These carry `is_anomaly = NULL`, never `false`. The first {minb} days of the series have no "
-        f"baseline; the day-14 trigger pool additionally has a stretch where the trailing window is "
-        f"constant at zero, so there is no scale to test a deviation against. Reporting either as "
-        f"\"no anomaly\" would be reporting an absence of measurement as a clean reading."
+        f"These days are recorded as unknown, never as fine. The first {minb} days of any series have no "
+        f"history to be compared against; the day-14 pool also has a stretch where the preceding window is "
+        f"flat at zero, and you cannot say how far off a day is when nothing was varying. Calling either "
+        f"of those \"no anomaly\" would pass off a missing measurement as a clean one."
     )
 
 # ----------------------------------------------------------------------------------
-st.header("The underlying daily table")
+st.header("The daily series underneath")
 
 opts = {
     "Sessions and orders": ["n_sessions", "n_orders"],
@@ -207,7 +209,7 @@ opts = {
     "New first-time buyers": ["n_new_first_time_buyers"],
     "Day-14 trigger pool": ["day14_trigger_pool_n", "day14_trigger_pool_observable_n"],
 }
-pick = st.radio("Series", list(opts), horizontal=True, label_visibility="collapsed")
+pick = st.radio("Which series", list(opts), horizontal=True, label_visibility="collapsed")
 cols = opts[pick]
 
 fig, ax = frame(figsize=(11, 3.8))
@@ -234,32 +236,32 @@ ax.legend(handles, [h.get_label() for h in handles], loc="upper left", fontsize=
 fig.autofmt_xdate(rotation=0, ha="center")
 
 TAKE = {
-    "Sessions and orders": "On their own scales (orders on the right axis, ~30x smaller) the two series "
-                           "track each other: the same Black Friday peak, the same New Year trough. "
-                           "Traffic and demand are not decoupling anywhere in this window.",
-    "Conversion, both scopes": "The two scopes track each other in shape and sit about 1.8x apart in "
-                               "level, every day. That constant offset is the reason both are stored "
-                               "and labelled rather than one being published as 'conversion'.",
-    "AOV: median and winsorised mean": "The median and the P99-winsorised mean stay close, which is the "
-                                       "point of reporting both: a raw mean would be moved by 143 bulk "
-                                       "buyers taking 1.4% of revenue on 0.19% of orders.",
-    "New first-time buyers": "First-time buyer inflow is what 08's trigger is sized on, and Black Friday "
-                             "is a visible bulge in it -- which is why 09 uses a four-month average "
-                             "rather than a peak-week rate.",
-    "Day-14 trigger pool": "The observable series ENDS before the operational one does. Once the 30-day "
-                           "outcome window runs past the end of the data the column is NULL, not zero -- "
-                           "an unobserved window is not an empty one.",
+    "Sessions and orders": "Drawn on their own scales -- orders are on the right axis and about 30x "
+                           "smaller -- the two move together: same Black Friday peak, same New Year "
+                           "trough. Traffic and demand never come apart in this window.",
+    "Conversion, both scopes": "The two ways of counting move in the same shape and sit about 1.8x apart "
+                               "every single day. That steady gap is why both are stored and labelled, "
+                               "instead of one being published as 'conversion'.",
+    "AOV: median and winsorised mean": "The median and the trimmed mean stay close together, which is the "
+                                       "reason to show both: a plain average would be dragged around by "
+                                       "143 bulk buyers taking 1.4% of revenue on 0.19% of orders.",
+    "New first-time buyers": "This is the inflow the day-14 test is sized on, and Black Friday is a "
+                             "visible bulge in it -- which is why the impact numbers use a four-month "
+                             "average rather than a peak week.",
+    "Day-14 trigger pool": "The measurable line stops before the operational one does. Once the 30-day "
+                           "outcome window runs past the end of the data there is nothing to record, so "
+                           "the value is blank rather than zero. An unfinished window is not an empty one.",
 }
 chart(
     fig,
     title=pick,
-    subtitle="Straight from marts.mart_daily_kpis. Nothing on this chart is recomputed by the app.",
+    subtitle="Straight from the daily KPI mart. Nothing on this chart is recomputed here.",
     takeaway=TAKE[pick],
     source="daily_kpis.parquet, from marts.mart_daily_kpis",
 )
 
 st.caption(
-    "Conversion appears at two labelled scopes throughout because they are different quantities with "
-    "different denominators; AOV is a median and a winsorised mean, never a raw mean. Both conventions "
-    "are enforced in the mart, not in this page."
+    "Conversion always appears twice, labelled, because per-visit and per-person are different quantities. "
+    "Order value is always a median and a trimmed mean, never a plain average. Both rules are enforced in "
+    "the mart, not on this page."
 )

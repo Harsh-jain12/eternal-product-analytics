@@ -1,4 +1,4 @@
-"""Eternal Product Analytics -- the dashboard.
+"""Cosmetics Retention & Growth Analytics -- the dashboard.
 
 Entry point. Streamlit Community Cloud is pointed at this file; everything it needs is
 in dashboard/ and nothing outside it is imported or read.
@@ -23,7 +23,7 @@ from lib.load import H, extract, manifest  # noqa: E402
 from lib.style import CSS  # noqa: E402
 
 st.set_page_config(
-    page_title="Eternal Product Analytics",
+    page_title="Cosmetics Retention & Growth Analytics",
     page_icon="chart_with_upwards_trend",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -41,8 +41,8 @@ PAGES = [
 ]
 
 with st.sidebar:
-    st.markdown("### Eternal Product Analytics")
-    st.caption("REES46 cosmetics, Oct 2019 - Feb 2020, plus the Criteo uplift experiment.")
+    st.markdown("### Cosmetics Retention & Growth Analytics")
+    st.caption("Cosmetics shop clickstream, Oct 2019 to Feb 2020, plus Criteo's randomised ad test.")
 
 nav = st.navigation([st.Page(p, title=t, icon=i, default=(i2 == 0))
                      for i2, (p, t, i) in enumerate(PAGES)])
@@ -57,27 +57,26 @@ with st.sidebar:
     rec = extract("reconciliation")
     n_pass = int(rec.passed.astype(bool).sum())
     st.caption(
-        f"{n_pass}/{len(rec)} certified numbers reconcile between the notebooks and the dbt layer."
+        f"{n_pass} of {len(rec)} published numbers match between the notebooks and the SQL layer."
     )
 
     with st.expander("Where these numbers come from"):
         st.markdown(
-            "This app reads **only** committed extracts and `handoff_params.json`. "
-            "The extracts are aggregates built by `dashboard/build_extracts.py` from the "
-            "dbt marts in `sql/`; no extract carries a user-level row, and nothing here "
-            "recomputes an analytical quantity."
+            "Every number on every page was computed upstream in SQL and is read here from a "
+            "checked-in file. Nothing in this app recalculates an analytical result, and no file "
+            "it reads contains an individual user's row."
         )
         man = manifest()
         st.dataframe(
             man[["file", "n_rows", "grain", "source"]],
             hide_index=True, width="stretch", height=260,
         )
-        st.caption(f"{man.bytes.sum() / 1e6:.2f} MB committed in total.")
+        st.caption(f"{man.bytes.sum() / 1e6:.2f} MB of data in total.")
 
     st.divider()
     st.caption(
-        f"user_id is **cookie-scoped**, not account-scoped. One person on two devices is two "
-        f"rows, so every retention and repeat figure on every page is a **lower bound**. "
+        f"These are **cookie IDs, not accounts**. One person on a phone and a laptop counts twice, so "
+        f"every retention and repeat figure on every page is a **floor, not an estimate**. "
         f"({H('data_date_range.span_days')} days of history.)"
     )
 

@@ -1,4 +1,4 @@
-"""Shared DuckDB data-access layer for the Eternal Product Analytics notebooks.
+"""Shared DuckDB data-access layer for the cosmetics-retention notebooks.
 
 Defined once here (per CLAUDE.md convention) and imported by every notebook after
 00_data_quality.ipynb instead of re-deriving connection setup, the cleaning rules
